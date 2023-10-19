@@ -11,7 +11,13 @@
         <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/delivery-app</property>
         <property name="connection_pool_size">1</property>
         <property name="hbm2ddl.auto">create</property>
+        <property name="hibernate.hdm2ddl.import_files">import.sql</property>
         <property name="show_sql">true</property>
         <mapping class="org.masonord.delivery.model.EmployeeEntity"/>
+        <mapping class="org.masonord.delivery.model.CompletedOrder"/>
+        <mapping class="org.masonord.delivery.model.Order"/>
+        <mapping class="org.masonord.delivery.model.Location"/>
+        <mapping class="org.masonord.delivery.model.Customer"/>
+        <mapping class="org.masonord.delivery.model.Courier"/>
     </session-factory>
 </hibernate-configuration>
