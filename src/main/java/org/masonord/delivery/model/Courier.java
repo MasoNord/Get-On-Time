@@ -14,11 +14,11 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "Courier")
+@Table(name = "couriers")
 public class Courier {
     @Id
-    @Column(name = "courierId", unique = true, nullable = false)
-    private String courierId;
+    @Column(name = "id", unique = true, nullable = false)
+    private String id;
 
     @Column(name = "email", unique = true, nullable = false, length = 100)
     private String email;

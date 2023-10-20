@@ -7,16 +7,18 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
+
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "Customer")
+@Table(name = "customers")
 public class Customer {
     @Id
-    @Column(name = "customerId", nullable = false, unique = true)
-    private String customerId;
+    @Column(name = "id", nullable = false, unique = true)
+    private String id;
 
     @Column(name = "email", unique = true, nullable = false, length = 100)
     private String email;
@@ -36,5 +38,8 @@ public class Customer {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "locationId")
     private Location location;
+
+    @OneToMany(mappedBy = "customer")
+    private Set<Order> orders;
 
 }

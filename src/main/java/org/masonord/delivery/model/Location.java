@@ -12,12 +12,12 @@ import org.masonord.delivery.enums.CountryType;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "Location")
+@Table(name = "locations")
 public class Location {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "locationId", nullable = false, unique = true)
-    private Long locationId;
+    @Column(name = "id", nullable = false, unique = true)
+    private Long id;
 
     @Column(name = "country", nullable = false)
     private CountryType country;
@@ -29,5 +29,5 @@ public class Location {
     private String zipCode;
 
     @Column(name = "number", nullable = false)
-    private int number; // No. of an apartment weather house, flat, etc
+    private int number; // No. of a home weather house, flat, apartment etc
 }

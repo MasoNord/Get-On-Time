@@ -10,12 +10,12 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "CompletedOrder")
+@Entity(name = "completedOrders")
 public class CompletedOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "completedOrderId", nullable = false, unique = true)
-    private Long completedOrderId;
+    @Column(name = "id", nullable = false, unique = true)
+    private Long id;
 
     @Column(name = "courierId", nullable = false, unique = true)
     private String courierId;

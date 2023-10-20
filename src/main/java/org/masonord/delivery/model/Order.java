@@ -11,11 +11,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "Order")
+@Table(name = "orders")
 public class Order {
     @Id
-    @Column(name = "orderId", nullable = false, unique = true)
-    private String orderId;
+    @Column(name = "id", nullable = false, unique = true)
+    private String id;
 
     @Column(name = "weight", nullable = false)
     private float weight;
@@ -30,7 +30,11 @@ public class Order {
     @JoinColumn(name = "courierId", nullable = false)
     private Courier courier;
 
-//    @OneToOne(cascade = CascadeType.ALL)
-//    @JoinColumn(name = "locationId")
-//    private Location location;
+    @ManyToOne
+    @JoinColumn(name = "customerId", nullable = false)
+    private Customer customer;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "locationId")
+    private Location location;
 }
