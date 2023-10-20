@@ -1,14 +1,13 @@
 package org.masonord.delivery.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.Accessors;
 import org.masonord.delivery.enums.CountryType;
 
 @Getter
-@Builder
+@Setter
+@Accessors(chain = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -23,7 +22,7 @@ public class Location {
     private CountryType country;
 
     @Column(name = "street", nullable = false)
-    private String street; // name of a street on which
+    private String street;
 
     @Column(name = "zipCode", nullable = false)
     private String zipCode;

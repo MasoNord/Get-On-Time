@@ -1,12 +1,14 @@
-package org.masonord.delivery.util;
+package org.masonord.delivery.config;
 
+import lombok.Getter;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
-public class HibernateUtil {
+public class HibernateConfig {
+    @Getter
     private static SessionFactory sessionFactory = buildSessionFactory();
 
     private static SessionFactory buildSessionFactory() {
@@ -25,10 +27,6 @@ public class HibernateUtil {
         }catch(Throwable e) {
             throw new ExceptionInInitializerError(e);
         }
-    }
-
-    public static SessionFactory getSessionFactory() {
-        return sessionFactory;
     }
 
     public static void shutdown() {

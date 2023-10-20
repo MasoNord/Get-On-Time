@@ -1,16 +1,15 @@
 package org.masonord.delivery.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.Accessors;
 import org.masonord.delivery.enums.CourierType;
 
 import java.util.Set;
 
 @Getter
-@Builder
+@Setter
+@Accessors(chain = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
