@@ -1,9 +1,10 @@
 package org.masonord.delivery.dto.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.Accessors;
-import org.masonord.delivery.enums.CountryType;
+import org.masonord.delivery.enums.UserRoles;
 
 @Getter
 @Setter
@@ -12,14 +13,13 @@ import org.masonord.delivery.enums.CountryType;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class LocationDto {
-    private CountryType country;
+@JsonInclude(value = JsonInclude.Include.NON_NULL)
+public class UserDto {
+    private String firstName;
 
-    private String street;
+    private String lastName;
 
-    private String zipCode;
+    private String email;
 
-    private int number;
-
-    private float[] coordinates;
+    private UserRoles role;
 }

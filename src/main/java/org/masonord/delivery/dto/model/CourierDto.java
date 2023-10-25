@@ -1,6 +1,7 @@
 package org.masonord.delivery.dto.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.masonord.delivery.enums.CourierType;
@@ -14,6 +15,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@JsonInclude(value = JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CourierDto {
     private String email;
@@ -23,9 +25,6 @@ public class CourierDto {
     private String lastName;
 
     private CourierType transport;
-
-    // in format: first is latitude and next is longitude
-    private float[] currentCoordinates;
 
     private String workingHours;
 

@@ -5,10 +5,10 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum CourierType {
-    WALK("walk"),
-    BICYCLE("bicycle"),
-    CAR("car");
+public enum UserRoles {
+    ADMIN("admin"),
+    CUSTOMER("customer"),
+    COURIER("courier");
 
     private final String value;
 }

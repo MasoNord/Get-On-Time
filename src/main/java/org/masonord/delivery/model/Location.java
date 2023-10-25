@@ -27,6 +27,9 @@ public class Location {
     @Column(name = "zipCode", nullable = false)
     private String zipCode;
 
+    @Column(name = "coordinates", nullable = false)
+    private float[] coordinates;     // in format: first is latitude and next is longitude
+
     @Column(name = "number", nullable = false)
     private int number; // No. of a home weather house, flat, apartment etc
 }

@@ -31,8 +31,9 @@ public class Courier {
     @Column(name = "transport", nullable = false)
     private CourierType transport;
 
-    @Column(name = "currentCoordinates", nullable = false)
-    private float[] currentCoordinates;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "locationId")
+    private Location location;
 
     @Column(name = "workingHours", nullable = false, length = 11)
     private String workingHours;
