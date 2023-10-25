@@ -18,13 +18,13 @@ import java.util.Set;
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CustomerDto {
+    private String id;
+
     private String email;
 
     private String firstName;
 
     private String lastName;
-
-    private Location location;
 
     private Set<Order> orders;
 }

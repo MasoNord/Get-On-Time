@@ -15,6 +15,8 @@ import org.masonord.delivery.enums.UserRoles;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class UserDto {
+    private String id;
+
     private String firstName;
 
     private String lastName;

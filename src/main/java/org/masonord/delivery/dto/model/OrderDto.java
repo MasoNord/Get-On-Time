@@ -17,6 +17,8 @@ import org.masonord.delivery.model.Location;
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OrderDto {
+    private String id;
+
     // take any measurement metrics, pounds or kgs
     // I'll stay with kg, because I've gotten used to it
     private float weight;
@@ -30,5 +32,4 @@ public class OrderDto {
 
     private Customer customer;
 
-    private Location location;
 }

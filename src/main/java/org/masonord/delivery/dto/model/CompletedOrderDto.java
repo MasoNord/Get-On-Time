@@ -5,7 +5,7 @@ import lombok.*;
 import lombok.experimental.Accessors;
 
 @Getter
-@Builder
+@Setter
 @Accessors(chain = true)
 @AllArgsConstructor
 @NoArgsConstructor

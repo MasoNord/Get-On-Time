@@ -10,7 +10,7 @@ import org.masonord.delivery.model.Order;
 import java.util.Set;
 
 @Getter
-@Builder
+@Setter
 @Accessors(chain = true)
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,6 +18,8 @@ import java.util.Set;
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CourierDto {
+    private String id;
+
     private String email;
 
     private String firstName;
