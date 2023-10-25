@@ -1,4 +1,4 @@
-package org.masonord.delivery.repository;
+package org.masonord.delivery.repository.interfaces;
 
 import org.masonord.delivery.model.Order;
 
