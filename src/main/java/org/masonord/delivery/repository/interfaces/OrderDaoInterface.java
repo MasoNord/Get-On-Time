@@ -5,11 +5,11 @@ import org.masonord.delivery.model.Order;
 
 import java.util.List;
 
-public interface OrderRepository {
-    Order addOrder(OrderDto orderDto);
+public interface OrderDaoInterface {
+    Order createOrder(Order order);
 
-    List<Order> getAll();
+    List<Order> getOrders();
 
-    Order getById(String id);
+    Order getOrder(String id);
 
 }

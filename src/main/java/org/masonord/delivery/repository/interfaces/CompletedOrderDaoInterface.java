@@ -1,7 +1,7 @@
 package org.masonord.delivery.repository.interfaces;
 
-import org.masonord.delivery.model.Order;
+import org.masonord.delivery.model.CompletedOrder;
 
-public interface CompletedOrderRepository {
-    void addOrder(Order order);
+public interface CompletedOrderDaoInterface {
+    CompletedOrder addOrder(CompletedOrder CompletedOrder);
 }

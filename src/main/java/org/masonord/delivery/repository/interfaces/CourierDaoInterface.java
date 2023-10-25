@@ -5,13 +5,13 @@ import org.masonord.delivery.model.Courier;
 
 import java.util.List;
 
-public interface CourierRepository {
+public interface CourierDaoInterface {
 
-    Courier addCourier(CourierDto courierDto);
+    Courier createCourier(Courier courier);
 
-    Courier getById(String id);
+    Courier getCourier(String id);
 
-    List<Courier> getAll();
+    List<Courier> getCouriers();
 
-    void removeCourier();
+    void deleteCourier(String id);
 }

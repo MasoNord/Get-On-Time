@@ -1,15 +1,14 @@
 package org.masonord.delivery.repository.interfaces;
 
-import org.masonord.delivery.dto.model.CustomerDto;
 import org.masonord.delivery.model.Customer;
 import java.util.List;
 
-public interface CustomerDaoInteface {
-    Customer addCourier(CustomerDto courierDto);
+public interface CustomerDaoInterface {
+    Customer createCustomer(Customer Customer);
 
-    Customer getById(String id);
+    Customer getCustomer(String id);
 
-    List<Customer> getAll();
+    List<Customer> getCustomers();
 
-    void removeCourier();
+    void deleteCustomer(String id);
 }
