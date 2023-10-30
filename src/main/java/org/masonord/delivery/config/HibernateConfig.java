@@ -1,35 +1,59 @@
 package org.masonord.delivery.config;
 
-import lombok.Getter;
-import org.hibernate.SessionFactory;
-import org.hibernate.boot.Metadata;
-import org.hibernate.boot.MetadataSources;
-import org.hibernate.boot.registry.StandardServiceRegistry;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.orm.hibernate5.HibernateTransactionManager;
+import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import javax.sql.DataSource;
+import java.util.Properties;
+
+@Configuration
+@EnableTransactionManagement
+@PropertySource("classpath:database.properties")
+@ComponentScan(basePackages = {"org.masonord.delivery"})
 public class HibernateConfig {
-    @Getter
-    private static SessionFactory sessionFactory = buildSessionFactory();
 
-    private static SessionFactory buildSessionFactory() {
-        try {
-            if (sessionFactory == null) {
-                StandardServiceRegistry standardServiceRegistry = new StandardServiceRegistryBuilder()
-                        .configure("hibernate.cfg.xml").build();
+    @Autowired
+    private Environment environment;
 
-                Metadata metadata = new MetadataSources(standardServiceRegistry)
-                        .getMetadataBuilder()
-                        .build();
-
-                sessionFactory = metadata.getSessionFactoryBuilder().build();
-            }
-            return sessionFactory;
-        }catch(Throwable e) {
-            throw new ExceptionInInitializerError(e);
-        }
+    @Bean
+    public LocalSessionFactoryBean sessionFactory() {
+        LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
+        sessionFactory.setDataSource(dataSource());
+        sessionFactory.setPackagesToScan(new String[] {"org.masonord.delivery.model"});
+        sessionFactory.setHibernateProperties(hibernateProperties());
+        return sessionFactory;
+    }
+    @Bean
+    public DataSource dataSource() {
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName(environment.getRequiredProperty("jdbc.driverClassName"));
+        dataSource.setUrl(environment.getRequiredProperty("jdbc.url"));
+        dataSource.setUsername(environment.getRequiredProperty("jdbc.username"));
+        dataSource.setPassword(environment.getRequiredProperty("jdbc.password"));
+        return dataSource;
     }
 
-    public static void shutdown() {
-        getSessionFactory().close();
+    private Properties hibernateProperties() {
+        Properties properties = new Properties();
+        properties.put("hibernate.dialect", environment.getRequiredProperty("hibernate.dialect"));
+        properties.put("hibernate.show_sql", environment.getRequiredProperty("hibernate.show_sql"));
+        properties.put("hibernate.format_sql", environment.getRequiredProperty("hibernate.format_sql"));
+        properties.put("hibernate.hbm2ddl.auto", environment.getRequiredProperty("hibernate.hbm2ddl.auto"));
+        return properties;
+    }
+
+    @Bean
+    public HibernateTransactionManager getTransactionManager() {
+        HibernateTransactionManager transactionManager = new HibernateTransactionManager();
+        transactionManager.setSessionFactory(sessionFactory().getObject());
+        return transactionManager;
     }
 }
