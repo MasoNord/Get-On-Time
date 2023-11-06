@@ -7,6 +7,7 @@ import org.hibernate.SessionFactory;
 import org.postgresql.shaded.com.ongres.scram.common.util.Preconditions;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.lang.annotation.Target;
 import java.util.List;
 
 @Getter
@@ -16,43 +17,49 @@ public abstract class AbstractHibernateDao <T> {
     private Class<T> targetClass;
 
     @Autowired
-    protected SessionFactory session;
+    protected SessionFactory sessionFactory;
 
     public final void setClass(final Class<T> targetClassToSet) {
         targetClass = Preconditions.checkNotNull(targetClassToSet, "targetClassToSet");
     }
 
-    public T getById(final String id) {
-        return (T) session.getCurrentSession().get(targetClass, id);
+    protected T getById(final Long id) {
+        String query = "from " + targetClass.getName() + " u where u.id = :id";
+        return (T) sessionFactory.getCurrentSession().createQuery(query).setParameter("id", id).uniqueResult();
     }
 
-    public T getByEmail(final String email) {
-        return (T) session.getCurrentSession().get(targetClass, email);
+    protected T getByUUID(final String id) {
+        return (T) sessionFactory.getCurrentSession().get(targetClass, id);
     }
 
-    public List<T> getAll() {
-        return  session.getCurrentSession().createNativeQuery("from " + targetClass.getName()).list();
+    protected T getByEmail(final String email) {
+        String query = "from " + targetClass.getName() + " u where u.email = :email";
+        return (T) sessionFactory.getCurrentSession().createQuery(query).setParameter("email", email).uniqueResult();
     }
 
-    public T create(final T entity) {
+    protected List<T> getAll() {
+        return  sessionFactory.getCurrentSession().createQuery("from " + targetClass.getName(), targetClass).list();
+    }
+
+    protected T create(final T entity) {
         Preconditions.checkNotNull(entity, "entity");
-        session.getCurrentSession().persist(entity);
+        sessionFactory.getCurrentSession().persist(entity);
         return entity;
     }
 
-    public T update(final T entity) {
+    protected T update(final T entity) {
         Preconditions.checkNotNull(entity, "entity");
-        return (T) session.getCurrentSession().merge(entity);
+        return (T) sessionFactory.getCurrentSession().merge(entity);
     }
 
-    public void delete(final T entity) {
+    protected void delete(final T entity) {
         Preconditions.checkNotNull(entity, "entity");
-        session.getCurrentSession().detach(entity);
+        sessionFactory.getCurrentSession().detach(entity);
     }
 
-    public void deleteById(final String id) {
+    protected void deleteById(final Long id) {
         final T entity = getById(id);
         Preconditions.checkNotNull(entity, "entity");
-        session.getCurrentSession().detach(entity);
+        sessionFactory.getCurrentSession().detach(entity);
     }
 }

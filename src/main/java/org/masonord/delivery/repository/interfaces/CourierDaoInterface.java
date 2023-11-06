@@ -9,9 +9,11 @@ public interface CourierDaoInterface {
 
     Courier createCourier(Courier courier);
 
-    Courier getCourier(String id);
+    Courier getCourierById(Long id);
+
+    Courier getCourierByEmail(String email);
 
     List<Courier> getCouriers();
 
-    void deleteCourier(String id);
+    void deleteCourier(Long id);
 }

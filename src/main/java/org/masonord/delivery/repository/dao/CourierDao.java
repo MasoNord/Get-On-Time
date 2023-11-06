@@ -4,22 +4,33 @@ import org.masonord.delivery.model.Courier;
 import org.masonord.delivery.repository.AbstractHibernateDao;
 import org.masonord.delivery.repository.interfaces.CourierDaoInterface;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Repository
+@Transactional
 public class CourierDao extends AbstractHibernateDao<Courier> implements CourierDaoInterface {
+    public CourierDao() {
+        setClass(Courier.class);
+    }
+
     @Override
     public Courier createCourier(Courier courier) {return create(courier);}
 
     @Override
-    public void deleteCourier(String id) {
+    public Courier getCourierById(Long id) {
+        return getById(id);
+    }
+
+    @Override
+    public void deleteCourier(Long id) {
         deleteById(id);
     }
 
     @Override
-    public Courier getCourier(String id) {
-        return getById(id);
+    public Courier getCourierByEmail(String email) {
+        return getByEmail(email);
     }
 
     @Override

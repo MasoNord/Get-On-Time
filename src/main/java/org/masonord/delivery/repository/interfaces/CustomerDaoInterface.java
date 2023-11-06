@@ -6,9 +6,11 @@ import java.util.List;
 public interface CustomerDaoInterface {
     Customer createCustomer(Customer Customer);
 
-    Customer getCustomer(String id);
+    Customer getCustomerById(Long id);
+
+    Customer getCustomerByEmail(String email);
 
     List<Customer> getCustomers();
 
-    void deleteCustomer(String id);
+    void deleteCustomer(Long id);
 }
