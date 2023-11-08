@@ -27,8 +27,24 @@ public class Location {
     @Column(name = "zipCode", nullable = false)
     private String zipCode;
 
-    @Column(name = "coordinates", nullable = false)
-    private float[] coordinates;     // in format: first is latitude and next is longitude
+//    @Column(name = "coordinates", nullable = false)
+//    private float[] coordinates;     // in format: first is latitude and next is longitude
+//
+
+    //TODO: recreate Location entity to divide coordinates field into two separate fields
+    /**
+     * @Column(name = "latitude")
+     * private float latitude;
+     *
+     * @Column(name = "longitude")
+     * private float longitude;
+     */
+
+    @Column(name = "latitude", nullable = false)
+    private float latitude;
+
+    @Column(name = "longitude", nullable = false)
+    private float longitude;
 
     @Column(name = "number", nullable = false)
     private int number; // No. of a home weather house, flat, apartment etc

@@ -16,8 +16,9 @@ import java.util.Set;
 @Table(name = "customers")
 public class Customer {
     @Id
-    @Column(name = "id", nullable = false, unique = true)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", unique = true, nullable = false)
+    private Long id;
 
     @Column(name = "email", unique = true, nullable = false, length = 100)
     private String email;
@@ -34,11 +35,11 @@ public class Customer {
     @Column(name = "du", nullable = false, length = 30)
     private String du; // data of updating
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "locationId")
     private Location location;
 
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER)
     private Set<Order> orders;
 
 }

@@ -16,8 +16,9 @@ import java.util.Set;
 @Table(name = "couriers")
 public class Courier {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", unique = true, nullable = false)
-    private String id;
+    private Long id;
 
     @Column(name = "email", unique = true, nullable = false, length = 100)
     private String email;
@@ -44,6 +45,6 @@ public class Courier {
     @Column(name = "du", nullable = false, length = 30)
     private String du; // data of updating
 
-    @OneToMany(mappedBy = "courier")
+    @OneToMany(mappedBy = "courier", fetch = FetchType.EAGER)
     private Set<Order> orders;
 }

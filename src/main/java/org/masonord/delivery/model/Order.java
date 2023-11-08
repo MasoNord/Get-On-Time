@@ -25,11 +25,11 @@ public class Order {
     @Column(name = "deliveryHours", nullable = false)
     private String deliveryHours;
 
-    @ManyToOne
-    @JoinColumn(name = "courierId", nullable = false)
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "courierId")
     private Courier courier;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "customerId", nullable = false)
     private Customer customer;
 

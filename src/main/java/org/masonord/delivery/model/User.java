@@ -1,9 +1,6 @@
 package org.masonord.delivery.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,8 +17,9 @@ import org.masonord.delivery.enums.UserRoles;
 @Table(name = "users")
 public class User {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", unique = true, nullable = false)
-    private String id;
+    private Long id;
 
     @Column(name = "firstName", nullable = false, length = 50)
     private String firstName;
