@@ -3,6 +3,7 @@ package org.masonord.delivery.service.classes;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.Accessors;
+import org.masonord.delivery.dto.model.GeoCodingDto;
 import org.masonord.delivery.service.interfaces.GeoCodingApiServiceInterface;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -13,14 +14,14 @@ import reactor.core.publisher.Mono;
 public class GeoCodingApiService implements GeoCodingApiServiceInterface {
     private final WebClient webClient;
 
-    public Object[] getGeoLocation(String address) {
-        Mono<Object[]> geoCodingApiMono = webClient
+    public GeoCodingDto[] getGeoLocation(String address) {
+        Mono<GeoCodingDto[]> geoCodingApiMono = webClient
                 .get()
                 .uri(String.join("", "search?q=", address))
                 .retrieve()
-                .bodyToMono(Object[].class);
+                .bodyToMono(GeoCodingDto[].class);
 
-        Object[] res = geoCodingApiMono
+        GeoCodingDto[] res = geoCodingApiMono
                 .share().block();
 
         return res;

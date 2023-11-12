@@ -21,24 +21,14 @@ public class Location {
     @Column(name = "country", nullable = false)
     private CountryType country;
 
+    @Column(name = "city", nullable = false)
+    private String city;
+
     @Column(name = "street", nullable = false)
     private String street;
 
     @Column(name = "zipCode", nullable = false)
     private String zipCode;
-
-//    @Column(name = "coordinates", nullable = false)
-//    private float[] coordinates;     // in format: first is latitude and next is longitude
-//
-
-    //TODO: recreate Location entity to divide coordinates field into two separate fields
-    /**
-     * @Column(name = "latitude")
-     * private float latitude;
-     *
-     * @Column(name = "longitude")
-     * private float longitude;
-     */
 
     @Column(name = "latitude", nullable = false)
     private float latitude;
