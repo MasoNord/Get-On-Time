@@ -1,13 +1,16 @@
 package org.masonord.delivery.exception;
 
+import org.hibernate.resource.transaction.LocalSynchronizationException;
 import org.masonord.delivery.config.PropertiesConfig;
-import org.masonord.delivery.enums.EntityType;
+import org.masonord.delivery.enums.ModelType;
 import org.masonord.delivery.enums.ExceptionType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.text.MessageFormat;
 import java.util.Optional;
 
+@Component
 public class ExceptionHandler {
 
     private static PropertiesConfig propertiesConfig;
@@ -17,18 +20,17 @@ public class ExceptionHandler {
         ExceptionHandler.propertiesConfig = propertiesConfig;
     }
 
-
     public static RuntimeException throwException(String message, String... args) {
         return new RuntimeException(format(message, args));
     }
 
-    public static RuntimeException throwException(EntityType entityType, ExceptionType exceptionType, String ...args) {
-        String message = getMessage(entityType, exceptionType);
+    public static RuntimeException throwException(ModelType modelType, ExceptionType exceptionType, String ...args) {
+        String message = getMessage(modelType, exceptionType);
         return throwException(exceptionType, message, args);
     }
 
-    public static RuntimeException throwException(EntityType entityType, ExceptionType exceptionType, String id, String ...args) {
-        String message = getMessage(entityType, exceptionType).concat(".").concat(id);
+    public static RuntimeException throwException(ModelType modelType, ExceptionType exceptionType, String id, String ...args) {
+        String message = getMessage(modelType, exceptionType).concat(".").concat(id);
         return throwException(exceptionType, message, args);
     }
 
@@ -46,16 +48,15 @@ public class ExceptionHandler {
     }
 
     private static String format(String message, String ...args) {
-        Optional<String> content = Optional.ofNullable(propertiesConfig.getValue(message));
-        if (content.isPresent())
+        Optional<String> content = Optional.ofNullable(propertiesConfig.getConfigValue(message));
+        if (content.isPresent()) {
             return MessageFormat.format(content.get(), (Object[]) args);
-
+        }
         return String.format(message, (Object[]) args);
     }
 
-
-    private static String getMessage(EntityType entityType, ExceptionType exceptionType) {
-        return entityType.name().concat(".").concat(exceptionType.getValue()).toLowerCase();
+    private static String getMessage(ModelType modelType, ExceptionType exceptionType) {
+        return modelType.name().concat(".").concat(exceptionType.getValue()).toLowerCase();
     }
 
     public static class EntityNotFoundException extends RuntimeException {
@@ -81,5 +82,5 @@ public class ExceptionHandler {
             super(message);
         }
     }
-
 }
+

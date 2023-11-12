@@ -64,6 +64,7 @@ public class Response<T> {
                 .setMessage(ex.getMessage())
                 .setDetails(message)
                 .setDate(DateUtils.today());
+        setErrors(error);
     }
 }
 
