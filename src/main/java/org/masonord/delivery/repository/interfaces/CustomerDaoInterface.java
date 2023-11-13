@@ -1,5 +1,6 @@
 package org.masonord.delivery.repository.interfaces;
 
+import org.masonord.delivery.dto.model.LocationDto;
 import org.masonord.delivery.model.Customer;
 import java.util.List;
 
@@ -13,4 +14,6 @@ public interface CustomerDaoInterface {
     List<Customer> getCustomers();
 
     void deleteCustomer(Long id);
+
+     Customer updateProfile(Customer customer);
 }

@@ -1,6 +1,6 @@
 package org.masonord.delivery.repository.dao;
 
-import org.masonord.delivery.dto.model.CustomerDto;
+import org.masonord.delivery.dto.model.LocationDto;
 import org.masonord.delivery.model.Customer;
 import org.masonord.delivery.repository.AbstractHibernateDao;
 import org.masonord.delivery.repository.interfaces.CustomerDaoInterface;
@@ -36,4 +36,10 @@ public class CustomerDao extends AbstractHibernateDao<Customer> implements Custo
     public void deleteCustomer(Long id) {
         deleteById(id);
     }
+
+    @Override
+    public Customer updateProfile(Customer customer) {
+        return update(customer);
+    }
+
 }

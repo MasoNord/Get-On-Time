@@ -4,7 +4,13 @@ package org.masonord.delivery.service.classes;
 import org.masonord.delivery.dto.mapper.CourierMapper;
 import org.masonord.delivery.dto.mapper.CustomerMapper;
 import org.masonord.delivery.dto.model.CustomerDto;
+import org.masonord.delivery.dto.model.LocationDto;
+import org.masonord.delivery.enums.ExceptionType;
+import org.masonord.delivery.enums.ModelType;
+import org.masonord.delivery.exception.ExceptionHandler;
+import org.masonord.delivery.model.Courier;
 import org.masonord.delivery.model.Customer;
+import org.masonord.delivery.model.Location;
 import org.masonord.delivery.model.Order;
 import org.masonord.delivery.repository.dao.CourierDao;
 import org.masonord.delivery.repository.dao.CustomerDao;
@@ -23,6 +29,9 @@ public class CustomerService implements CustomerServiceInterface {
 
     @Autowired
     CustomerDao customerDao;
+
+    @Autowired
+    LocationService locationService;
 
     @Override
     public CustomerDto addNewCustomer(CustomerDto customerDto) {
@@ -66,7 +75,25 @@ public class CustomerService implements CustomerServiceInterface {
     }
 
     @Override
+    public String updateCurrentLocation(LocationDto locationDto, String email) {
+        Customer customer = customerDao.getCustomerByEmail(email);
+        if (customer != null) {
+            Location location = locationService.addNewPlaceByName(locationDto);
+            customer.setLocation(location);
+            customerDao.updateProfile(customer);
+
+            return "The location has been successfully updated";
+        }
+
+        throw exception(ModelType.CUSTOMER, ExceptionType.ENTITY_NOT_FOUND, email);
+
+    }
+    @Override
     public void deleteCustomer(String email) {
 
+    }
+
+    private RuntimeException exception(ModelType entity, ExceptionType exception, String ...args) {
+        return ExceptionHandler.throwException(entity, exception, args);
     }
 }

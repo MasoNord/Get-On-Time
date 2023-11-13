@@ -1,13 +1,12 @@
 package org.masonord.delivery.controller.v1.api;
 
 
+import org.masonord.delivery.controller.v1.request.LocationAddRequest;
+import org.masonord.delivery.dto.model.LocationDto;
 import org.masonord.delivery.dto.response.Response;
 import org.masonord.delivery.service.classes.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController("CustomerController")
 @RequestMapping("/api/v1/customer")
@@ -19,10 +18,24 @@ public class CustomerController {
     public Response getCustomer(@PathVariable String email) {
         return Response.ok().setPayload(customerService.findCustomerByEmail(email));
     }
+//(params = {"page", "size"})
 
     @GetMapping()
     public Response getCustomers() {
         return Response.ok().setPayload(customerService.getCustomers());
 
     }
+
+    @PutMapping("/{email}")
+    public Response updateCurrentLocation(@RequestBody LocationAddRequest locationAddRequest, @PathVariable String email) {
+        LocationDto locationDto = new LocationDto()
+                .setStreet(locationAddRequest.getStreet())
+                .setCity(locationAddRequest.getCity())
+                .setCountry(locationAddRequest.getCountry())
+                .setZipCode(locationAddRequest.getZipCode())
+                .setNumber(locationAddRequest.getNumber());
+
+        return Response.ok().setPayload(customerService.updateCurrentLocation(locationDto, email));
+    }
+
 }
