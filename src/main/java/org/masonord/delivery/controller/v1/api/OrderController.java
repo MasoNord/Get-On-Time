@@ -1,9 +1,8 @@
 package org.masonord.delivery.controller.v1.api;
 
-
 import jakarta.validation.Valid;
-import org.hibernate.validator.constraints.UUID;
 import org.masonord.delivery.controller.v1.request.OrderCreateRequest;
+import org.masonord.delivery.dto.model.LocationDto;
 import org.masonord.delivery.dto.model.OrderDto;
 import org.masonord.delivery.dto.response.Response;
 import org.masonord.delivery.enums.CountryType;
@@ -24,21 +23,20 @@ public class OrderController {
 
     @PostMapping()
     public Response addOrder(@RequestBody @Valid OrderCreateRequest orderCreateRequest) {
-        Location location = new Location()
-                .setCountry(CountryType.valueOf(orderCreateRequest.getLocation().getCountry().toString()))
-                .setStreet(orderCreateRequest.getLocation().getStreet())
+        LocationDto locationDto = new LocationDto()
+                .setCountry(orderCreateRequest.getLocation().getCountry())
+                .setCity(orderCreateRequest.getLocation().getCity())
                 .setNumber(orderCreateRequest.getLocation().getNumber())
-                .setZipCode(orderCreateRequest.getLocation().getZipCode())
-                .setCoordinates(new float[] {1.3f, 3.2f});
+                .setStreet(orderCreateRequest.getLocation().getStreet())
+                .setZipCode(orderCreateRequest.getLocation().getZipCode());
 
         OrderDto orderDto = new OrderDto()
-                .setLocation(location)
-                .setCustomer(customerDao.getCustomerByEmail(orderCreateRequest.getCustomerEmail()))
+                .setCustomerEmail(orderCreateRequest.getCustomerEmail())
                 .setCost(orderCreateRequest.getCost())
                 .setWeight(orderCreateRequest.getWeight())
                 .setDeliveryHours(orderCreateRequest.getDeliveryHours());
 
-        return Response.ok().setPayload(orderService.addNewOrder(orderDto));
+        return Response.ok().setPayload(orderService.addNewOrder(orderDto, locationDto));
     }
 
     @GetMapping()
@@ -46,7 +44,7 @@ public class OrderController {
         return Response.ok().setPayload(orderService.getOrders());
     }
     @GetMapping("/{id}")
-    public Response getOrderById(@PathVariable  String id) {
+    public Response getOrderById(@PathVariable String id) {
         return Response.ok().setPayload(orderService.getOrderById(id));
     }
 }
