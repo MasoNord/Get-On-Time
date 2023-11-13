@@ -33,7 +33,7 @@ public class Order {
     @JoinColumn(name = "customerId", nullable = false)
     private Customer customer;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "locationId")
     private Location location;
 }
