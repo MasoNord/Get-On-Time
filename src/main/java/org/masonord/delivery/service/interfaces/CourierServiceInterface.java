@@ -1,6 +1,7 @@
 package org.masonord.delivery.service.interfaces;
 
 import org.masonord.delivery.dto.model.CourierDto;
+import org.masonord.delivery.dto.model.LocationDto;
 import org.masonord.delivery.model.Courier;
 
 import java.util.List;
@@ -58,4 +59,13 @@ public interface CourierServiceInterface {
      *
      */
     Courier updateProfile(String id, Courier newUserProfile);
+
+    /**
+     * Update courier's current location
+     *
+     * @param locationDto
+     * @return
+     */
+    String updateCurrentLocation(LocationDto locationDto, String email);
+
 }

@@ -1,6 +1,7 @@
 package org.masonord.delivery.repository.interfaces;
 
 import org.masonord.delivery.dto.model.CourierDto;
+import org.masonord.delivery.dto.model.LocationDto;
 import org.masonord.delivery.model.Courier;
 
 import java.util.List;
@@ -16,4 +17,6 @@ public interface CourierDaoInterface {
     List<Courier> getCouriers();
 
     void deleteCourier(Long id);
+
+    Courier updateProfile(Courier courier);
 }

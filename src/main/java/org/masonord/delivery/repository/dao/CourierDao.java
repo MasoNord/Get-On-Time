@@ -1,5 +1,6 @@
 package org.masonord.delivery.repository.dao;
 
+import org.masonord.delivery.dto.model.LocationDto;
 import org.masonord.delivery.model.Courier;
 import org.masonord.delivery.repository.AbstractHibernateDao;
 import org.masonord.delivery.repository.interfaces.CourierDaoInterface;
@@ -36,5 +37,9 @@ public class CourierDao extends AbstractHibernateDao<Courier> implements Courier
     @Override
     public List<Courier> getCouriers() {
         return getAll();
+    }
+    @Override
+    public Courier updateProfile(Courier courier) {
+        return update(courier);
     }
 }

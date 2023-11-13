@@ -3,6 +3,7 @@ package org.masonord.delivery.controller.v1.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,7 +17,7 @@ import org.masonord.delivery.enums.CountryType;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class LocationAddRequest {
 
-    @NotEmpty
+    @NotNull
     private CountryType country;
 
     @NotEmpty
@@ -28,6 +29,6 @@ public class LocationAddRequest {
     @NotEmpty
     private String zipCode;
 
-    @NotEmpty
+    @NotNull
     private int number;
 }

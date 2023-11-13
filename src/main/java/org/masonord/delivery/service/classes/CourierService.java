@@ -2,8 +2,12 @@ package org.masonord.delivery.service.classes;
 
 import org.masonord.delivery.dto.mapper.CourierMapper;
 import org.masonord.delivery.dto.model.CourierDto;
+import org.masonord.delivery.dto.model.LocationDto;
 import org.masonord.delivery.dto.model.OrderDto;
 import org.masonord.delivery.dto.model.UserDto;
+import org.masonord.delivery.enums.ExceptionType;
+import org.masonord.delivery.enums.ModelType;
+import org.masonord.delivery.exception.ExceptionHandler;
 import org.masonord.delivery.model.Courier;
 import org.masonord.delivery.model.Location;
 import org.masonord.delivery.model.Order;
@@ -29,7 +33,7 @@ public class CourierService implements CourierServiceInterface {
     private CourierDao courierDao;
 
     @Autowired
-    private LocationDao locationDao;
+    private LocationService locationService;
 
     @Autowired
     private OrderDao orderDao;
@@ -62,7 +66,13 @@ public class CourierService implements CourierServiceInterface {
 
     @Override
     public CourierDto findCourierByEmail(String email) {
-        return CourierMapper.toCourierDto(courierDao.getCourierByEmail(email));
+        Courier courier = courierDao.getCourierByEmail(email);
+
+        if (courier != null) {
+            return CourierMapper.toCourierDto(courierDao.getCourierByEmail(email));
+        }
+
+        throw exception(ModelType.COURIER, ExceptionType.ENTITY_NOT_FOUND, email);
     }
 
     @Override
@@ -75,7 +85,19 @@ public class CourierService implements CourierServiceInterface {
 
         return couriers;
     }
+    @Override
+    public String updateCurrentLocation(LocationDto locationDto, String email) {
+       Courier courier = courierDao.getCourierByEmail(email);
 
+       if (courier != null) {
+            Location location = locationService.addNewPlaceByName(locationDto);
+            courier.setLocation(location);
+            courierDao.updateProfile(courier);
+
+            return "The location has been successfully updated";
+       }
+       throw exception(ModelType.COURIER, ExceptionType.ENTITY_NOT_FOUND, email);
+    }
     @Override
     public void DeleteCourierById(Long id) {
 
@@ -84,5 +106,9 @@ public class CourierService implements CourierServiceInterface {
     @Override
     public Courier updateProfile(String id, Courier newUserProfile) {
         return null;
+    }
+
+    private RuntimeException exception(ModelType entity, ExceptionType exception, String ...args) {
+        return ExceptionHandler.throwException(entity, exception, args);
     }
 }

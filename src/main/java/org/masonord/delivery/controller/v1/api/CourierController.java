@@ -1,17 +1,16 @@
 package org.masonord.delivery.controller.v1.api;
 
+import jakarta.validation.Valid;
+import org.masonord.delivery.controller.v1.request.LocationAddRequest;
+import org.masonord.delivery.dto.model.LocationDto;
 import org.masonord.delivery.dto.response.Response;
 import org.masonord.delivery.service.classes.CourierService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController("CourierController")
 @RequestMapping("/api/v1/courier")
 public class CourierController {
-
     @Autowired
     private CourierService courierService;
 
@@ -25,4 +24,15 @@ public class CourierController {
         return Response.ok().setPayload(courierService.getAllCouriers());
     }
 
+    @PutMapping("/{email}")
+    public Response setCurrentLocation(@RequestBody @Valid LocationAddRequest locationAddRequest, @PathVariable String email) {
+        LocationDto locationDto = new LocationDto()
+                .setZipCode(locationAddRequest.getZipCode())
+                .setNumber((locationAddRequest.getNumber()))
+                .setCity(locationAddRequest.getCity())
+                .setCountry(locationAddRequest.getCountry())
+                .setStreet(locationAddRequest.getStreet());
+
+        return Response.ok().setPayload(courierService.updateCurrentLocation(locationDto, email));
+    }
 }
