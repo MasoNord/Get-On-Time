@@ -10,7 +10,7 @@ public class OrderMapper {
                 .setCost(order.getCost())
                 .setWeight(order.getWeight())
                 .setCourier(order.getCourier())
-                .setCustomer(order.getCustomer())
+                .setCustomerEmail(order.getCustomer().getEmail())
                 .setDeliveryHours(order.getDeliveryHours());
     }
 }

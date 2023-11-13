@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 public class CourierMapper {
     public static CourierDto toCourierDto(Courier courier) {
         return new CourierDto()
-                .setId(courier.getId())
                 .setEmail(courier.getEmail())
                 .setFirstName(courier.getFirstName())
                 .setLastName(courier.getLastName())

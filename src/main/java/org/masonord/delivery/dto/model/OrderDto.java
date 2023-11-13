@@ -30,6 +30,5 @@ public class OrderDto {
 
     private Courier courier;
 
-    private Customer customer;
-
+    private String customerEmail;
 }

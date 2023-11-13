@@ -19,7 +19,7 @@ public class LocationDto {
 
     private String zipCode;
 
-    private int number;
+    private String city;
 
-    private float[] coordinates;
+    private int number;
 }

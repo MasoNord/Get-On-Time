@@ -12,7 +12,7 @@ import lombok.experimental.Accessors;
 @ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CompletedOrderDto {
-    private String courierId;
+    private Long courierId;
 
     private String orderId;
 
