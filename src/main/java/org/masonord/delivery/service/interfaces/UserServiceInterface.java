@@ -1,6 +1,9 @@
 package org.masonord.delivery.service.interfaces;
 
+import org.masonord.delivery.controller.v1.request.UserSignupRequest;
 import org.masonord.delivery.dto.model.UserDto;
+
+import java.util.List;
 
 public interface UserServiceInterface {
     /**
@@ -9,7 +12,7 @@ public interface UserServiceInterface {
      * @param userDto
      * @return
      */
-    UserDto signup(UserDto userDto);
+    UserDto signup(UserDto userDto, UserSignupRequest userSignupRequest);
 
     /**
      * Search an existing user
@@ -35,4 +38,12 @@ public interface UserServiceInterface {
      * @return
      */
     UserDto updateProfile(String email, UserDto newUserProfile);
+
+    /**
+     * Get all user records
+     *
+     * @return
+     */
+
+    List<UserDto> getUsers();
 }
