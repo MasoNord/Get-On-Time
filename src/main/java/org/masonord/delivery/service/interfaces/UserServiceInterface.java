@@ -46,4 +46,11 @@ public interface UserServiceInterface {
      */
 
     List<UserDto> getUsers();
+
+    /**
+     * Create random users
+     *
+     * @param count - define how many users will be created
+     */
+    void createDummyUsers(int count);
 }

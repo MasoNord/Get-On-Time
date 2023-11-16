@@ -35,6 +35,4 @@ public class FakeDataUtil {
     public CourierType generateCourier() {
         return opt.option(CourierType.class);
     }
-
-
 }

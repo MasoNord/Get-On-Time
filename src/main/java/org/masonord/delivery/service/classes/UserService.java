@@ -16,6 +16,7 @@ import org.masonord.delivery.model.User;
 import org.masonord.delivery.repository.dao.CustomerDao;
 import org.masonord.delivery.repository.dao.UserDao;
 import org.masonord.delivery.service.interfaces.UserServiceInterface;
+import org.masonord.delivery.util.FakeDataUtil;
 import org.masonord.delivery.util.IdUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -42,6 +43,9 @@ public class UserService implements UserServiceInterface {
 
     @Autowired
     private CustomerService customerService;
+
+    @Autowired
+    private FakeDataUtil fakeData;
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder = ContextConfig.bCryptPasswordEncoder();
 
@@ -127,6 +131,28 @@ public class UserService implements UserServiceInterface {
         }
 
         throw exception(ModelType.USER, ExceptionType.ENTITY_NOT_FOUND, email);
+    }
+    @Override
+    public void createDummyUsers(int count) {
+        for (int i = 0; i < count; i++) {
+           UserSignupRequest userSignupRequest = new UserSignupRequest()
+                   .setCourierType(fakeData.generateCourier().getValue().toUpperCase())
+                   .setRole(fakeData.generateRole().getValue().toUpperCase())
+                   .setPassword(fakeData.generatePassword())
+                   .setFirstName(fakeData.generateFirstName())
+                   .setLastName(fakeData.generateLastName())
+                   .setEmail(fakeData.generateEmail())
+                   .setWorkingHours("08:00-16:00");
+
+           UserDto userDto = new UserDto()
+                   .setPassword(userSignupRequest.getPassword())
+                   .setEmail(userSignupRequest.getEmail())
+                   .setRole(UserRoles.valueOf(userSignupRequest.getRole()))
+                   .setLastName(userSignupRequest.getLastName())
+                   .setFirstName(userSignupRequest.getFirstName());
+
+           signup(userDto, userSignupRequest);
+        }
     }
 
     private RuntimeException exception(ModelType entity, ExceptionType exception, String... args) {

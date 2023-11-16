@@ -6,6 +6,7 @@ import org.masonord.delivery.controller.v1.request.UserSignupRequest;
 import org.masonord.delivery.dto.model.UserDto;
 import org.masonord.delivery.dto.response.Response;
 import org.masonord.delivery.enums.UserRoles;
+import org.masonord.delivery.model.User;
 import org.masonord.delivery.service.classes.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -42,6 +43,12 @@ public class UserController {
     @PutMapping("/password/{email}")
     public Response changePassword(@RequestBody @Valid UserPasswordChangeRequest userPasswordChangeRequest, @PathVariable String email) {
         return Response.ok().setPayload(userService.changePassword(userPasswordChangeRequest.oldPassword, userPasswordChangeRequest.newPassword, email));
+    }
+
+    @PostMapping(value = "/random", params = {"count"})
+    public Response createDummyUsers(@RequestParam(value = "count", defaultValue = "1") int count) {
+        userService.createDummyUsers(count);
+        return Response.ok().setPayload("dummy users has been successfully created");
     }
 
 }
