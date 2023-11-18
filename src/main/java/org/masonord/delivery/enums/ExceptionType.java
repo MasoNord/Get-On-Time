@@ -1,7 +1,5 @@
 package org.masonord.delivery.enums;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.AllArgsConstructor; import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
@@ -10,7 +8,7 @@ public enum ExceptionType {
     NOT_UUID_FORMAT("not.uuid"),
     DUPLICATE_ENTITY("duplicate"),
     ENTITY_EXCEPTION("exception"),
-    WRONG_PASSWORD("wrong.password");
-
+    WRONG_PASSWORD("wrong.password"),
+    RANGE_NOT_SATISFIABLE("not.satisfiable");
     private final String value;
 }

@@ -1,5 +1,6 @@
 package org.masonord.delivery.service.classes;
 
+import org.masonord.delivery.controller.v1.request.OffsetBasedPageRequest;
 import org.masonord.delivery.dto.mapper.OrderMapper;
 import org.masonord.delivery.dto.model.LocationDto;
 import org.masonord.delivery.dto.model.OrderDto;
@@ -60,6 +61,15 @@ public class OrderService implements OrderServiceInterface {
     public List<OrderDto> getOrders() {
         List<OrderDto> orders = new LinkedList<>();
         List<Order> orderEntity = orderDao.getOrders();
+        for (Order o : orderEntity)
+            orders.add(OrderMapper.toOrderDto(o));
+
+        return orders;
+    }
+
+    public List<OrderDto> getOrders(OffsetBasedPageRequest offsetBasedPageRequest) {
+        List<OrderDto> orders = new LinkedList<>();
+        List<Order> orderEntity = orderDao.getOrders(offsetBasedPageRequest.getOffset(), offsetBasedPageRequest.getPageSize());
         for (Order o : orderEntity)
             orders.add(OrderMapper.toOrderDto(o));
 

@@ -10,6 +10,8 @@ public interface OrderDaoInterface {
 
     List<Order> getOrders();
 
+    List<Order> getOrders(int offset, int limit);
+
     Order getOrder(String id);
 
 }

@@ -7,8 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.masonord.delivery.enums.StatusCode;
 import org.masonord.delivery.util.DateUtils;
+import org.springframework.http.HttpStatus;
 
 @Getter
 @Setter
@@ -18,44 +18,50 @@ import org.masonord.delivery.util.DateUtils;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Response<T> {
 
-    private StatusCode statusCode;
+    private HttpStatus statusCode;
     private T payload;
     private Object errors;
     private Object metadata;
 
     public static <T> Response<T> ok() {
         Response<T> response = new Response<>();
-        response.setStatusCode(StatusCode.OK);
+        response.setStatusCode(HttpStatus.OK);
         return response;
     }
 
     public static <T> Response<T> noContent() {
         Response<T> response = new Response<>();
-        response.setStatusCode(StatusCode.NO_CONTENT);
+        response.setStatusCode(HttpStatus.NO_CONTENT);
         return response;
     }
 
     public static <T> Response<T> duplicateException() {
         Response<T> response = new Response<>();
-        response.setStatusCode(StatusCode.BAD_REQUEST);
+        response.setStatusCode(HttpStatus.BAD_REQUEST);
         return response;
     }
 
     public static <T> Response<T> wrongPasswordException() {
         Response<T> response = new Response<>();
-        response.setStatusCode(StatusCode.BAD_REQUEST);
+        response.setStatusCode(HttpStatus.BAD_REQUEST);
         return response;
     }
 
     public static <T> Response<T> notUuidFormat() {
         Response<T> response = new Response<>();
-        response.setStatusCode(StatusCode.BAD_REQUEST);
+        response.setStatusCode(HttpStatus.BAD_REQUEST);
         return response;
     }
 
     public static <T> Response<T> notFoundException() {
         Response<T> response = new Response<>();
-        response.setStatusCode(StatusCode.NOT_FOUND);
+        response.setStatusCode(HttpStatus.NOT_FOUND);
+        return response;
+    }
+
+    public static <T> Response<T> requestedRangeNotSatisfiable() {
+        Response<T> response = new Response<>();
+        response.setStatusCode(HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
         return response;
     }
 

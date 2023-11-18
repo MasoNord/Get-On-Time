@@ -29,6 +29,11 @@ public class ExceptionHandler {
         return throwException(exceptionType, message, args);
     }
 
+    public static RuntimeException throwException(String model, ExceptionType exceptionType, String ...args) {
+        String message = getMessage(model, exceptionType);
+        return throwException(exceptionType, message, args);
+    }
+
     public static RuntimeException throwException(ModelType modelType, ExceptionType exceptionType, String id, String ...args) {
         String message = getMessage(modelType, exceptionType).concat(".").concat(id);
         return throwException(exceptionType, message, args);
@@ -43,6 +48,8 @@ public class ExceptionHandler {
             return new NotUuidFormatException(format(message, args));
         }else if (ExceptionType.WRONG_PASSWORD.equals(exceptionType)){
             return new WrongPasswordException(format(message, args));
+        }else if (ExceptionType.RANGE_NOT_SATISFIABLE.equals(exceptionType)) {
+            return new RangeNotSatisfiableException(format(message, args));
         }
         return new RuntimeException(format(message, args));
     }
@@ -57,6 +64,10 @@ public class ExceptionHandler {
 
     private static String getMessage(ModelType modelType, ExceptionType exceptionType) {
         return modelType.name().concat(".").concat(exceptionType.getValue()).toLowerCase();
+    }
+
+    private  static String getMessage(String model, ExceptionType exceptionType) {
+        return model.concat(".").concat(exceptionType.getValue()).toLowerCase();
     }
 
     public static class EntityNotFoundException extends RuntimeException {
@@ -81,6 +92,10 @@ public class ExceptionHandler {
         public WrongPasswordException(String message) {
             super(message);
         }
+    }
+
+    public static class RangeNotSatisfiableException extends RuntimeException {
+        public RangeNotSatisfiableException(String message) {super(message);}
     }
 }
 

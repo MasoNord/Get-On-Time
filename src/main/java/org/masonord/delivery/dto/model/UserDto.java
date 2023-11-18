@@ -25,8 +25,4 @@ public class UserDto {
     private String email;
 
     private UserRoles role;
-
-    private CourierType courierType;
-
-    private String workingHours;
 }

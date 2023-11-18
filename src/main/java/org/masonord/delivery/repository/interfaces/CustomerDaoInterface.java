@@ -13,6 +13,8 @@ public interface CustomerDaoInterface {
 
     List<Customer> getCustomers();
 
+    List<Customer> getCustomers(int offset, int limit);
+
     void deleteCustomer(Long id);
 
      Customer updateProfile(Customer customer);

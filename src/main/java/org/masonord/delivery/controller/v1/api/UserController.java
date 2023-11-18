@@ -1,6 +1,7 @@
 package org.masonord.delivery.controller.v1.api;
 
 import jakarta.validation.Valid;
+import org.masonord.delivery.controller.v1.request.OffsetBasedPageRequest;
 import org.masonord.delivery.controller.v1.request.UserPasswordChangeRequest;
 import org.masonord.delivery.controller.v1.request.UserSignupRequest;
 import org.masonord.delivery.dto.model.UserDto;
@@ -35,9 +36,15 @@ public class UserController {
     public Response getUser(@PathVariable String email) {
         return Response.ok().setPayload(userService.findUserByEmail(email));
     }
+//    @GetMapping
+//    public Response getUsers() {
+//        return Response.ok().setPayload(userService.getUsers());
+//    }
+
     @GetMapping
-    public Response getUsers() {
-        return Response.ok().setPayload(userService.getUsers());
+    public Response getUsers(@RequestParam(defaultValue = "0", required = false) int offset,
+                             @RequestParam(defaultValue = "1", required = false) int limit) {
+        return Response.ok().setPayload(userService.getUsers(new OffsetBasedPageRequest(offset, limit)));
     }
 
     @PutMapping("/password/{email}")

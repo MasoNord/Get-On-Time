@@ -12,4 +12,6 @@ public interface UserDaoInterface {
     User updateUserProfile(User user);
 
     List<User> getAllUsers();
+
+    List<User> getAllUsers(int offset, int limit);
 }

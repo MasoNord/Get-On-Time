@@ -36,4 +36,10 @@ public class UserDao extends AbstractHibernateDao<User> implements UserDaoInterf
     public List<User> getAllUsers() {
         return getAll();
     }
+
+    @Override
+    public List<User> getAllUsers(int offset, int limit) {
+        return getAll(offset, limit);
+    }
+
 }

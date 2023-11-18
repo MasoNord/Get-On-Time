@@ -33,6 +33,11 @@ public class CustomerDao extends AbstractHibernateDao<Customer> implements Custo
     }
 
     @Override
+    public List<Customer> getCustomers(int offset, int limit) {
+        return getAll(offset, limit);
+    }
+
+    @Override
     public void deleteCustomer(Long id) {
         deleteById(id);
     }

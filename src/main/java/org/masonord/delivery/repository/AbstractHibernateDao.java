@@ -1,9 +1,13 @@
 package org.masonord.delivery.repository;
 
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaQuery;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
+import org.hibernate.query.SelectionQuery;
 import org.postgresql.shaded.com.ongres.scram.common.util.Preconditions;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -40,6 +44,16 @@ public abstract class AbstractHibernateDao <T> {
     protected List<T> getAll() {
         return  sessionFactory.getCurrentSession().createQuery("from " + targetClass.getName(), targetClass).list();
     }
+
+
+    protected List<T> getAll(int offset, int limit) {
+        Query<T> query = sessionFactory.getCurrentSession().createQuery("From " + targetClass.getName(), targetClass);
+        query.setFirstResult(offset);
+        query.setMaxResults(limit);
+        List<T> targetList  = query.list();
+        return targetList;
+    }
+
 
     protected T create(final T entity) {
         Preconditions.checkNotNull(entity, "entity");

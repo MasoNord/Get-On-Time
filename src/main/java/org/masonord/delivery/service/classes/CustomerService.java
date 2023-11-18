@@ -1,6 +1,7 @@
 package org.masonord.delivery.service.classes;
 
 
+import org.masonord.delivery.controller.v1.request.OffsetBasedPageRequest;
 import org.masonord.delivery.dto.mapper.CourierMapper;
 import org.masonord.delivery.dto.mapper.CustomerMapper;
 import org.masonord.delivery.dto.model.CustomerDto;
@@ -62,6 +63,17 @@ public class CustomerService implements CustomerServiceInterface {
     public List<CustomerDto> getCustomers() {
         List<CustomerDto> customers = new LinkedList<>();
         List<Customer> customerEntity = customerDao.getCustomers();
+        for (Customer c : customerEntity) {
+            customers.add(CustomerMapper.toCustomerDto(c));
+        }
+
+        return customers;
+    }
+
+    public List<CustomerDto> getCustomers(OffsetBasedPageRequest offsetBasedPageRequest) {
+        List<CustomerDto> customers = new LinkedList<>();
+        List<Customer> customerEntity = customerDao.getCustomers(offsetBasedPageRequest.getOffset(), offsetBasedPageRequest.getPageSize());
+
         for (Customer c : customerEntity) {
             customers.add(CustomerMapper.toCustomerDto(c));
         }

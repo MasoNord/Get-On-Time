@@ -38,6 +38,13 @@ public class CourierDao extends AbstractHibernateDao<Courier> implements Courier
     public List<Courier> getCouriers() {
         return getAll();
     }
+
+    @Override
+    public List<Courier> getCouriers(int offset, int limit) {
+        return getAll(offset, limit);
+    }
+
+
     @Override
     public Courier updateProfile(Courier courier) {
         return update(courier);

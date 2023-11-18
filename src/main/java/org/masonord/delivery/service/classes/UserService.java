@@ -1,6 +1,7 @@
 package org.masonord.delivery.service.classes;
 
 import org.masonord.delivery.config.ContextConfig;
+import org.masonord.delivery.controller.v1.request.OffsetBasedPageRequest;
 import org.masonord.delivery.controller.v1.request.UserSignupRequest;
 import org.masonord.delivery.dto.mapper.UserMapper;
 import org.masonord.delivery.dto.model.CourierDto;
@@ -99,7 +100,16 @@ public class UserService implements UserServiceInterface {
         for (int i = 0; i < userEntity.size(); i++) {
             users.add(UserMapper.toUserDto(userEntity.get(i)));
         }
-        return users ;
+        return users;
+    }
+
+    public List<UserDto> getUsers(OffsetBasedPageRequest offsetBasedPageRequest) {
+        List<UserDto> users = new LinkedList<>();
+        List<User> userEntity = userDao.getAllUsers(offsetBasedPageRequest.getOffset(), offsetBasedPageRequest.getPageSize());
+        for (int i = 0; i < userEntity.size(); i++) {
+            users.add(UserMapper.toUserDto(userEntity.get(i)));
+        }
+        return users;
     }
 
     @Override

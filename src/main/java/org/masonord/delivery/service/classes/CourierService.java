@@ -1,5 +1,6 @@
 package org.masonord.delivery.service.classes;
 
+import org.masonord.delivery.controller.v1.request.OffsetBasedPageRequest;
 import org.masonord.delivery.dto.mapper.CourierMapper;
 import org.masonord.delivery.dto.model.CourierDto;
 import org.masonord.delivery.dto.model.LocationDto;
@@ -74,11 +75,15 @@ public class CourierService implements CourierServiceInterface {
 
         throw exception(ModelType.COURIER, ExceptionType.ENTITY_NOT_FOUND, email);
     }
-
     @Override
     public List<CourierDto> getAllCouriers() {
+        return null;
+    }
+     // TODO: remove the method above;
+    public List<CourierDto> getAllCouriers(OffsetBasedPageRequest offsetBasedPageRequest) {
         List<CourierDto> couriers = new LinkedList<>();
-        List<Courier> couriersEntity = courierDao.getCouriers();
+        List<Courier> couriersEntity = courierDao.getCouriers(offsetBasedPageRequest.getOffset(), offsetBasedPageRequest.getPageSize());
+
         for (Courier c : couriersEntity) {
             couriers.add(CourierMapper.toCourierDto(c));
         }

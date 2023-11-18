@@ -16,7 +16,10 @@ public interface CourierDaoInterface {
 
     List<Courier> getCouriers();
 
+    List<Courier> getCouriers(int offset, int limit);
+
     void deleteCourier(Long id);
 
     Courier updateProfile(Courier courier);
+
 }

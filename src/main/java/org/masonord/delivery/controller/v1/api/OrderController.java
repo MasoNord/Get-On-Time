@@ -1,6 +1,7 @@
 package org.masonord.delivery.controller.v1.api;
 
 import jakarta.validation.Valid;
+import org.masonord.delivery.controller.v1.request.OffsetBasedPageRequest;
 import org.masonord.delivery.controller.v1.request.OrderCreateRequest;
 import org.masonord.delivery.dto.model.LocationDto;
 import org.masonord.delivery.dto.model.OrderDto;
@@ -40,8 +41,9 @@ public class OrderController {
     }
 
     @GetMapping()
-    public Response getOrders() {
-        return Response.ok().setPayload(orderService.getOrders());
+    public Response getOrders(@RequestParam(defaultValue = "0", required = false) int offset,
+                              @RequestParam(defaultValue = "10", required = false) int limit){
+        return Response.ok().setPayload(orderService.getOrders(new OffsetBasedPageRequest(offset, limit)));
     }
     @GetMapping("/{id}")
     public Response getOrderById(@PathVariable String id) {
