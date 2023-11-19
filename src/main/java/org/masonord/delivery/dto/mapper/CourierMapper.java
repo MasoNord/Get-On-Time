@@ -17,10 +17,10 @@ public class CourierMapper {
                 .setLastName(courier.getLastName())
                 .setTransport(courier.getTransport())
                 .setWorkingHours(courier.getWorkingHours())
-                .setOrders(new HashSet<Order>(courier
+                .setOrders(new HashSet<OrderDto>(courier
                         .getOrders()
                         .stream()
-                        .map(order -> new ModelMapper().map(order, Order.class))
+                        .map(order -> new ModelMapper().map(order, OrderDto.class))
                         .collect(Collectors.toSet())
                 ));
     }

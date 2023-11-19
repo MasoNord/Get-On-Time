@@ -28,5 +28,5 @@ public class CourierDto {
 
     private String workingHours;
 
-    private Set<Order> orders;
+    private Set<OrderDto> orders;
 }

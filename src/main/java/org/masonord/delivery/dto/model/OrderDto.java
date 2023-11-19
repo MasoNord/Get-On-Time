@@ -28,7 +28,7 @@ public class OrderDto {
 
     private String deliveryHours;
 
-    private Courier courier;
+    private String courierEmail;
 
     private String customerEmail;
 }

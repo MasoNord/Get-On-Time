@@ -9,6 +9,7 @@ public enum ExceptionType {
     DUPLICATE_ENTITY("duplicate"),
     ENTITY_EXCEPTION("exception"),
     WRONG_PASSWORD("wrong.password"),
-    RANGE_NOT_SATISFIABLE("not.satisfiable");
+    RANGE_NOT_SATISFIABLE("not.satisfiable"),
+    CONFLICT_EXCEPTION("conflict");
     private final String value;
 }

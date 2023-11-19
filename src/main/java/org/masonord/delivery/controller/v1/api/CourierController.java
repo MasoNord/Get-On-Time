@@ -26,7 +26,7 @@ public class CourierController {
         return Response.ok().setPayload(courierService.getAllCouriers(new OffsetBasedPageRequest(offset, limit)));
     }
 
-    @PutMapping("/{email}")
+    @PutMapping("/location/{email}")
     public Response setCurrentLocation(@RequestBody @Valid LocationAddRequest locationAddRequest, @PathVariable String email) {
         LocationDto locationDto = new LocationDto()
                 .setZipCode(locationAddRequest.getZipCode())
@@ -36,5 +36,10 @@ public class CourierController {
                 .setStreet(locationAddRequest.getStreet());
 
         return Response.ok().setPayload(courierService.updateCurrentLocation(locationDto, email));
+    }
+
+    @PutMapping("/order/{email}")
+    public Response setNewOrder(@RequestParam String orderId, @PathVariable String email) {
+        return Response.ok().setPayload(courierService.setNewOrder(orderId, email));
     }
 }

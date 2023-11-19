@@ -50,6 +50,8 @@ public class ExceptionHandler {
             return new WrongPasswordException(format(message, args));
         }else if (ExceptionType.RANGE_NOT_SATISFIABLE.equals(exceptionType)) {
             return new RangeNotSatisfiableException(format(message, args));
+        }else if (ExceptionType.CONFLICT_EXCEPTION.equals(exceptionType)) {
+            return new ConflictException(format(message, args));
         }
         return new RuntimeException(format(message, args));
     }
@@ -97,5 +99,12 @@ public class ExceptionHandler {
     public static class RangeNotSatisfiableException extends RuntimeException {
         public RangeNotSatisfiableException(String message) {super(message);}
     }
+
+    public static class ConflictException extends  RuntimeException {
+        public ConflictException(String message)  {
+            super(message);
+        }
+    }
+
 }
 

@@ -1,5 +1,6 @@
 package org.masonord.delivery.service.interfaces;
 
+import org.masonord.delivery.controller.v1.request.OffsetBasedPageRequest;
 import org.masonord.delivery.dto.model.CourierDto;
 import org.masonord.delivery.dto.model.LocationDto;
 import org.masonord.delivery.model.Courier;
@@ -41,7 +42,7 @@ public interface CourierServiceInterface {
      *
      */
 
-    List<CourierDto> getAllCouriers();
+    List<CourierDto> getAllCouriers(OffsetBasedPageRequest offsetBasedPageRequest);
 
     /**
      * Delete courier's record by id
@@ -67,5 +68,7 @@ public interface CourierServiceInterface {
      * @return
      */
     String updateCurrentLocation(LocationDto locationDto, String email);
+
+    CourierDto setNewOrder(String orderId, String email);
 
 }

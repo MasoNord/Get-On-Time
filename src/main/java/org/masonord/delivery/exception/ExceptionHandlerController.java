@@ -39,4 +39,11 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
         response.addMessageToResponse(exception.getMessage(), exception);
         return new ResponseEntity(response, HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
     }
+
+    @ExceptionHandler(org.masonord.delivery.exception.ExceptionHandler.ConflictException.class)
+    public final ResponseEntity handlerConflictException(Exception exception, WebRequest request) {
+        Response response = Response.conflictException();
+        response.addMessageToResponse(exception.getMessage(), exception);
+        return new ResponseEntity(response, HttpStatus.CONFLICT);
+    }
 }

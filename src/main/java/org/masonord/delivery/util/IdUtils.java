@@ -17,5 +17,4 @@ public class IdUtils {
     public boolean validateUuid(String id) {
         return UUID_REGEX.matcher(id).matches();
     }
-//        return UUID.fromString(id).toString().equals(id);
 }
