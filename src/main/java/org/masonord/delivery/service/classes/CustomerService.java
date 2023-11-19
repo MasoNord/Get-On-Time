@@ -51,25 +51,18 @@ public class CustomerService implements CustomerServiceInterface {
 
     @Override
     public CustomerDto findCustomerByEmail(String email) {
-        return CustomerMapper.toCustomerDto(customerDao.getCustomerByEmail(email));
+        Customer customer = customerDao.getCustomerByEmail(email);
+        if (customer != null) {
+            return CustomerMapper.toCustomerDto(customerDao.getCustomerByEmail(email));
+        }
+        throw exception(ModelType.CUSTOMER, ExceptionType.ENTITY_NOT_FOUND, email);
     }
 
     @Override
     public CustomerDto findCustomerById(Long id) {
         return CustomerMapper.toCustomerDto(customerDao.getCustomerById(id));
     }
-
     @Override
-    public List<CustomerDto> getCustomers() {
-        List<CustomerDto> customers = new LinkedList<>();
-        List<Customer> customerEntity = customerDao.getCustomers();
-        for (Customer c : customerEntity) {
-            customers.add(CustomerMapper.toCustomerDto(c));
-        }
-
-        return customers;
-    }
-
     public List<CustomerDto> getCustomers(OffsetBasedPageRequest offsetBasedPageRequest) {
         List<CustomerDto> customers = new LinkedList<>();
         List<Customer> customerEntity = customerDao.getCustomers(offsetBasedPageRequest.getOffset(), offsetBasedPageRequest.getPageSize());
@@ -96,9 +89,7 @@ public class CustomerService implements CustomerServiceInterface {
 
             return "The location has been successfully updated";
         }
-
         throw exception(ModelType.CUSTOMER, ExceptionType.ENTITY_NOT_FOUND, email);
-
     }
     @Override
     public void deleteCustomer(String email) {

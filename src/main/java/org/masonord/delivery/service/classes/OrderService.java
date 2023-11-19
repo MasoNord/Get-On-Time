@@ -37,12 +37,12 @@ public class OrderService implements OrderServiceInterface {
     public OrderDto getOrderById(String id) {
         Order order = orderDao.getOrder(id);
 
-        if (order != null) {
-            if (idUtils.validateUuid(id))
+        if (idUtils.validateUuid(id)) {
+            if (order != null)
                  return OrderMapper.toOrderDto(order);
-            throw exception(ModelType.ORDER, ExceptionType.NOT_UUID_FORMAT);
+            throw exception(ModelType.ORDER, ExceptionType.ENTITY_NOT_FOUND);
         }
-        throw exception(ModelType.ORDER, ExceptionType.ENTITY_NOT_FOUND, id);
+        throw exception(ModelType.ORDER, ExceptionType.NOT_UUID_FORMAT, id);
     }
     @Override
     public OrderDto addNewOrder(OrderDto orderDto, LocationDto locationDto) {
@@ -58,15 +58,6 @@ public class OrderService implements OrderServiceInterface {
         return OrderMapper.toOrderDto(orderDao.createOrder(order));
     }
     @Override
-    public List<OrderDto> getOrders() {
-        List<OrderDto> orders = new LinkedList<>();
-        List<Order> orderEntity = orderDao.getOrders();
-        for (Order o : orderEntity)
-            orders.add(OrderMapper.toOrderDto(o));
-
-        return orders;
-    }
-
     public List<OrderDto> getOrders(OffsetBasedPageRequest offsetBasedPageRequest) {
         List<OrderDto> orders = new LinkedList<>();
         List<Order> orderEntity = orderDao.getOrders(offsetBasedPageRequest.getOffset(), offsetBasedPageRequest.getPageSize());
@@ -75,6 +66,12 @@ public class OrderService implements OrderServiceInterface {
 
         return orders;
     }
+
+    @Override
+    public OrderDto updateOrderProfile(Order order) {
+        return OrderMapper.toOrderDto(orderDao.updateOrderProfile(order));
+    }
+
     private RuntimeException exception(ModelType entity, ExceptionType exception, String ...args) {
         return ExceptionHandler.throwException(entity, exception, args);
     }

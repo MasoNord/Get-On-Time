@@ -94,15 +94,6 @@ public class UserService implements UserServiceInterface {
         throw exception(ModelType.USER, ExceptionType.ENTITY_NOT_FOUND, email);
     }
     @Override
-    public List<UserDto> getUsers() {
-        List<UserDto> users = new LinkedList<>();
-        List<User> userEntity = userDao.getAllUsers();
-        for (int i = 0; i < userEntity.size(); i++) {
-            users.add(UserMapper.toUserDto(userEntity.get(i)));
-        }
-        return users;
-    }
-
     public List<UserDto> getUsers(OffsetBasedPageRequest offsetBasedPageRequest) {
         List<UserDto> users = new LinkedList<>();
         List<User> userEntity = userDao.getAllUsers(offsetBasedPageRequest.getOffset(), offsetBasedPageRequest.getPageSize());

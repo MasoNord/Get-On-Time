@@ -65,6 +65,12 @@ public class Response<T> {
         return response;
     }
 
+    public static <T> Response<T> conflictException() {
+        Response<T> response = new Response<>();
+        response.setStatusCode(HttpStatus.CONFLICT);
+        return response;
+    }
+
     public void addMessageToResponse(String message, Exception ex) {
         ResponseError error = new ResponseError()
                 .setMessage(ex.getMessage())

@@ -1,5 +1,6 @@
 package org.masonord.delivery.service.interfaces;
 
+import org.masonord.delivery.controller.v1.request.OffsetBasedPageRequest;
 import org.masonord.delivery.controller.v1.request.UserSignupRequest;
 import org.masonord.delivery.dto.model.UserDto;
 
@@ -45,7 +46,7 @@ public interface UserServiceInterface {
      * @return
      */
 
-    List<UserDto> getUsers();
+    List<UserDto> getUsers(OffsetBasedPageRequest offsetBasedPageRequest);
 
     /**
      * Create random users

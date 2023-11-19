@@ -1,5 +1,6 @@
 package org.masonord.delivery.service.interfaces;
 
+import org.masonord.delivery.controller.v1.request.OffsetBasedPageRequest;
 import org.masonord.delivery.dto.model.CustomerDto;
 import org.masonord.delivery.dto.model.LocationDto;
 
@@ -13,7 +14,7 @@ public interface CustomerServiceInterface {
 
     CustomerDto findCustomerById(Long id);
 
-    List<CustomerDto> getCustomers();
+    List<CustomerDto> getCustomers(OffsetBasedPageRequest offsetBasedPageRequest);
 
     CustomerDto updateCustomer(String email, CustomerDto newCostumerProfile);
 

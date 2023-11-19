@@ -25,6 +25,11 @@ public class OrderDao extends AbstractHibernateDao<Order> implements OrderDaoInt
     }
 
     @Override
+    public Order updateOrderProfile(Order order) {
+        return update(order);
+    }
+
+    @Override
     public List<Order> getOrders(int offset, int limit) {
         return getAll(offset, limit);
     }
