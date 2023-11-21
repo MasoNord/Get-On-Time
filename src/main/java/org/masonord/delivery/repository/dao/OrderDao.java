@@ -38,4 +38,9 @@ public class OrderDao extends AbstractHibernateDao<Order> implements OrderDaoInt
     public Order getOrder(String id) {
         return getByUUID(id);
     }
+
+    @Override
+    public void deleteOrder(Order order) {
+        delete(order);
+    }
 }

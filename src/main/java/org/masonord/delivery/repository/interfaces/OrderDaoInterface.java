@@ -16,4 +16,6 @@ public interface OrderDaoInterface {
 
     Order getOrder(String id);
 
+    void deleteOrder(Order order);
+
 }

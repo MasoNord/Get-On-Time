@@ -50,8 +50,7 @@ public abstract class AbstractHibernateDao <T> {
         Query<T> query = sessionFactory.getCurrentSession().createQuery("From " + targetClass.getName(), targetClass);
         query.setFirstResult(offset);
         query.setMaxResults(limit);
-        List<T> targetList  = query.list();
-        return targetList;
+        return query.list();
     }
 
 
@@ -68,7 +67,7 @@ public abstract class AbstractHibernateDao <T> {
 
     protected void delete(final T entity) {
         Preconditions.checkNotNull(entity, "entity");
-        sessionFactory.getCurrentSession().detach(entity);
+        sessionFactory.getCurrentSession().remove(entity);
     }
 
     protected void deleteById(final Long id) {

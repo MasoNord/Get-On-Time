@@ -1,6 +1,5 @@
 package org.masonord.delivery.repository.dao;
 
-import org.masonord.delivery.dto.model.LocationDto;
 import org.masonord.delivery.model.Courier;
 import org.masonord.delivery.repository.AbstractHibernateDao;
 import org.masonord.delivery.repository.interfaces.CourierDaoInterface;
