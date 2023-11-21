@@ -37,5 +37,5 @@ public class Location {
     private float longitude;
 
     @Column(name = "number", nullable = false)
-    private int number; // No. of a home weather house, flat, apartment etc
+    private int number; // No. of a home house, flat, apartment etc
 }

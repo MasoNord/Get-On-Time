@@ -16,13 +16,11 @@ public class CompletedOrder {
     @Column(name = "id", nullable = false, unique = true)
     private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "courierId")
     private Courier courier;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "orderId")
-    private Order order;
+    private String orderId;
 
     @Column(name = "completedTime", nullable = false, unique = true,  length = 30)
     private String completedTime;

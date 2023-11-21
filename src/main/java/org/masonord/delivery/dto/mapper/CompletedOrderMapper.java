@@ -6,8 +6,8 @@ import org.masonord.delivery.model.CompletedOrder;
 public class CompletedOrderMapper {
     public static CompletedOrderDto toCompletedOrderDto(CompletedOrder completedOrder) {
         return new CompletedOrderDto()
-                .setOrderId(completedOrder.getOrder().getId())
-                .setCourierId(completedOrder.getCourier().getId())
+                .setOrderId(completedOrder.getOrderId())
+                .setCourierEmail(completedOrder.getCourier().getEmail())
                 .setCompletedTime(completedOrder.getCompletedTime());
     }
 }

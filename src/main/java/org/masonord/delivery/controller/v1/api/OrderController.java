@@ -2,7 +2,9 @@ package org.masonord.delivery.controller.v1.api;
 
 import jakarta.validation.Valid;
 import org.masonord.delivery.controller.v1.request.OffsetBasedPageRequest;
+import org.masonord.delivery.controller.v1.request.OrderCompleteRequest;
 import org.masonord.delivery.controller.v1.request.OrderCreateRequest;
+import org.masonord.delivery.dto.model.CompletedOrderDto;
 import org.masonord.delivery.dto.model.LocationDto;
 import org.masonord.delivery.dto.model.OrderDto;
 import org.masonord.delivery.dto.response.Response;
@@ -18,9 +20,6 @@ import org.springframework.web.bind.annotation.*;
 public class OrderController {
     @Autowired
     OrderService orderService;
-
-    @Autowired
-    CustomerDao customerDao;
 
     @PostMapping()
     public Response addOrder(@RequestBody @Valid OrderCreateRequest orderCreateRequest) {
@@ -40,6 +39,11 @@ public class OrderController {
         return Response.ok().setPayload(orderService.addNewOrder(orderDto, locationDto));
     }
 
+    @PostMapping("/complete")
+    public Response completeOrder(@RequestBody @Valid OrderCompleteRequest orderCompleteRequest) {
+        return Response.ok().setPayload(orderService.completeOrder(orderCompleteRequest));
+    }
+
     @GetMapping()
     public Response getOrders(@RequestParam(defaultValue = "0", required = false) int offset,
                               @RequestParam(defaultValue = "10", required = false) int limit){
@@ -48,5 +52,10 @@ public class OrderController {
     @GetMapping("/{id}")
     public Response getOrderById(@PathVariable String id) {
         return Response.ok().setPayload(orderService.getOrderById(id));
+    }
+
+    @DeleteMapping("/{id}")
+    public Response deleteOrderById(@PathVariable String id) {
+        return Response.ok().setPayload(orderService.deleteOrder(id));
     }
 }
