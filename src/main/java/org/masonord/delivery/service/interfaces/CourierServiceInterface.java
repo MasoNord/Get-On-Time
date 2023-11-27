@@ -2,9 +2,12 @@ package org.masonord.delivery.service.interfaces;
 
 import org.masonord.delivery.controller.v1.request.OffsetBasedPageRequest;
 import org.masonord.delivery.dto.model.CourierDto;
+import org.masonord.delivery.dto.model.CourierMetaInfoDto;
 import org.masonord.delivery.dto.model.LocationDto;
 import org.masonord.delivery.model.Courier;
+import org.masonord.delivery.model.Order;
 
+import java.text.ParseException;
 import java.util.List;
 
 public interface CourierServiceInterface {
@@ -70,5 +73,9 @@ public interface CourierServiceInterface {
     String updateCurrentLocation(LocationDto locationDto, String email);
 
     CourierDto setNewOrder(String orderId, String email);
+
+     void calculateRatingAndSalary(String courierEmail, Order order);
+
+     CourierMetaInfoDto getMetaInfo(String courierEmail, String startDate, String endDate) throws ParseException;
 
 }

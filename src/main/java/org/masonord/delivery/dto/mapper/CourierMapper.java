@@ -1,6 +1,7 @@
 package org.masonord.delivery.dto.mapper;
 
 import org.masonord.delivery.dto.model.CourierDto;
+import org.masonord.delivery.dto.model.CourierMetaInfoDto;
 import org.masonord.delivery.dto.model.OrderDto;
 import org.masonord.delivery.model.Courier;
 import org.masonord.delivery.model.Order;
@@ -23,5 +24,13 @@ public class CourierMapper {
                         .map(order -> new ModelMapper().map(order, OrderDto.class))
                         .collect(Collectors.toSet())
                 ));
+    }
+
+    public static CourierMetaInfoDto toCourierMetaInfoDto(Courier courier) {
+        return new CourierMetaInfoDto()
+                .setEarnings(courier.getEarnings())
+                .setRating(courier.getRating())
+                .setLocationDto(LocationMapper.toLocationDto(courier.getLocation()))
+                .setWorkingHours(courier.getWorkingHours());
     }
 }

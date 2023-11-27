@@ -10,6 +10,8 @@ import org.masonord.delivery.service.classes.CourierService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
+
 @RestController("CourierController")
 @RequestMapping("/api/v1/courier")
 public class CourierController {
@@ -42,5 +44,10 @@ public class CourierController {
     @PutMapping("/getOrder")
     public Response setNewOrder(@RequestBody @Valid OrderCompleteRequest orderCompleteRequest) {
         return Response.ok().setPayload(courierService.setNewOrder(orderCompleteRequest.getOrderId(), orderCompleteRequest.getCourierEmail()));
+    }
+
+    @GetMapping("/meta-info/{email}")
+    public Response getMetaInfo(@RequestParam() String startDate, @RequestParam() String endDate, @PathVariable String email) throws ParseException {
+        return Response.ok().setPayload(courierService.getMetaInfo(email, startDate, endDate));
     }
 }

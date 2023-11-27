@@ -94,6 +94,7 @@ public class OrderService implements OrderServiceInterface {
                         CompletedOrder completedOrder = new CompletedOrder()
                                 .setOrderId(order.getId())
                                 .setCourier(courier)
+                                .setCost(order.getCost())
                                 .setCompletedTime(DateUtils.todayToStr());
 
                         orderDao.deleteOrder(orderDao.getOrder(orderCompleteRequest.getOrderId()));

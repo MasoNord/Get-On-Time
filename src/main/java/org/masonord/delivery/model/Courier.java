@@ -45,6 +45,12 @@ public class Courier {
     @Column(name = "du", nullable = false, length = 30)
     private String du; // data of updating
 
+    @Column(name = "rating", nullable = false)
+    private float rating;
+
+    @Column(name = "earnings", nullable = false)
+    private float earnings;
+
     @OneToMany(mappedBy = "courier", fetch = FetchType.EAGER)
     private Set<Order> orders;
 }

@@ -25,15 +25,15 @@ public class Order {
     @Column(name = "deliveryHours", nullable = false)
     private String deliveryHours;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "courierId")
     private Courier courier;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "customerId", nullable = false)
     private Customer customer;
 
-    @OneToOne(cascade = CascadeType.PERSIST)
+    @OneToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "locationId")
     private Location location;
 }
