@@ -1,8 +1,6 @@
 package org.masonord.delivery.repository.interfaces;
 
-import org.masonord.delivery.dto.model.OrderDto;
-import org.masonord.delivery.model.Order;
-
+import org.masonord.delivery.model.order.Order;
 import java.util.List;
 
 public interface OrderDaoInterface {

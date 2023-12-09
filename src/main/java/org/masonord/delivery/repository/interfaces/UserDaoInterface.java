@@ -1,7 +1,6 @@
 package org.masonord.delivery.repository.interfaces;
 
 import org.masonord.delivery.model.User;
-
 import java.util.List;
 
 public interface UserDaoInterface {

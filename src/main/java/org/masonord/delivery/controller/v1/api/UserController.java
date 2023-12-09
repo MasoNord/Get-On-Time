@@ -6,9 +6,7 @@ import org.masonord.delivery.controller.v1.request.UserPasswordChangeRequest;
 import org.masonord.delivery.controller.v1.request.UserSignupRequest;
 import org.masonord.delivery.dto.model.UserDto;
 import org.masonord.delivery.dto.response.Response;
-import org.masonord.delivery.enums.UserRoles;
-import org.masonord.delivery.model.User;
-import org.masonord.delivery.service.classes.UserService;
+import org.masonord.delivery.service.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.web.bind.annotation.*;
@@ -24,22 +22,20 @@ public class UserController {
     public Response signup(@RequestBody @Valid UserSignupRequest userSignupRequest) {
         UserDto userDto = new UserDto()
                 .setEmail(userSignupRequest.getEmail())
-                .setRole(UserRoles.valueOf(userSignupRequest.getRole().toUpperCase()))
+                .setRole(userSignupRequest.getRole().toUpperCase())
                 .setFirstName(userSignupRequest.getFirstName())
                 .setLastName(userSignupRequest.getLastName())
-                .setPassword(userSignupRequest.getPassword());
+                .setPassword(userSignupRequest.getPassword())
+                .setTransport(userSignupRequest.getTransport())
+                .setWorkingHours(userSignupRequest.getWorkingHours());
 
-        return Response.ok().setPayload(userService.signup(userDto, userSignupRequest));
+        return Response.ok().setPayload(userService.signup(userDto));
     }
 
     @GetMapping("/{email}")
     public Response getUser(@PathVariable String email) {
         return Response.ok().setPayload(userService.findUserByEmail(email));
     }
-//    @GetMapping
-//    public Response getUsers() {
-//        return Response.ok().setPayload(userService.getUsers());
-//    }
 
     @GetMapping
     public Response getUsers(@RequestParam(defaultValue = "0", required = false) int offset,

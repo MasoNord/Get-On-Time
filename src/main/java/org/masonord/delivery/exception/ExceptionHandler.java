@@ -1,6 +1,5 @@
 package org.masonord.delivery.exception;
 
-import org.hibernate.resource.transaction.LocalSynchronizationException;
 import org.masonord.delivery.config.PropertiesConfig;
 import org.masonord.delivery.enums.ModelType;
 import org.masonord.delivery.enums.ExceptionType;
@@ -52,16 +51,15 @@ public class ExceptionHandler {
             return new RangeNotSatisfiableException(format(message, args));
         }else if (ExceptionType.CONFLICT_EXCEPTION.equals(exceptionType)) {
             return new ConflictException(format(message, args));
+        }else if (ExceptionType.ENTITY_EXCEPTION.equals(exceptionType)) {
+            return new Exception(format(message, args));
         }
         return new RuntimeException(format(message, args));
     }
 
     private static String format(String message, String ...args) {
         Optional<String> content = Optional.ofNullable(propertiesConfig.getConfigValue(message));
-        if (content.isPresent()) {
-            return MessageFormat.format(content.get(), (Object[]) args);
-        }
-        return String.format(message, (Object[]) args);
+        return content.map(s -> MessageFormat.format(s, (Object[]) args)).orElseGet(() -> String.format(message, (Object[]) args));
     }
 
     private static String getMessage(ModelType modelType, ExceptionType exceptionType) {
@@ -100,10 +98,14 @@ public class ExceptionHandler {
         public RangeNotSatisfiableException(String message) {super(message);}
     }
 
-    public static class ConflictException extends  RuntimeException {
+    public static class ConflictException extends RuntimeException {
         public ConflictException(String message)  {
             super(message);
         }
+    }
+
+    public static class Exception extends RuntimeException {
+        public Exception(String message) {super(message);}
     }
 
 }

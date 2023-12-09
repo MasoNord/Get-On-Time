@@ -2,33 +2,24 @@ package org.masonord.delivery.service.classes;
 
 import org.masonord.delivery.config.ContextConfig;
 import org.masonord.delivery.controller.v1.request.OffsetBasedPageRequest;
-import org.masonord.delivery.controller.v1.request.UserSignupRequest;
 import org.masonord.delivery.dto.mapper.UserMapper;
-import org.masonord.delivery.dto.model.CourierDto;
-import org.masonord.delivery.dto.model.CustomerDto;
 import org.masonord.delivery.dto.model.UserDto;
-import org.masonord.delivery.enums.CourierType;
-import org.masonord.delivery.enums.ModelType;
-import org.masonord.delivery.enums.ExceptionType;
-import org.masonord.delivery.enums.UserRoles;
+import org.masonord.delivery.enums.*;
 import org.masonord.delivery.exception.ExceptionHandler;
-import org.masonord.delivery.model.Customer;
 import org.masonord.delivery.model.User;
-import org.masonord.delivery.repository.dao.CustomerDao;
 import org.masonord.delivery.repository.dao.UserDao;
-import org.masonord.delivery.service.interfaces.UserServiceInterface;
+import org.masonord.delivery.util.DateUtils;
 import org.masonord.delivery.util.FakeDataUtil;
 import org.masonord.delivery.util.IdUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 @Service("userService")
-public class UserService implements UserServiceInterface {
+public class UserServiceImpl implements org.masonord.delivery.service.interfaces.UserService {
 
     @Autowired
     private UserDao userDao;
@@ -40,10 +31,10 @@ public class UserService implements UserServiceInterface {
     private IdUtils idUtils;
 
     @Autowired
-    private CourierService courierService;
+    private CourierServiceImpl courierService;
 
     @Autowired
-    private CustomerService customerService;
+    private CustomerServiceImpl customerService;
 
     @Autowired
     private FakeDataUtil fakeData;
@@ -51,33 +42,34 @@ public class UserService implements UserServiceInterface {
     private final BCryptPasswordEncoder bCryptPasswordEncoder = ContextConfig.bCryptPasswordEncoder();
 
     @Override
-    public UserDto signup(UserDto userDto, UserSignupRequest userSignupRequest) {
+    public UserDto signup(UserDto userDto) {
         User user = userDao.findUserByEmail(userDto.getEmail());
 
         if (user == null) {
-            user = new User()
-                .setEmail(userDto.getEmail())
-                .setRole(userDto.getRole())
-                .setPassword(bCryptPasswordEncoder.encode(userDto.getPassword()))
-                .setFirstName(userDto.getFirstName())
-                .setLastName(userDto.getLastName());
-            if (UserRoles.COURIER.equals(UserRoles.valueOf(userSignupRequest.getRole().toUpperCase()))) {
-                CourierDto courierDto = new CourierDto()
-                        .setEmail(userSignupRequest.getEmail())
-                        .setLastName(userSignupRequest.getLastName())
-                        .setFirstName(userSignupRequest.getFirstName())
-                        .setWorkingHours(userSignupRequest.getWorkingHours())
-                        .setTransport(CourierType.valueOf(userSignupRequest.getCourierType().toUpperCase()));
-
-                courierService.addNewCourier(courierDto);
-            }
-            if (UserRoles.CUSTOMER.equals(UserRoles.valueOf(userSignupRequest.getRole().toUpperCase()))) {
-                CustomerDto customerDto = new CustomerDto()
-                        .setEmail(userSignupRequest.getEmail())
-                        .setFirstName(userSignupRequest.getFirstName())
-                        .setLastName(userSignupRequest.getLastName());
-
-                customerService.addNewCustomer(customerDto);
+            if (Objects.equals(userDto.getRole().toString(), "COURIER")) {
+                if (!Objects.isNull(userDto.getTransport()) && !Objects.isNull(userDto.getWorkingHours())) {
+                    user = new User()
+                            .setEmail(userDto.getEmail())
+                            .setRole(UserRoles.valueOf(userDto.getRole().toUpperCase()))
+                            .setWorkingHours(userDto.getWorkingHours())
+                            .setTransport(CourierType.valueOf(userDto.getTransport().toUpperCase()))
+                            .setPassword(bCryptPasswordEncoder.encode(userDto.getPassword()))
+                            .setFirstName(userDto.getFirstName())
+                            .setLastName(userDto.getLastName())
+                            .setDc(DateUtils.todayToStr())
+                            .setDu(DateUtils.todayToStr());
+                }else {
+                    throw exception(ModelType.COURIER, ExceptionType.ENTITY_EXCEPTION, "");
+                }
+            }else {
+                user = new User()
+                        .setEmail(userDto.getEmail())
+                        .setRole(UserRoles.valueOf(userDto.getRole().toUpperCase()))
+                        .setPassword(bCryptPasswordEncoder.encode(userDto.getPassword()))
+                        .setFirstName(userDto.getFirstName())
+                        .setLastName(userDto.getLastName())
+                        .setDc(DateUtils.todayToStr())
+                        .setDu(DateUtils.todayToStr());
             }
             return UserMapper.toUserDto(userDao.creatUser(user));
         }
@@ -93,6 +85,7 @@ public class UserService implements UserServiceInterface {
 
         throw exception(ModelType.USER, ExceptionType.ENTITY_NOT_FOUND, email);
     }
+
     @Override
     public List<UserDto> getUsers(OffsetBasedPageRequest offsetBasedPageRequest) {
         List<UserDto> users = new LinkedList<>();
@@ -133,26 +126,19 @@ public class UserService implements UserServiceInterface {
 
         throw exception(ModelType.USER, ExceptionType.ENTITY_NOT_FOUND, email);
     }
+
     @Override
     public void createDummyUsers(int count) {
         for (int i = 0; i < count; i++) {
-           UserSignupRequest userSignupRequest = new UserSignupRequest()
-                   .setCourierType(fakeData.generateCourier().getValue().toUpperCase())
-                   .setRole(fakeData.generateRole().getValue().toUpperCase())
-                   .setPassword(fakeData.generatePassword())
-                   .setFirstName(fakeData.generateFirstName())
-                   .setLastName(fakeData.generateLastName())
-                   .setEmail(fakeData.generateEmail())
-                   .setWorkingHours("08:00-16:00");
-
            UserDto userDto = new UserDto()
-                   .setPassword(userSignupRequest.getPassword())
-                   .setEmail(userSignupRequest.getEmail())
-                   .setRole(UserRoles.valueOf(userSignupRequest.getRole()))
-                   .setLastName(userSignupRequest.getLastName())
-                   .setFirstName(userSignupRequest.getFirstName());
-
-           signup(userDto, userSignupRequest);
+                   .setPassword(fakeData.generatePassword())
+                   .setEmail(fakeData.generateEmail())
+                   .setRole(fakeData.generateRole().getValue().toUpperCase())
+                   .setLastName(fakeData.generateLastName())
+                   .setFirstName(fakeData.generateFirstName())
+                   .setWorkingHours("08:00-16:00")
+                   .setTransport(fakeData.generateCourier().getValue());
+           signup(userDto);
         }
     }
 

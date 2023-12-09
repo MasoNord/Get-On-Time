@@ -17,8 +17,8 @@ public class CompletedOrder {
     private Long id;
 
     @ManyToOne(cascade = CascadeType.DETACH)
-    @JoinColumn(name = "courierId")
-    private Courier courier;
+    @JoinColumn(name = "userId")
+    private User courier;
 
     @Column(name = "orderId")
     private String orderId;

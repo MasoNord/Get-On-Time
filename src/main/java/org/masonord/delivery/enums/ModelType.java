@@ -7,8 +7,12 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ModelType {
     COURIER("courier"),
-    USER("user"),
     CUSTOMER("customer"),
+    USER("user"),
+    RESTAURANT("restaurant"),
+    MENU("menu"),
+    DISH("dish"),
+    REVIEW("REVIEW"),
     ORDER("order"),
     LOCATION("location"),
     COMPLETEDORDER("completedorder");

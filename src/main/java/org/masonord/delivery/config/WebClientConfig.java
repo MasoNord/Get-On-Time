@@ -8,12 +8,11 @@ import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.tcp.TcpClient;
-
 import java.util.concurrent.TimeUnit;
 
 @Configuration
 public class WebClientConfig {
-//
+
     private static final String BASE_URL = "https://geocode.maps.co";
     public  static final int TIMEOUT = 1000;
 

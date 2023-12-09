@@ -1,12 +1,22 @@
 package org.masonord.delivery.model.restarurant.dish;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.masonord.delivery.model.Review;
 import org.masonord.delivery.model.order.OrderItem;
 import org.masonord.delivery.model.restarurant.Menu;
 
 import java.util.Set;
 
+@Getter
+@Setter
+@Accessors(chain = true)
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "dishes")
 public class Dish {

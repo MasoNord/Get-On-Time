@@ -1,7 +1,17 @@
 package org.masonord.delivery.model.restarurant.dish;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
+@Getter
+@Setter
+@Accessors(chain = true)
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "dishOptions")
 public class DishOption {

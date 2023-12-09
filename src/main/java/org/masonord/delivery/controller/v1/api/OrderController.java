@@ -4,20 +4,18 @@ import jakarta.validation.Valid;
 import org.masonord.delivery.controller.v1.request.OffsetBasedPageRequest;
 import org.masonord.delivery.controller.v1.request.OrderCompleteRequest;
 import org.masonord.delivery.controller.v1.request.OrderCreateRequest;
-import org.masonord.delivery.dto.model.CompletedOrderDto;
 import org.masonord.delivery.dto.model.LocationDto;
 import org.masonord.delivery.dto.model.OrderDto;
 import org.masonord.delivery.dto.response.Response;
-import org.masonord.delivery.enums.CountryType;
-import org.masonord.delivery.model.Location;
-import org.masonord.delivery.repository.dao.CustomerDao;
-import org.masonord.delivery.service.classes.OrderService;
+import org.masonord.delivery.service.classes.OrderServiceImpl;
+import org.masonord.delivery.service.interfaces.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController("OrderController")
 @RequestMapping("api/v1/order")
 public class OrderController {
+
     @Autowired
     OrderService orderService;
 

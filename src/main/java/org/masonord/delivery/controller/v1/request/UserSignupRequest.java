@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.masonord.delivery.enums.CourierType;
 
 @Setter
 @Getter
@@ -31,5 +32,5 @@ public class UserSignupRequest {
 
     private String workingHours;
 
-    private String courierType;
+    private String transport;
 }

@@ -12,6 +12,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 @RestController
 public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
+
     @ExceptionHandler(org.masonord.delivery.exception.ExceptionHandler.EntityNotFoundException.class)
     public final ResponseEntity handledNotFoundExceptions(Exception exception, WebRequest request) {
         Response response = Response.notFoundException();
@@ -45,5 +46,12 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
         Response response = Response.conflictException();
         response.addMessageToResponse(exception.getMessage(), exception);
         return new ResponseEntity(response, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(org.masonord.delivery.exception.ExceptionHandler.Exception.class)
+    public final ResponseEntity handlerException(Exception exception, WebRequest request) {
+        Response response = Response.exception();
+        response.addMessageToResponse(exception.getMessage(), exception);
+        return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
     }
 }

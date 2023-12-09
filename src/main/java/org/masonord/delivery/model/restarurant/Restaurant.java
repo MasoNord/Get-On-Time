@@ -2,6 +2,11 @@ package org.masonord.delivery.model.restarurant;
 
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.masonord.delivery.model.Location;
 import org.masonord.delivery.model.Review;
 import org.masonord.delivery.model.User;
@@ -9,6 +14,11 @@ import org.masonord.delivery.model.order.Order;
 
 import java.util.Set;
 
+@Getter
+@Setter
+@Accessors(chain = true)
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "restaurants")
 public class Restaurant {

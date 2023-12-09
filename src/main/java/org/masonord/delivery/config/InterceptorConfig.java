@@ -12,7 +12,6 @@ public class InterceptorConfig implements WebMvcConfigurer {
     @Autowired
     RateLimitFilter rateLimitFilter = new RateLimitFilter();
 
-
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(rateLimitFilter);

@@ -7,7 +7,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-
 import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -48,7 +47,6 @@ public class RateLimitFilter implements HandlerInterceptor {
         response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
         response.addHeader("X-Rate-Limit-Retry-After-Milliseconds",
                 Long.toString(TimeUnit.NANOSECONDS.toMillis(probe.getNanosToWaitForRefill())));
-
 
         return false;
     }

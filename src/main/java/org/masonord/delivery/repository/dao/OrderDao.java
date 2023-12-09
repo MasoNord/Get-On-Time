@@ -1,6 +1,6 @@
 package org.masonord.delivery.repository.dao;
 
-import org.masonord.delivery.model.Order;
+import org.masonord.delivery.model.order.Order;
 import org.masonord.delivery.repository.AbstractHibernateDao;
 import org.masonord.delivery.repository.interfaces.OrderDaoInterface;
 import org.springframework.stereotype.Repository;

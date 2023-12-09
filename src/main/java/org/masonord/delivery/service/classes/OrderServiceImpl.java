@@ -5,47 +5,39 @@ import org.masonord.delivery.controller.v1.request.OrderCompleteRequest;
 import org.masonord.delivery.dto.mapper.CompletedOrderMapper;
 import org.masonord.delivery.dto.mapper.OrderMapper;
 import org.masonord.delivery.dto.model.CompletedOrderDto;
-import org.masonord.delivery.dto.model.CourierDto;
 import org.masonord.delivery.dto.model.LocationDto;
 import org.masonord.delivery.dto.model.OrderDto;
 import org.masonord.delivery.enums.ExceptionType;
 import org.masonord.delivery.enums.ModelType;
 import org.masonord.delivery.exception.ExceptionHandler;
 import org.masonord.delivery.model.*;
-import org.masonord.delivery.repository.dao.CompletedOrderDao;
-import org.masonord.delivery.repository.dao.CourierDao;
-import org.masonord.delivery.repository.dao.CustomerDao;
-import org.masonord.delivery.repository.dao.OrderDao;
-import org.masonord.delivery.service.interfaces.OrderServiceInterface;
+import org.masonord.delivery.model.order.Order;
+import org.masonord.delivery.repository.dao.*;
 import org.masonord.delivery.util.DateUtils;
 import org.masonord.delivery.util.IdUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
 @Service("OrderService")
-public class OrderService implements OrderServiceInterface {
+public class OrderServiceImpl implements org.masonord.delivery.service.interfaces.OrderService {
     @Autowired
     IdUtils idUtils;
 
     @Autowired
-    CustomerDao customerDao;
+    UserDao userDao;
 
     @Autowired
     OrderDao orderDao;
 
     @Autowired
-    CourierDao courierDao;
-
-    @Autowired
     CompletedOrderDao completedOrderDao;
 
     @Autowired
-    LocationService locationService;
+    LocationServiceImpl locationService;
 
     @Override
     public OrderDto getOrderById(String id) {
@@ -68,7 +60,7 @@ public class OrderService implements OrderServiceInterface {
                 .setCost(orderDto.getCost())
                 .setWeight(orderDto.getWeight())
                 .setDeliveryHours(orderDto.getDeliveryHours())
-                .setCustomer(customerDao.getCustomerByEmail(orderDto.getCustomerEmail()));
+                .setCustomer(userDao.findUserByEmail(orderDto.getCustomerEmail()));
         return OrderMapper.toOrderDto(orderDao.createOrder(order));
     }
     @Override
@@ -83,7 +75,7 @@ public class OrderService implements OrderServiceInterface {
 
     @Override
     public CompletedOrderDto completeOrder(OrderCompleteRequest orderCompleteRequest) {
-        Courier courier = courierDao.getCourierByEmail(orderCompleteRequest.getCourierEmail());
+        User courier = userDao.findUserByEmail(orderCompleteRequest.getCourierEmail());
         Order order = orderDao.getOrder(orderCompleteRequest.getOrderId());
 
         if (idUtils.validateUuid(orderCompleteRequest.getOrderId())) {
