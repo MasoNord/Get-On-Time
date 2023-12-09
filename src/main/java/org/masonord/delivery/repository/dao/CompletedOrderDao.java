@@ -5,8 +5,7 @@ import org.masonord.delivery.repository.AbstractHibernateDao;
 import org.masonord.delivery.repository.interfaces.CompletedOrderDaoInterface;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.io.Serializable;
+import java.util.List;
 
 @Repository
 @Transactional
@@ -17,5 +16,9 @@ public class CompletedOrderDao extends AbstractHibernateDao<CompletedOrder> impl
     @Override
     public CompletedOrder addOrder(CompletedOrder CompletedOrder) {
         return create(CompletedOrder);
+    }
+    @Override
+    public List<CompletedOrder> getCompletedOrders() {
+        return getAll();
     }
 }

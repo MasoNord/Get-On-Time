@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.Accessors;
-import org.masonord.delivery.model.Courier;
-import org.masonord.delivery.model.Customer;
 import org.masonord.delivery.model.Location;
 
 @Getter

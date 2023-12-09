@@ -1,34 +1,37 @@
 package org.masonord.delivery.service.interfaces;
 
 import org.masonord.delivery.controller.v1.request.OffsetBasedPageRequest;
-import org.masonord.delivery.controller.v1.request.UserSignupRequest;
 import org.masonord.delivery.dto.model.UserDto;
 
 import java.util.List;
 
-public interface UserServiceInterface {
+public interface UserService {
     /**
      * Create a new user
      *
      * @param userDto
-     * @return
+     * @return UserDto
      */
-    UserDto signup(UserDto userDto, UserSignupRequest userSignupRequest);
+
+    UserDto signup(UserDto userDto);
 
     /**
      * Search an existing user
      *
      * @param email
-     * @return
+     * @return UserDto
      */
+
     UserDto findUserByEmail(String email);
 
     /**
      * Change user's password
+     *
      * @param email
      * @param newPassword
-     * @return
+     * @return UserDto
      */
+
     UserDto changePassword(String email, String oldPassword, String newPassword);
 
     /**
@@ -36,14 +39,15 @@ public interface UserServiceInterface {
      *
      * @param email
      * @param newUserProfile
-     * @return
+     * @return UserDto
      */
+
     UserDto updateProfile(String email, UserDto newUserProfile);
 
     /**
      * Get all user records
      *
-     * @return
+     * @return List<UserDto>
      */
 
     List<UserDto> getUsers(OffsetBasedPageRequest offsetBasedPageRequest);
@@ -53,5 +57,6 @@ public interface UserServiceInterface {
      *
      * @param count - define how many users will be created
      */
+
     void createDummyUsers(int count);
 }

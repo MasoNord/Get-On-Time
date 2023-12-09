@@ -4,11 +4,11 @@ import org.masonord.delivery.dto.model.CompletedOrderDto;
 
 import java.util.List;
 
-public interface CompletedOrderServiceInterface {
+public interface CompletedOrderService {
     /**
      * Get all completed orders for every courier in the db
      *
-     * @return
+     * @return List<CompletedOrderDto>
      */
     public List<CompletedOrderDto> getAllCompletedOrders();
 
@@ -16,7 +16,7 @@ public interface CompletedOrderServiceInterface {
      * Get all completed orders for a courier by an email
      *
      * @param courierEmail
-     * @return
+     * @return List<CompletedOrderDto>
      */
 
     public List<CompletedOrderDto> getCompletedOrdersByCourierEmail(String courierEmail);

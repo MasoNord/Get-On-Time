@@ -24,5 +24,9 @@ public class UserDto {
 
     private String email;
 
-    private UserRoles role;
+    private String transport;
+
+    private String workingHours;
+
+    private String role;
 }

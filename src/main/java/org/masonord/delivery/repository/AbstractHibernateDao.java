@@ -1,17 +1,12 @@
 package org.masonord.delivery.repository;
 
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaQuery;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
-import org.hibernate.query.SelectionQuery;
 import org.postgresql.shaded.com.ongres.scram.common.util.Preconditions;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.lang.annotation.Target;
 import java.util.List;
 
 @Getter

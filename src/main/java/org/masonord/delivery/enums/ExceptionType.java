@@ -11,5 +11,6 @@ public enum ExceptionType {
     WRONG_PASSWORD("wrong.password"),
     RANGE_NOT_SATISFIABLE("not.satisfiable"),
     CONFLICT_EXCEPTION("conflict");
+
     private final String value;
 }

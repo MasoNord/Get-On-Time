@@ -19,8 +19,11 @@ target/
 *.iml
 *.ipr
 
-### Java related ###
+### Project related ###
 out
+.env
+/src/main/resources/database.properties
+
 
 ### NetBeans ###
 /nbproject/private/
@@ -34,3 +37,4 @@ build/
 
 ### VS Code ###
 .vscode/
+

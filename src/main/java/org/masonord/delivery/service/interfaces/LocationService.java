@@ -3,7 +3,7 @@ package org.masonord.delivery.service.interfaces;
 import org.masonord.delivery.dto.model.LocationDto;
 import org.masonord.delivery.model.Location;
 
-public interface LocationServiceInterface {
+public interface LocationService {
 
     /**
      * Register a new location based on place (street, country, zip code, number)

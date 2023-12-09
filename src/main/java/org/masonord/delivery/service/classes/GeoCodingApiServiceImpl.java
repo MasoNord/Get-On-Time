@@ -4,14 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.masonord.delivery.dto.model.GeoCodingDto;
-import org.masonord.delivery.service.interfaces.GeoCodingApiServiceInterface;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 @Getter
 @Accessors(chain = true)
 @AllArgsConstructor
-public class GeoCodingApiService implements GeoCodingApiServiceInterface {
+public class GeoCodingApiServiceImpl implements org.masonord.delivery.service.interfaces.GeoCodingApiService {
     private final WebClient webClient;
 
     public GeoCodingDto[] getGeoLocation(String address) {

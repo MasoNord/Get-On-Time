@@ -71,6 +71,12 @@ public class Response<T> {
         return response;
     }
 
+    public static <T> Response<T> exception() {
+        Response<T> response = new Response<>();
+        response.setStatusCode(HttpStatus.BAD_REQUEST);
+        return response;
+    }
+
     public void addMessageToResponse(String message, Exception ex) {
         ResponseError error = new ResponseError()
                 .setMessage(ex.getMessage())

@@ -4,8 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.Accessors;
-import org.masonord.delivery.model.Location;
-import org.masonord.delivery.model.Order;
+import org.masonord.delivery.enums.UserRoles;
 
 import java.util.Set;
 
@@ -23,6 +22,8 @@ public class CustomerDto {
     private String firstName;
 
     private String lastName;
+
+    private UserRoles userRoles;
 
     private Set<OrderDto> orders;
 }

@@ -7,17 +7,17 @@ import org.masonord.delivery.enums.ModelType;
 import org.masonord.delivery.exception.ExceptionHandler;
 import org.masonord.delivery.model.Location;
 import org.masonord.delivery.repository.dao.LocationDao;
-import org.masonord.delivery.service.interfaces.LocationServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 @Service("LocationService")
-public class LocationService implements LocationServiceInterface {
+public class LocationServiceImpl implements org.masonord.delivery.service.interfaces.LocationService {
 
     @Autowired
     LocationDao locationDao;
 
     @Autowired
-    GeoCodingApiService geoCodingApiService;
+    GeoCodingApiServiceImpl geoCodingApiService;
 
     @Override
     public Location addNewPlaceByName(LocationDto locationDto) {
