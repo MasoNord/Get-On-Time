@@ -20,11 +20,17 @@ App will consist of 4 parts:
 
 ## Dependencies:
 - Spring Boot
-- Java 8 or later
+- Java 21
 - PostgreSQL
 - Hibernate
 - Docker & Docker Compose
 - Junit
+- Spring Security and jjwt
+- Log4j
+- [Geocoding API](https://geocode.maps.co/)
+- lombok
+- jackson
+- bucket4j
 
 ## How to install:
 1. Clone the following repository
