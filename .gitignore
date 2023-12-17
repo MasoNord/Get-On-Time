@@ -23,6 +23,7 @@ target/
 out
 .env
 /src/main/resources/database.properties
+/src/main/resources/security.properties
 
 
 ### NetBeans ###

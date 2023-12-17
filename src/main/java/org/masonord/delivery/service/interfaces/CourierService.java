@@ -15,7 +15,7 @@ public interface CourierService {
      * Sear an existing courier by his email;
      *
      * @param email
-     * @return CoureirDto
+     * @return CourierDto
      */
 
     CourierDto findCourierByEmail(String email);

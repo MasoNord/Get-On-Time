@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class RateLimitFilter implements HandlerInterceptor {
 
-    private final long capacity = 10;
+    private final long capacity = 100;
     private final long tokens = 10;
 
     private final Bucket bucket = Bucket.builder()

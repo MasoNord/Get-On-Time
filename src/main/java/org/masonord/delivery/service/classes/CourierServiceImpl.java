@@ -143,10 +143,6 @@ public class CourierServiceImpl implements org.masonord.delivery.service.interfa
 
         throw  exception(ModelType.COURIER, ExceptionType.ENTITY_NOT_FOUND, courierEmail);
     }
-    @Override
-    public void DeleteCourierById(Long id) {
-
-    }
 
     @Override
     public User updateProfile(String id, User newUserProfile) {
