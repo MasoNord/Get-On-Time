@@ -1,5 +1,6 @@
 package org.masonord.delivery.service.classes;
 
+import lombok.AllArgsConstructor;
 import org.masonord.delivery.config.ContextConfig;
 import org.masonord.delivery.controller.v1.request.OffsetBasedPageRequest;
 import org.masonord.delivery.dto.mapper.UserMapper;
@@ -12,14 +13,19 @@ import org.masonord.delivery.util.DateUtils;
 import org.masonord.delivery.util.FakeDataUtil;
 import org.masonord.delivery.util.IdUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+
+import java.util.*;
 
 @Service("userService")
-public class UserServiceImpl implements org.masonord.delivery.service.interfaces.UserService {
+@AllArgsConstructor
+public class UserServiceImpl implements org.masonord.delivery.service.interfaces.UserService, UserDetailsService {
 
     @Autowired
     private UserDao userDao;
@@ -39,7 +45,7 @@ public class UserServiceImpl implements org.masonord.delivery.service.interfaces
     @Autowired
     private FakeDataUtil fakeData;
 
-    private final BCryptPasswordEncoder bCryptPasswordEncoder = ContextConfig.bCryptPasswordEncoder();
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
     public UserDto signup(UserDto userDto) {
@@ -74,6 +80,21 @@ public class UserServiceImpl implements org.masonord.delivery.service.interfaces
             return UserMapper.toUserDto(userDao.creatUser(user));
         }
         throw exception(ModelType.USER, ExceptionType.DUPLICATE_ENTITY, userDto.getEmail());
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String email) {
+
+        User user = userDao.findUserByEmail(email);
+
+        if (user != null) {
+            Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+            authorities.add(new SimpleGrantedAuthority(user.getRole().getValue()));
+
+            return buildUserForAuthentication(user, authorities);
+        }
+
+        throw exception(ModelType.USER, ExceptionType.ENTITY_NOT_FOUND, email);
     }
 
     @Override
@@ -144,5 +165,9 @@ public class UserServiceImpl implements org.masonord.delivery.service.interfaces
 
     private RuntimeException exception(ModelType entity, ExceptionType exception, String... args) {
         return ExceptionHandler.throwException(entity, exception, args);
+    }
+
+    private UserDetails buildUserForAuthentication(User user, Collection<SimpleGrantedAuthority> authorities) {
+        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), authorities);
     }
 }

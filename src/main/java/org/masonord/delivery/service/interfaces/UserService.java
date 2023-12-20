@@ -2,6 +2,7 @@ package org.masonord.delivery.service.interfaces;
 
 import org.masonord.delivery.controller.v1.request.OffsetBasedPageRequest;
 import org.masonord.delivery.dto.model.UserDto;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.List;
 
