@@ -5,9 +5,17 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.masonord.delivery.dto.mapper.UserMapper;
+import org.masonord.delivery.enums.UserRoles;
 import org.springframework.http.HttpHeaders;
 import org.masonord.delivery.controller.v1.request.OffsetBasedPageRequest;
 import org.masonord.delivery.controller.v1.request.UserPasswordChangeRequest;
@@ -21,7 +29,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.*;
-
+@Tag(name = "user", description = "the user API")
 @RestController("UserController")
 @RequestMapping("/api/v1/user")
 public class UserController {
@@ -43,6 +51,17 @@ public class UserController {
         return Response.ok().setPayload(userService.signup(userDto));
     }
 
+    @Operation(summary = "Get a user by his email")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "User has been found",
+            content = {@Content(mediaType = "application/json",
+                schema = @Schema(implementation = UserDto.class))
+        }),
+        @ApiResponse(responseCode = "404", description = "Use has not been found",
+            content = {@Content(mediaType = "application/json",
+                schema = @Schema(implementation  = Response.class))
+        }),
+    })
     @GetMapping("/{email}")
     public Response getUser(@PathVariable String email) {
         return Response.ok().setPayload(userService.findUserByEmail(email));
