@@ -7,16 +7,17 @@
 - [How to use:](#CRUD-API)
     - [CRUD API]()
     - [Courier ranking]()
-    - [Orders distribution]()
+    - [Frontend]()
 
 ## About the project:
-This is an implementation of backend for delivery service (no frontend).
+This is an implementation of a backend for delivery services. Customers will be able to order any type of food in any restaurant they want. Restaurants, in turn,  will accept customers' orders, and couriers will deliver the order to the customer's door. 
 
-App will consist of 4 parts:
-* CRUD API: here we're expecting to have about 7 basic methods
+App will consist of the following parts:
+* CRUD API: (courier part, customer part and restaurant owner part)
 * Courier ranking: here we're going to calculate salary for every courier
 * Rate Limiter
-* Orders distribution: before the start of a working day the service is going to divide available orders between couriers base on distance, order's weight, courier's type, etc.
+* Load Balancer
+* Web Client (to register users)
 
 ## Dependencies:
 - Spring Boot
