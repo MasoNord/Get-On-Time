@@ -1,4 +1,5 @@
-# Delivery App
+# Application
+![Get On Time Schema](https://github.com/MasoNord/Get-On-Time/assets/112730325/05dd0e87-b8c1-4ceb-93cb-6b81d9fb6e33)
 
 ## Table of Content:
 - [About the project](#about-the-project)
