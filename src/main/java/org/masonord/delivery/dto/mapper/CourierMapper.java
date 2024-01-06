@@ -22,7 +22,7 @@ public class CourierMapper {
                         .collect(Collectors.toSet())
                 ));
     }
-    //TODO: come back later when I will have a clear plan for courier's rating system
+    //TODO: come back later when I  have a clear plan for courier's rating system
 
 //    public static CourierMetaInfoDto toCourierMetaInfoDto(User courier) {
 //        return new CourierMetaInfoDto()

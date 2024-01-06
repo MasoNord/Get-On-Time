@@ -14,7 +14,6 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-
 public class OrderCreateRequest {
 
     @NotNull
@@ -31,6 +30,5 @@ public class OrderCreateRequest {
 
     @NotNull
     private LocationAddRequest location;
-
 
 }

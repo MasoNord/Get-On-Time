@@ -1,6 +1,5 @@
 package org.masonord.delivery.controller.v1.request;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -10,27 +9,21 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.masonord.delivery.enums.CountryType;
+import org.masonord.delivery.dto.model.MenuDto;
+import org.masonord.delivery.model.restarurant.Menu;
+import org.masonord.delivery.model.restarurant.dish.Dish;
 
-@Getter
+import java.util.Set;
+
 @Setter
+@Getter
 @Accessors(chain = true)
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class LocationAddRequest {
+public class RestaurantCreateRequest {
+    @NotEmpty
+    private String name;
 
     @NotNull
-    private CountryType country;
-
-    @NotEmpty
-    private String street;
-
-    @NotEmpty
-    private String city;
-
-    @NotEmpty
-    private String zipCode;
-
-    @NotNull
-    private int number;
+    private LocationAddRequest location;
 }

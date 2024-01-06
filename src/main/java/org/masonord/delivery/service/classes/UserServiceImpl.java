@@ -1,7 +1,6 @@
 package org.masonord.delivery.service.classes;
 
 import lombok.AllArgsConstructor;
-import org.masonord.delivery.config.ContextConfig;
 import org.masonord.delivery.controller.v1.request.OffsetBasedPageRequest;
 import org.masonord.delivery.dto.mapper.UserMapper;
 import org.masonord.delivery.dto.model.UserDto;
@@ -13,14 +12,11 @@ import org.masonord.delivery.util.DateUtils;
 import org.masonord.delivery.util.FakeDataUtil;
 import org.masonord.delivery.util.IdUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.*;
 
 @Service("userService")

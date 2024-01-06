@@ -7,18 +7,15 @@ import org.masonord.delivery.security.filter.CustomAuthenticationFilter;
 import org.masonord.delivery.security.filter.CustomAuthorizationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -37,8 +34,15 @@ public class WebSecurityConfig {
             "/home",
             "/logout",
             "/api/v1/user/signup",
-            "/api/v1/auth/login/**",
-            "/api/v1/user/token/refresh/**",
+            "/api/v1/user/login",
+            "/api/v1/user/logout",
+            "/swagger-ui-custom/index.html",
+            "/swagger-ui/",
+            "/swagger-ui/**",
+            "/swagger-resources/**",
+            "/openapi.json",
+            "/context-path/**",
+            "/v3/api-docs/**",
     };
 
     private final LogoutHandler logoutHandler;
@@ -56,6 +60,7 @@ public class WebSecurityConfig {
                                 .requestMatchers("/api/v1/customer/**").hasAnyAuthority(UserRoles.CUSTOMER.getValue(), UserRoles.ADMIN.getValue())
                                 .requestMatchers("/api/v1/user/**").hasAuthority(UserRoles.ADMIN.getValue())
                                 .requestMatchers("/api/v1/completedOrders/**").hasAnyAuthority(UserRoles.COURIER.getValue(), UserRoles.ADMIN.getValue())
+                                .requestMatchers("/api/v1/restaurant/**").hasAnyAuthority(UserRoles.OWNER.getValue())
                                 .anyRequest()
                                 .authenticated()
                 )

@@ -12,7 +12,6 @@ import java.util.List;
 @Repository
 @Transactional
 public class UserDao extends AbstractHibernateDao<User> implements UserDaoInterface {
-
     @Autowired
     public UserDao() {
         setClass(User.class);

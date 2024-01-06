@@ -22,7 +22,7 @@ public class LocationServiceImpl implements org.masonord.delivery.service.interf
     @Override
     public Location addNewPlaceByName(LocationDto locationDto) {
         String address = locationDto.getNumber() + "+" + locationDto.getStreet() + "+" + locationDto.getCity() + "+" + locationDto.getZipCode()
-                + "+" + locationDto.getCountry();
+                + "+" + locationDto.getCountry() + "&api_key=" + "65988567c37b7029444375nqce47e1c";
 
         GeoCodingDto[] coordinates = geoCodingApiService.getGeoLocation(address);
 

@@ -36,6 +36,11 @@ public abstract class AbstractHibernateDao <T> {
         return (T) sessionFactory.getCurrentSession().createQuery(query).setParameter("email", email).uniqueResult();
     }
 
+    protected T getByName(final String name) {
+        String query = "from " + targetClass.getName() + " u where u.name = :name";
+        return (T) sessionFactory.getCurrentSession().createQuery(query).setParameter("name", name).uniqueResult();
+    }
+
     protected List<T> getAll() {
         return  sessionFactory.getCurrentSession().createQuery("from " + targetClass.getName(), targetClass).list();
     }
