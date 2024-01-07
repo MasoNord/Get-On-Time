@@ -7,8 +7,23 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 
 @Configuration
-@PropertySource("classpath:custom.properties")
-public class PropertiesConfig implements EnvironmentAware {
+public class PropertiesConfig  {
+
+    private static ConfigurationClass config;
+    @Autowired
+    PropertiesConfig(ConfigurationClass config) {
+        PropertiesConfig.config= config;
+    }
+
+    public static String getConfigValue(String configKey) {
+        return PropertiesConfig.config.getConfigValue(configKey);
+    }
+}
+
+
+@Configuration
+@PropertySource({"classpath:custom.properties", "application.properties"})
+class ConfigurationClass implements EnvironmentAware {
 
     @Autowired
     private Environment env;

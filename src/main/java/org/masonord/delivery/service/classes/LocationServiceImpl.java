@@ -1,5 +1,7 @@
 package org.masonord.delivery.service.classes;
 
+import org.masonord.delivery.config.HibernateConfig;
+import org.masonord.delivery.config.PropertiesConfig;
 import org.masonord.delivery.dto.model.GeoCodingDto;
 import org.masonord.delivery.dto.model.LocationDto;
 import org.masonord.delivery.enums.ExceptionType;
@@ -12,6 +14,12 @@ import org.springframework.stereotype.Service;
 
 @Service("LocationService")
 public class LocationServiceImpl implements org.masonord.delivery.service.interfaces.LocationService {
+    private static PropertiesConfig environment;
+
+    @Autowired
+    LocationServiceImpl(PropertiesConfig propertiesConfig) {
+        LocationServiceImpl.environment = propertiesConfig;
+    }
 
     @Autowired
     LocationDao locationDao;
@@ -22,7 +30,7 @@ public class LocationServiceImpl implements org.masonord.delivery.service.interf
     @Override
     public Location addNewPlaceByName(LocationDto locationDto) {
         String address = locationDto.getNumber() + "+" + locationDto.getStreet() + "+" + locationDto.getCity() + "+" + locationDto.getZipCode()
-                + "+" + locationDto.getCountry() + "&api_key=" + "65988567c37b7029444375nqce47e1c";
+                + "+" + locationDto.getCountry() + "&api_key=" + environment.getConfigValue("geocoding");
 
         GeoCodingDto[] coordinates = geoCodingApiService.getGeoLocation(address);
 

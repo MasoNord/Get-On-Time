@@ -10,7 +10,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class InterceptorConfig implements WebMvcConfigurer {
 
     @Autowired
-    RateLimitFilter rateLimitFilter = new RateLimitFilter();
+    RateLimitFilter rateLimitFilter;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {

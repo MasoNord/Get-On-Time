@@ -78,7 +78,6 @@ public class WebSecurityConfig {
                                 .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
 
                 );
-
         return http.build();
     }
 

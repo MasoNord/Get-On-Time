@@ -4,6 +4,9 @@ import io.github.bucket4j.Bucket;
 import io.github.bucket4j.ConsumptionProbe;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.masonord.delivery.config.PropertiesConfig;
+import org.masonord.delivery.service.classes.LocationServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -14,16 +17,15 @@ import java.util.concurrent.TimeUnit;
 
 @Component
 public class RateLimitFilter implements HandlerInterceptor {
-
-    private final long capacity = 100;
-    private final long tokens = 10;
+    private final long capacity = Long.parseLong(PropertiesConfig.getConfigValue("capacity"));
+    private final long tokens =  Long.parseLong(PropertiesConfig.getConfigValue("tokens"));;
 
     private final Bucket bucket = Bucket.builder()
             .addLimit(limit -> limit.capacity(capacity).refillGreedy(tokens, Duration.ofMinutes(1)))
             .build();
 
     private final Map<String, Bucket> buckets = new ConcurrentHashMap<>();
-    private final long defaultTokens = 1;
+    private final long defaultTokens =  Long.parseLong(PropertiesConfig.getConfigValue("defaultTokens"));;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
