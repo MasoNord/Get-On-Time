@@ -1,16 +1,15 @@
-package org.masonord.delivery.exception;
+package org.masonord.delivery.exceptionPimsleur;
 
 import org.masonord.delivery.dto.response.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-@ControllerAdvice
-@RestController
+@RestControllerAdvice
 public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(org.masonord.delivery.exception.ExceptionHandler.EntityNotFoundException.class)
@@ -53,5 +52,10 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
         Response response = Response.exception();
         response.addMessageToResponse(exception.getMessage(), exception);
         return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(HttpServerErrorException.InternalServerError.class)
+    public final ResponseEntity handledInternalServerError(Exception exception, WebRequest request) {
+        return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
