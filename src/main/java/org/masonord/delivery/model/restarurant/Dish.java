@@ -1,5 +1,6 @@
 package org.masonord.delivery.model.restarurant.dish;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,11 +18,12 @@ import java.util.Set;
 @Accessors(chain = true)
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(value = JsonInclude.Include.NON_NULL)
 @Entity
 @Table(name = "dishes")
 public class Dish {
     @Id
-    @Column(name = "id", nullable = false, unique = true, length = 32)
+    @Column(name = "id", nullable = false, unique = true)
     private String id;
 
     @Column(name = "name", nullable = false, length = 50)
@@ -30,7 +32,7 @@ public class Dish {
     @Column(name = "price", nullable = false)
     private float cost;
 
-    @Column(name = "description", nullable = false, length = 255)
+    @Column(name = "description", nullable = false)
     private String description;
 
     @OneToMany(mappedBy = "dish")

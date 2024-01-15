@@ -43,6 +43,7 @@ public class WebSecurityConfig {
             "/openapi.json",
             "/context-path/**",
             "/v3/api-docs/**",
+            "/error"
     };
 
     private final LogoutHandler logoutHandler;
@@ -60,7 +61,9 @@ public class WebSecurityConfig {
                                 .requestMatchers("/api/v1/customer/**").hasAnyAuthority(UserRoles.CUSTOMER.getValue(), UserRoles.ADMIN.getValue())
                                 .requestMatchers("/api/v1/user/**").hasAuthority(UserRoles.ADMIN.getValue())
                                 .requestMatchers("/api/v1/completedOrders/**").hasAnyAuthority(UserRoles.COURIER.getValue(), UserRoles.ADMIN.getValue())
-                                .requestMatchers("/api/v1/restaurant/**").hasAnyAuthority(UserRoles.OWNER.getValue())
+                                .requestMatchers("/api/v1/restaurant/**").hasAnyAuthority(UserRoles.OWNER.getValue(), UserRoles.ADMIN.getValue())
+                                .requestMatchers("/api/v1/menu/**").hasAnyAuthority(UserRoles.OWNER.getValue(), UserRoles.ADMIN.getValue())
+                                .requestMatchers("/api/v1/dish/**").hasAnyAuthority(UserRoles.OWNER.getValue(), UserRoles.ADMIN.getValue())
                                 .anyRequest()
                                 .authenticated()
                 )
