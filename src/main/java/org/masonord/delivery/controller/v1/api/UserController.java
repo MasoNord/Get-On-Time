@@ -89,7 +89,7 @@ public class UserController {
        String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             try {
-                // TODO: replace this piece of code with a dedicated method for generating tokens to get read of redundancy
+                // TODO: replace this piece of code with a dedicated method for generating tokens to get rid of redundancy
                 String refresh_token = authorizationHeader.substring("Bearer ".length());
                 Algorithm algorithm = Algorithm.HMAC256("SecreteKeyTOGenJWTs".getBytes()); // TODO: make retrieving secret key from a property file
                 JWTVerifier verifier = JWT.require(algorithm).build();

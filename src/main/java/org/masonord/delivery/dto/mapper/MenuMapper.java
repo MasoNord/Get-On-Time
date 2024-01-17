@@ -1,5 +1,6 @@
 package org.masonord.delivery.dto.mapper;
 
+import org.masonord.delivery.dto.model.DishDto;
 import org.masonord.delivery.dto.model.MenuDto;
 import org.masonord.delivery.dto.model.ReviewDto;
 import org.masonord.delivery.model.restarurant.Menu;
@@ -25,7 +26,7 @@ public class MenuMapper {
                 .setDishes(new HashSet<>(menu
                         .getDishes()
                         .stream()
-                        .map(dish -> new ModelMapper().map(dish, Dish.class))
+                        .map(dish -> new ModelMapper().map(dish, DishDto.class))
                         .collect(Collectors.toList())
                 ));
     }

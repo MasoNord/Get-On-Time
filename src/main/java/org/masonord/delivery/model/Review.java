@@ -8,7 +8,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.masonord.delivery.model.restarurant.Menu;
 import org.masonord.delivery.model.restarurant.Restaurant;
-import org.masonord.delivery.model.restarurant.dish.Dish;
+import org.masonord.delivery.model.restarurant.Dish;
 
 @Getter
 @Setter

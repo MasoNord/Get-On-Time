@@ -15,8 +15,8 @@ public class RestaurantMapper {
         return new RestaurantDto()
                 .setLocation(LocationMapper.toLocationDto(restaurant.getLocation()))
                 .setName(restaurant.getName())
-                .setMenues(new HashSet<>(restaurant
-                        .getMenues()
+                .setMenus(new HashSet<>(restaurant
+                        .getMenus()
                         .stream()
                         .map(menu -> new ModelMapper().map(menu, MenuDto.class))
                         .collect(Collectors.toList())

@@ -32,7 +32,7 @@ public class Restaurant {
     private String name;
 
     @OneToMany(mappedBy = "restaurant", fetch = FetchType.EAGER)
-    private Set<Menu> menuse;
+    private Set<Menu> menus;
 
     @OneToMany(mappedBy = "restaurant", fetch = FetchType.EAGER)
     private Set<Order> orders;
@@ -40,13 +40,11 @@ public class Restaurant {
     @OneToMany(mappedBy = "restaurant", fetch = FetchType.EAGER)
     private Set<Review> reviews;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "locationId")
     private Location location;
 
     @ManyToOne(cascade =  CascadeType.DETACH)
     @JoinColumn(name = "userId", nullable = false)
     private User user;
-
-
 }

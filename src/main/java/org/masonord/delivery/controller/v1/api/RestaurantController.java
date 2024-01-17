@@ -1,18 +1,22 @@
 package org.masonord.delivery.controller.v1.api;
 
-
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.masonord.delivery.controller.v1.request.RestaurantCreateRequest;
 import org.masonord.delivery.dto.model.LocationDto;
+import org.masonord.delivery.dto.model.MenuDto;
 import org.masonord.delivery.dto.model.RestaurantDto;
 import org.masonord.delivery.service.interfaces.RestaurantService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Tag(name = "restaurant", description = "the restaurant API")
 @RestController("RestaurantController")
@@ -34,16 +38,23 @@ public class RestaurantController {
                 .setStreet(createRequest.getLocation().getStreet())
                 .setZipCode(createRequest.getLocation().getZipCode());
 
+        Set<MenuDto> menus = new HashSet<>(createRequest.getMenus()
+                .stream()
+                .map(menuCreateRequest -> new ModelMapper().map(menuCreateRequest, MenuDto.class))
+                .collect(Collectors.toList())
+        );
+
 
         RestaurantDto restaurantDto = new RestaurantDto()
                 .setLocation(locationDto)
-                .setName(createRequest.getName());
+                .setName(createRequest.getName())
+                .setMenus(menus);
         return ResponseEntity.ok().body(restaurantService.addNewRestaurant(restaurantDto, request.getUserPrincipal().getName()));
     }
 
-//    @GetMapping()
-//    public ResponseEntity<RestaurantDto> getRestaurants() {
-//        return ResponseEntity.ok().body()
-//    }
+    @GetMapping()
+    public ResponseEntity<List<RestaurantDto>> getRestaurants() {
+        return ResponseEntity.ok().body(restaurantService.getAllRestaurants());
+    }
 
 }

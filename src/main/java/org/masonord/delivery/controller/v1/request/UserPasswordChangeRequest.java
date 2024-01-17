@@ -13,7 +13,6 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UserPasswordChangeRequest {
-
     @NotEmpty
     public String oldPassword;
 
