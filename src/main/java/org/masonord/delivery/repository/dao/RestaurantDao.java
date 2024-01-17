@@ -6,6 +6,8 @@ import org.masonord.delivery.repository.AbstractHibernateDao;
 import org.masonord.delivery.repository.interfaces.RestaurantDaoInterface;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 @Transactional
 public class RestaurantDao extends AbstractHibernateDao<Restaurant> implements RestaurantDaoInterface {
@@ -21,5 +23,15 @@ public class RestaurantDao extends AbstractHibernateDao<Restaurant> implements R
     @Override
     public Restaurant getRestaurant(String name) {
         return getByName(name);
+    }
+
+    @Override
+    public Restaurant updateRestaurant(Restaurant restaurant) {
+        return update(restaurant);
+    }
+
+    @Override
+    public List<Restaurant> getAllRestaurants() {
+        return getAll();
     }
 }

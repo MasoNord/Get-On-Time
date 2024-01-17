@@ -11,7 +11,7 @@ public interface RestaurantService {
 
     RestaurantService updateRestaurantProfile(RestaurantDto restaurantDto);
 
-    List<Restaurant> getAllRestaurants();
+    List<RestaurantDto> getAllRestaurants();
 
     List<Restaurant> getMostPopularRestaurants();
 
