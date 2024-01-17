@@ -6,9 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.masonord.delivery.enums.MenuType;
 import org.masonord.delivery.model.Review;
-import org.masonord.delivery.model.restarurant.dish.Dish;
 
 import java.util.Set;
 
@@ -21,7 +19,7 @@ import java.util.Set;
 @Table(name = "menus")
 public class Menu {
     @Id
-    @Column(name = "id", unique = true, nullable = false, length = 32)
+    @Column(name = "id", unique = true, nullable = false)
     private String id;
 
     @Column(name = "dc", nullable = false, length = 30)
@@ -33,11 +31,11 @@ public class Menu {
     @Column(name = "name", nullable = false, length = 50)
     private String name;
 
-    @Column(name = "description", nullable = false, length = 255)
+    @Column(name = "description", nullable = false)
     private String description;
 
     @Column(name = "menuType")
-    private MenuType menuType;
+    private String menuType;
 
     @OneToMany(mappedBy = "menu", fetch = FetchType.EAGER)
     private Set<Dish> dishes;
@@ -45,7 +43,7 @@ public class Menu {
     @OneToMany(mappedBy = "menu", fetch = FetchType.EAGER)
     private Set<Review> reviews;
 
-    @ManyToOne(cascade = CascadeType.DETACH)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "restaurantId")
     private Restaurant restaurant;
 }

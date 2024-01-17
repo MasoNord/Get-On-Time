@@ -25,7 +25,7 @@ public class MenuDto {
 
     private String restaurantName;
 
-    private Set<Dish> dishes;
+    private Set<DishDto> dishes;
 
     private Set<ReviewDto> review;
 }

@@ -1,8 +1,10 @@
 package org.masonord.delivery.dto.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.Accessors;
+
 import java.util.Set;
 
 @Getter
@@ -12,12 +14,16 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class RestaurantDto {
-    public String name;
+@JsonInclude(value = JsonInclude.Include.NON_NULL)
+public class DishDto {
 
-    public Set<MenuDto> menus;
+    private String name;
 
-    public Set<ReviewDto> reviews;
+    private float cost;
 
-    public LocationDto location;
+    private String description;
+
+    private Set<ReviewDto> reviews;
+
+    private String menu;
 }

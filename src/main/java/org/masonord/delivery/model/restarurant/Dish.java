@@ -1,4 +1,4 @@
-package org.masonord.delivery.model.restarurant.dish;
+package org.masonord.delivery.model.restarurant;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
@@ -35,17 +35,14 @@ public class Dish {
     @Column(name = "description", nullable = false)
     private String description;
 
-    @OneToMany(mappedBy = "dish")
-    private Set<DishOption> dishOptions;
-
     @OneToMany(mappedBy = "dish", fetch = FetchType.EAGER)
     private Set<Review> reviews;
 
-    @ManyToOne(cascade = CascadeType.DETACH)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "menuId")
     private Menu menu;
 
-    @ManyToOne(cascade = CascadeType.DETACH)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "orderItemId")
     private OrderItem orderItem;
 }
