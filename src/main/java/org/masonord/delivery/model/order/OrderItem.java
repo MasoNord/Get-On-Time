@@ -19,7 +19,7 @@ import java.util.Set;
 @Table(name = "orderItems")
 public class OrderItem {
     @Id
-    @Column(name = "id", unique = true, nullable = false, length = 32)
+    @Column(name = "id", unique = true, nullable = false)
     private String id;
 
     @OneToMany(mappedBy = "orderItem", fetch = FetchType.EAGER)

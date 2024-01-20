@@ -22,12 +22,11 @@ public interface OrderService {
     /**
      * Add a new order to a database
      *
-     * @param orderDto
-     * @param locationDto
+     * @param customerName
      * @return OrderDto
      */
 
-    OrderDto addNewOrder(OrderDto orderDto, LocationDto locationDto);
+    OrderDto addNewOrder(String restaurantName, String customerName, List<String> dishes);
 
     /**
      * Get list of all orders

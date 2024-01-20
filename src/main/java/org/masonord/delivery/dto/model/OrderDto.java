@@ -4,7 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.Accessors;
+import org.masonord.delivery.enums.OrderStatusType;
 import org.masonord.delivery.model.Location;
+import org.masonord.delivery.model.order.OrderItem;
+
+import java.util.Set;
 
 @Getter
 @Setter
@@ -17,16 +21,16 @@ import org.masonord.delivery.model.Location;
 public class OrderDto {
     private String id;
 
-    // take any measurement metrics, pounds or kgs
-    // I'll stay with kg, because I've gotten used to it
-    private float weight;
-
     // select any currency you want
     private float cost;
-
-    private String deliveryHours;
 
     private String courierEmail;
 
     private String customerEmail;
+
+    private Set<DishDto> items;
+
+    private OrderStatusType status;
+
+    private String restaurantName;
 }

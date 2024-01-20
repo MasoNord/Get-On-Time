@@ -20,23 +20,11 @@ public class Order {
     @Column(name = "id", nullable = false, unique = true)
     private String id;
 
-    @Column(name = "weight", nullable = false)
-    private float weight;
-
     @Column(name = "cost", nullable = false)
     private float cost;
 
-    @Column(name = "deliveryHours", nullable = false)
-    private String deliveryHours;
-
     @Column(name = "orderStatus", nullable = false)
     OrderStatusType orderStatusType;
-
-    @Column(name = "dc", nullable = false, length = 30)
-    private String dc; // data of creation
-
-    @Column(name = "du", nullable = false, length = 30)
-    private String du; // data of updating
 
     @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "courierId")
@@ -49,10 +37,6 @@ public class Order {
     @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "restaurantId")
     private Restaurant restaurant;
-
-    @OneToOne(cascade = CascadeType.DETACH)
-    @JoinColumn(name = "locationId")
-    private Location location;
 
     @OneToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "orderItemId")

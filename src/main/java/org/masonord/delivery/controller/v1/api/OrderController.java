@@ -1,5 +1,6 @@
 package org.masonord.delivery.controller.v1.api;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.masonord.delivery.controller.v1.request.OffsetBasedPageRequest;
 import org.masonord.delivery.controller.v1.request.OrderCompleteRequest;
@@ -19,22 +20,9 @@ public class OrderController {
     @Autowired
     OrderService orderService;
 
-    @PostMapping()
-    public Response addOrder(@RequestBody @Valid OrderCreateRequest orderCreateRequest) {
-        LocationDto locationDto = new LocationDto()
-                .setCountry(orderCreateRequest.getLocation().getCountry())
-                .setCity(orderCreateRequest.getLocation().getCity())
-                .setNumber(orderCreateRequest.getLocation().getNumber())
-                .setStreet(orderCreateRequest.getLocation().getStreet())
-                .setZipCode(orderCreateRequest.getLocation().getZipCode());
-
-        OrderDto orderDto = new OrderDto()
-                .setCustomerEmail(orderCreateRequest.getCustomerEmail())
-                .setCost(orderCreateRequest.getCost())
-                .setWeight(orderCreateRequest.getWeight())
-                .setDeliveryHours(orderCreateRequest.getDeliveryHours());
-
-        return Response.ok().setPayload(orderService.addNewOrder(orderDto, locationDto));
+    @PostMapping("/{restaurantName}")
+    public Response addOrder(@RequestBody @Valid OrderCreateRequest orderCreateRequest, @PathVariable String restaurantName, HttpServletRequest request) {
+        return Response.ok().setPayload(orderService.addNewOrder(restaurantName, request.getUserPrincipal().getName(), orderCreateRequest.getDishes()));
     }
 
     @PostMapping("/complete")

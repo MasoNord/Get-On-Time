@@ -45,14 +45,12 @@ public abstract class AbstractHibernateDao <T> {
         return  sessionFactory.getCurrentSession().createQuery("from " + targetClass.getName(), targetClass).list();
     }
 
-
     protected List<T> getAll(int offset, int limit) {
         Query<T> query = sessionFactory.getCurrentSession().createQuery("From " + targetClass.getName(), targetClass);
         query.setFirstResult(offset);
         query.setMaxResults(limit);
         return query.list();
     }
-
 
     protected T create(final T entity) {
         Preconditions.checkNotNull(entity, "entity");

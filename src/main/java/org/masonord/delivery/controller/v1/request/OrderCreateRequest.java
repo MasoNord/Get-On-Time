@@ -8,6 +8,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.masonord.delivery.dto.model.DishDto;
+
+import java.util.List;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -15,20 +19,6 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OrderCreateRequest {
-
     @NotNull
-    private float weight;
-
-    @NotNull
-    private float cost;
-
-    @NotEmpty
-    private String deliveryHours;
-
-    @NotEmpty
-    private String customerEmail;
-
-    @NotNull
-    private LocationAddRequest location;
-
+    private List<String> dishes;
 }

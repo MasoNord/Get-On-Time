@@ -1,31 +1,30 @@
 package org.masonord.delivery.service.classes;
 
+import org.hibernate.validator.cfg.defs.UUIDDef;
 import org.masonord.delivery.controller.v1.request.OffsetBasedPageRequest;
 import org.masonord.delivery.controller.v1.request.OrderCompleteRequest;
 import org.masonord.delivery.dto.mapper.CompletedOrderMapper;
 import org.masonord.delivery.dto.mapper.OrderMapper;
-import org.masonord.delivery.dto.model.CompletedOrderDto;
-import org.masonord.delivery.dto.model.LocationDto;
-import org.masonord.delivery.dto.model.OrderDto;
+import org.masonord.delivery.dto.model.*;
 import org.masonord.delivery.enums.ExceptionType;
 import org.masonord.delivery.enums.ModelType;
+import org.masonord.delivery.enums.OrderStatusType;
 import org.masonord.delivery.exception.ExceptionHandler;
 import org.masonord.delivery.model.*;
 import org.masonord.delivery.model.order.Order;
+import org.masonord.delivery.model.order.OrderItem;
+import org.masonord.delivery.model.restarurant.Dish;
+import org.masonord.delivery.model.restarurant.Restaurant;
 import org.masonord.delivery.repository.dao.*;
 import org.masonord.delivery.util.DateUtils;
 import org.masonord.delivery.util.IdUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+
+import java.util.*;
 
 @Service("OrderService")
 public class OrderServiceImpl implements org.masonord.delivery.service.interfaces.OrderService {
-    @Autowired
-    IdUtils idUtils;
 
     @Autowired
     UserDao userDao;
@@ -34,14 +33,22 @@ public class OrderServiceImpl implements org.masonord.delivery.service.interface
     OrderDao orderDao;
 
     @Autowired
+    RestaurantDao restaurantDao;
+
+    @Autowired
     CompletedOrderDao completedOrderDao;
 
     @Autowired
-    LocationServiceImpl locationService;
+    DishDao dishDao;
+
+    @Autowired
+    OrderItemDao orderItemDao;
+
 
     @Override
     public OrderDto getOrderById(String id) {
         Order order = orderDao.getOrder(id);
+        IdUtils idUtils = new IdUtils();
 
         if (idUtils.validateUuid(id)) {
             if (order != null)
@@ -51,17 +58,34 @@ public class OrderServiceImpl implements org.masonord.delivery.service.interface
         throw exception(ModelType.ORDER, ExceptionType.NOT_UUID_FORMAT, id);
     }
     @Override
-    public OrderDto addNewOrder(OrderDto orderDto, LocationDto locationDto) {
-        Location newLocation = locationService.addNewPlaceByName(locationDto);
+    public OrderDto addNewOrder(String restaurantName, String customerName, List<String> dishes) {
+        Restaurant restaurant = restaurantDao.getRestaurant(restaurantName);
+        User currCustomer = userDao.findUserByEmail(customerName);
 
-        Order order = new Order()
-                .setId(idUtils.generateUuid())
-                .setLocation(newLocation)
-                .setCost(orderDto.getCost())
-                .setWeight(orderDto.getWeight())
-                .setDeliveryHours(orderDto.getDeliveryHours())
-                .setCustomer(userDao.findUserByEmail(orderDto.getCustomerEmail()));
-        return OrderMapper.toOrderDto(orderDao.createOrder(order));
+        if (restaurant != null) {
+            float cost = 0.0f;
+            OrderItem items = new OrderItem()
+                    .setId(UUID.randomUUID().toString())
+                    .setDishes(new HashSet<>());
+
+            for (String name : dishes) {
+                Dish tempDish = dishDao.getDishByName(name);
+                if (tempDish != null) {
+                    items.getDishes().add(tempDish);
+                    cost+= tempDish.getCost();
+                }
+            }
+            orderItemDao.addNewOrderItem(items);
+            Order newOrder = new Order()
+                    .setOrderItems(items)
+                    .setId(UUID.randomUUID().toString())
+                    .setOrderStatusType(OrderStatusType.PENDING)
+                    .setCustomer(currCustomer)
+                    .setRestaurant(restaurant)
+                    .setCost(cost);
+            return OrderMapper.toOrderDto(orderDao.createOrder(newOrder));
+        }
+        throw exception(ModelType.RESTAURANT, ExceptionType.ENTITY_NOT_FOUND, restaurantName);
     }
     @Override
     public List<OrderDto> getOrders(OffsetBasedPageRequest offsetBasedPageRequest) {
@@ -71,12 +95,15 @@ public class OrderServiceImpl implements org.masonord.delivery.service.interface
             orders.add(OrderMapper.toOrderDto(o));
 
         return orders;
+
+        // TODO: do refactor of a code, from for loop to lambdas
     }
 
     @Override
     public CompletedOrderDto completeOrder(OrderCompleteRequest orderCompleteRequest) {
         User courier = userDao.findUserByEmail(orderCompleteRequest.getCourierEmail());
         Order order = orderDao.getOrder(orderCompleteRequest.getOrderId());
+        IdUtils idUtils = new IdUtils();
 
         if (idUtils.validateUuid(orderCompleteRequest.getOrderId())) {
             if (courier != null) {

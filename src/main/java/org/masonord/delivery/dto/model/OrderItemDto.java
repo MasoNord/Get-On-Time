@@ -5,15 +5,16 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.Accessors;
 
+import java.util.Set;
+
 @Getter
 @Setter
 @Accessors(chain = true)
 @ToString
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@JsonInclude(value = JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class GeoCodingDto {
-    float lat;
-
-    float lon;
+public class OrderItemDto {
+    private Set<DishDto> dishes;
 }
