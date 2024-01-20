@@ -22,7 +22,6 @@ import java.util.Set;
 @Entity
 @Table(name = "restaurants")
 public class Restaurant {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", unique = true, nullable = false)

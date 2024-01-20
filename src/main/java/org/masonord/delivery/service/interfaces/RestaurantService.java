@@ -1,6 +1,9 @@
 package org.masonord.delivery.service.interfaces;
 
+import org.masonord.delivery.dto.model.OrderDto;
 import org.masonord.delivery.dto.model.RestaurantDto;
+import org.masonord.delivery.enums.OrderStatusType;
+import org.masonord.delivery.model.order.Order;
 import org.masonord.delivery.model.restarurant.Restaurant;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +15,10 @@ public interface RestaurantService {
     RestaurantService updateRestaurantProfile(RestaurantDto restaurantDto);
 
     List<RestaurantDto> getAllRestaurants();
+
+    List<OrderDto> getAllOrders(String restaurantName);
+
+    String changeOrderStatus(String orderId, String restaurantName, OrderStatusType status);
 
     List<Restaurant> getMostPopularRestaurants();
 

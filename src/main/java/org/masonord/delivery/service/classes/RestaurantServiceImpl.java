@@ -4,19 +4,18 @@ import org.masonord.delivery.dto.mapper.RestaurantMapper;
 import org.masonord.delivery.dto.mapper.UserMapper;
 import org.masonord.delivery.dto.model.DishDto;
 import org.masonord.delivery.dto.model.MenuDto;
+import org.masonord.delivery.dto.model.OrderDto;
 import org.masonord.delivery.dto.model.RestaurantDto;
 import org.masonord.delivery.enums.ExceptionType;
 import org.masonord.delivery.enums.ModelType;
+import org.masonord.delivery.enums.OrderStatusType;
 import org.masonord.delivery.exception.ExceptionHandler;
 import org.masonord.delivery.model.Location;
 import org.masonord.delivery.model.order.Order;
 import org.masonord.delivery.model.restarurant.Dish;
 import org.masonord.delivery.model.restarurant.Menu;
 import org.masonord.delivery.model.restarurant.Restaurant;
-import org.masonord.delivery.repository.dao.DishDao;
-import org.masonord.delivery.repository.dao.MenuDao;
-import org.masonord.delivery.repository.dao.RestaurantDao;
-import org.masonord.delivery.repository.dao.UserDao;
+import org.masonord.delivery.repository.dao.*;
 import org.masonord.delivery.service.interfaces.LocationService;
 import org.masonord.delivery.service.interfaces.RestaurantService;
 import org.masonord.delivery.service.interfaces.UserService;
@@ -26,6 +25,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.beans.PropertyEditorSupport;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -40,6 +40,9 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Autowired
     UserDao userDao;
+
+    @Autowired
+    OrderDao orderDao;
 
     @Autowired
     MenuDao menuDao;
@@ -126,6 +129,38 @@ public class RestaurantServiceImpl implements RestaurantService {
                 .map(restaurant -> new ModelMapper().map(restaurant, RestaurantDto.class))
                 .collect(Collectors.toList())
         );
+    }
+
+    @Override
+    public List<OrderDto> getAllOrders(String restaurantName) {
+        Restaurant restaurant = restaurantDao.getRestaurant(restaurantName);
+        if (restaurant != null) {
+            return new ArrayList<>(restaurant.getOrders()
+                    .stream()
+                    .map(order -> new ModelMapper().map(order, OrderDto.class))
+                    .collect(Collectors.toList())
+            );
+        }
+        throw exception(ModelType.RESTAURANT, ExceptionType.ENTITY_NOT_FOUND, restaurantName);
+    }
+
+    @Override
+    public String changeOrderStatus(String orderId, String restaurantName, OrderStatusType status) {
+        Restaurant restaurant = restaurantDao.getRestaurant(restaurantName);
+        IdUtils idUtils = new IdUtils();
+        if (restaurant != null) {
+            if (idUtils.validateUuid(orderId)) {
+                Order order = orderDao.getOrder(orderId);
+                if (order != null) {
+                    order.setOrderStatusType(status);
+                    orderDao.updateOrderProfile(order);
+                    return "Order has been updated successfully";
+                }
+                throw exception(ModelType.ORDER, ExceptionType.ENTITY_NOT_FOUND, orderId);
+            }
+            throw exception(ModelType.ORDER, ExceptionType.NOT_UUID_FORMAT, orderId);
+        }
+        throw exception(ModelType.RESTAURANT, ExceptionType.ENTITY_NOT_FOUND, restaurantName);
     }
 
     @Override

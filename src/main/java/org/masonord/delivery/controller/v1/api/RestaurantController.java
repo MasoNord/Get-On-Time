@@ -3,9 +3,11 @@ package org.masonord.delivery.controller.v1.api;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.masonord.delivery.controller.v1.request.ChangeOrderStatusRequest;
 import org.masonord.delivery.controller.v1.request.RestaurantCreateRequest;
 import org.masonord.delivery.dto.model.LocationDto;
 import org.masonord.delivery.dto.model.MenuDto;
+import org.masonord.delivery.dto.model.OrderDto;
 import org.masonord.delivery.dto.model.RestaurantDto;
 import org.masonord.delivery.service.interfaces.RestaurantService;
 import org.modelmapper.ModelMapper;
@@ -50,6 +52,18 @@ public class RestaurantController {
                 .setName(createRequest.getName())
                 .setMenus(menus);
         return ResponseEntity.ok().body(restaurantService.addNewRestaurant(restaurantDto, request.getUserPrincipal().getName()));
+    }
+
+    @GetMapping("/orders/{restaurantName}")
+    public ResponseEntity<List<OrderDto>> getAllOrders(@PathVariable String restaurantName){
+        return ResponseEntity.ok().body(restaurantService.getAllOrders(restaurantName));
+    }
+
+    @PutMapping("/orders/change-order-status")
+    public ResponseEntity<String> acceptOrder(@RequestParam String orderId,
+                                              @RequestParam String restaurantName,
+                                              @RequestBody @Valid ChangeOrderStatusRequest status) {
+        return ResponseEntity.ok().body(restaurantService.changeOrderStatus(orderId, restaurantName, status.getStatus()));
     }
 
     @GetMapping()
