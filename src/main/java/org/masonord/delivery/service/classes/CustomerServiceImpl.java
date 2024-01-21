@@ -11,7 +11,7 @@ import org.masonord.delivery.enums.UserRoles;
 import org.masonord.delivery.exception.ExceptionHandler;
 import org.masonord.delivery.model.Location;
 import org.masonord.delivery.model.User;
-import org.masonord.delivery.repository.dao.UserDao;
+import org.masonord.delivery.repository.UserRep;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.*;
@@ -20,16 +20,16 @@ import java.util.*;
 public class CustomerServiceImpl implements org.masonord.delivery.service.interfaces.CustomerService {
 
     @Autowired
-    UserDao userDao;
+    UserRep userRep;
 
     @Autowired
     LocationServiceImpl locationService;
 
     @Override
     public CustomerDto findCustomerByEmail(String email) {
-        User customer = userDao.findUserByEmail(email);
+        User customer = userRep.findUserByEmail(email);
         if (customer != null && Objects.equals(customer.getRole(), UserRoles.CUSTOMER)) {
-            return CustomerMapper.toCustomerDto(userDao.findUserByEmail(email));
+            return CustomerMapper.toCustomerDto(userRep.findUserByEmail(email));
         }
         throw exception(ModelType.CUSTOMER, ExceptionType.ENTITY_NOT_FOUND, email);
     }
@@ -37,7 +37,7 @@ public class CustomerServiceImpl implements org.masonord.delivery.service.interf
     @Override
     public List<CustomerDto> getCustomers(OffsetBasedPageRequest offsetBasedPageRequest) {
         List<CustomerDto> customers = new LinkedList<>();
-        List<User> customerEntity = userDao.getAllUsers(offsetBasedPageRequest.getOffset(), offsetBasedPageRequest.getPageSize());
+        List<User> customerEntity = userRep.getAllUsers(offsetBasedPageRequest.getOffset(), offsetBasedPageRequest.getPageSize());
 
         for (User c : customerEntity) {
             if (Objects.equals(c.getRole(), UserRoles.CUSTOMER)) {
@@ -55,11 +55,11 @@ public class CustomerServiceImpl implements org.masonord.delivery.service.interf
 
     @Override
     public String updateCurrentLocation(LocationDto locationDto, String email) {
-        User customer = userDao.findUserByEmail(email);
+        User customer = userRep.findUserByEmail(email);
         if (customer != null) {
             Location location = locationService.addNewPlaceByName(locationDto);
             customer.setLocation(location);
-            userDao.updateUserProfile(customer);
+            userRep.updateUserProfile(customer);
 
             return "The location has been successfully updated";
         }

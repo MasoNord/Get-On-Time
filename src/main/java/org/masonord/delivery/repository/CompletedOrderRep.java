@@ -1,9 +1,9 @@
-package org.masonord.delivery.repository.interfaces;
+package org.masonord.delivery.repository;
 
 import org.masonord.delivery.model.CompletedOrder;
 import java.util.List;
 
-public interface CompletedOrderDaoInterface {
+public interface CompletedOrderRep {
     CompletedOrder addOrder(CompletedOrder CompletedOrder);
 
     List<CompletedOrder> getCompletedOrders();

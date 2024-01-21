@@ -1,4 +1,4 @@
-package org.masonord.delivery.repository;
+package org.masonord.delivery.repository.hibernate;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public abstract class AbstractHibernateDao <T> {
+public abstract class AbstractHibernateRep<T> {
     private Class<T> targetClass;
 
     @Autowired

@@ -15,9 +15,10 @@ import org.masonord.delivery.model.CompletedOrder;
 import org.masonord.delivery.model.Location;
 import org.masonord.delivery.model.User;
 import org.masonord.delivery.model.order.Order;
-import org.masonord.delivery.repository.dao.CompletedOrderDao;
-import org.masonord.delivery.repository.dao.OrderDao;
-import org.masonord.delivery.repository.dao.UserDao;
+import org.masonord.delivery.repository.CompletedOrderRep;
+import org.masonord.delivery.repository.OrderRep;
+import org.masonord.delivery.repository.UserRep;
+import org.masonord.delivery.service.interfaces.LocationService;
 import org.masonord.delivery.util.DateUtils;
 import org.masonord.delivery.util.IdUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,23 +31,23 @@ import java.util.*;
 public class CourierServiceImpl implements org.masonord.delivery.service.interfaces.CourierService {
 
     @Autowired
-    private UserDao userDao;
+    private UserRep userRep;
 
     @Autowired
-    private LocationServiceImpl locationService;
+    private LocationService locationService;
 
     @Autowired
-    private CompletedOrderDao completedOrderDao;
+    private CompletedOrderRep completedOrderRep;
 
     @Autowired
-    private OrderDao orderDao;
+    private OrderRep orderRep;
 
     @Autowired
     private IdUtils idUtils;
 
     @Override
     public CourierDto findCourierByEmail(String email) {
-        User courier = userDao.findUserByEmail(email);
+        User courier = userRep.findUserByEmail(email);
 
         if (courier != null && Objects.equals(courier.getRole(), UserRoles.COURIER)) {
             return CourierMapper.toCourierDto(courier);
@@ -58,7 +59,7 @@ public class CourierServiceImpl implements org.masonord.delivery.service.interfa
     @Override
     public List<CourierDto> getAllCouriers(OffsetBasedPageRequest offsetBasedPageRequest) {
         List<CourierDto> couriers = new LinkedList<>();
-        List<User> couriersEntity = userDao.getAllUsers(offsetBasedPageRequest.getOffset(), offsetBasedPageRequest.getPageSize());
+        List<User> couriersEntity = userRep.getAllUsers(offsetBasedPageRequest.getOffset(), offsetBasedPageRequest.getPageSize());
 
         for (User c : couriersEntity) {
             if (Objects.equals(c.getRole(), UserRoles.COURIER)) {
@@ -71,12 +72,12 @@ public class CourierServiceImpl implements org.masonord.delivery.service.interfa
 
     @Override
     public String updateCurrentLocation(LocationDto locationDto, String email) {
-       User courier = userDao.findUserByEmail(email);
+       User courier = userRep.findUserByEmail(email);
 
        if (courier != null && Objects.equals(courier.getRole(), UserRoles.COURIER)) {
             Location location = locationService.addNewPlaceByName(locationDto);
             courier.setLocation(location);
-            userDao.updateUserProfile(courier);
+            userRep.updateUserProfile(courier);
 
             return "The location has been successfully updated";
        }
@@ -87,8 +88,8 @@ public class CourierServiceImpl implements org.masonord.delivery.service.interfa
 
     @Override
     public CourierDto setNewOrder(String orderId, String email) {
-        Order order = orderDao.getOrder(orderId);
-        User courier = userDao.findUserByEmail(email);
+        Order order = orderRep.getOrder(orderId);
+        User courier = userRep.findUserByEmail(email);
         if (idUtils.validateUuid(orderId)) {
             if (order != null) {
                 if (courier != null && Objects.equals(courier.getRole(), UserRoles.COURIER)) {
@@ -97,10 +98,10 @@ public class CourierServiceImpl implements org.masonord.delivery.service.interfa
 
                         order.setCourier(courier);
                         orders.add(order);
-                        orderDao.updateOrderProfile(order);
+                        orderRep.updateOrderProfile(order);
 
                         courier.setOrders(orders);
-                        return CourierMapper.toCourierDto(userDao.updateUserProfile(courier));
+                        return CourierMapper.toCourierDto(userRep.updateUserProfile(courier));
                     }
                     throw exception(ModelType.ORDER, ExceptionType.CONFLICT_EXCEPTION, orderId);
                 }
@@ -117,10 +118,10 @@ public class CourierServiceImpl implements org.masonord.delivery.service.interfa
 
     @Override
     public CourierMetaInfoDto getMetaInfo(String courierEmail, String startDate, String endDate) throws ParseException {
-        User courier = userDao.findUserByEmail(courierEmail);
+        User courier = userRep.findUserByEmail(courierEmail);
 
         if (courier != null) {
-            List<CompletedOrder> completedOrders = completedOrderDao.getCompletedOrders();
+            List<CompletedOrder> completedOrders = completedOrderRep.getCompletedOrders();
             int criteria = (CourierCriteriaType.valueOf(courier.getTransport().getValue().toUpperCase()).getValue());
             int countCompletedOrders = 0;
             float rating = 0.0f, earnings = 0.0f;

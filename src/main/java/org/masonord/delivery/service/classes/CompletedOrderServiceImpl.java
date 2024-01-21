@@ -6,8 +6,8 @@ import org.masonord.delivery.enums.ModelType;
 import org.masonord.delivery.exception.ExceptionHandler;
 import org.masonord.delivery.model.CompletedOrder;
 import org.masonord.delivery.model.User;
-import org.masonord.delivery.repository.dao.CompletedOrderDao;
-import org.masonord.delivery.repository.dao.UserDao;
+import org.masonord.delivery.repository.CompletedOrderRep;
+import org.masonord.delivery.repository.UserRep;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,15 +19,15 @@ import java.util.Objects;
 public class CompletedOrderServiceImpl implements org.masonord.delivery.service.interfaces.CompletedOrderService {
 
     @Autowired
-    CompletedOrderDao completedOrderDao;
+    CompletedOrderRep completedOrderRep;
 
     @Autowired
-    UserDao userDao;
+    UserRep userRep;
 
     @Override
     public List<CompletedOrderDto> getAllCompletedOrders() {
         List<CompletedOrderDto> completedOrdersDto = new ArrayList<>();
-        List<CompletedOrder> completedOrders = completedOrderDao.getCompletedOrders();
+        List<CompletedOrder> completedOrders = completedOrderRep.getCompletedOrders();
         for (CompletedOrder o : completedOrders) {
             completedOrdersDto.add(CompletedOrderMapper.toCompletedOrderDto(o));
         }
@@ -36,11 +36,11 @@ public class CompletedOrderServiceImpl implements org.masonord.delivery.service.
 
     @Override
     public List<CompletedOrderDto> getCompletedOrdersByCourierEmail(String courierEmail) {
-        User courier = userDao.findUserByEmail(courierEmail);
+        User courier = userRep.findUserByEmail(courierEmail);
 
         if (courier != null) {
             List<CompletedOrderDto> completedOrdersDto = new ArrayList<>();
-            List<CompletedOrder> completedOrders = completedOrderDao.getCompletedOrders();
+            List<CompletedOrder> completedOrders = completedOrderRep.getCompletedOrders();
             for (CompletedOrder o : completedOrders) {
                 if (Objects.equals(o.getCourier().getEmail(), courierEmail)) {
                     completedOrdersDto.add(CompletedOrderMapper.toCompletedOrderDto(o));

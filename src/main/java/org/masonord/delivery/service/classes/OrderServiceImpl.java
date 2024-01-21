@@ -1,6 +1,5 @@
 package org.masonord.delivery.service.classes;
 
-import org.hibernate.validator.cfg.defs.UUIDDef;
 import org.masonord.delivery.controller.v1.request.OffsetBasedPageRequest;
 import org.masonord.delivery.controller.v1.request.OrderCompleteRequest;
 import org.masonord.delivery.dto.mapper.CompletedOrderMapper;
@@ -15,7 +14,8 @@ import org.masonord.delivery.model.order.Order;
 import org.masonord.delivery.model.order.OrderItem;
 import org.masonord.delivery.model.restarurant.Dish;
 import org.masonord.delivery.model.restarurant.Restaurant;
-import org.masonord.delivery.repository.dao.*;
+import org.masonord.delivery.repository.*;
+import org.masonord.delivery.repository.hibernate.*;
 import org.masonord.delivery.util.DateUtils;
 import org.masonord.delivery.util.IdUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,27 +27,27 @@ import java.util.*;
 public class OrderServiceImpl implements org.masonord.delivery.service.interfaces.OrderService {
 
     @Autowired
-    UserDao userDao;
+    UserRep userRep;
 
     @Autowired
-    OrderDao orderDao;
+    OrderRep orderRep;
 
     @Autowired
-    RestaurantDao restaurantDao;
+    RestaurantRep restaurantRep;
 
     @Autowired
-    CompletedOrderDao completedOrderDao;
+    CompletedOrderRep completedOrderRep;
 
     @Autowired
-    DishDao dishDao;
+    DishRep dishRep;
 
     @Autowired
-    OrderItemDao orderItemDao;
+    OrderItemRep orderItemRep;
 
 
     @Override
     public OrderDto getOrderById(String id) {
-        Order order = orderDao.getOrder(id);
+        Order order = orderRep.getOrder(id);
         IdUtils idUtils = new IdUtils();
 
         if (idUtils.validateUuid(id)) {
@@ -59,8 +59,8 @@ public class OrderServiceImpl implements org.masonord.delivery.service.interface
     }
     @Override
     public OrderDto addNewOrder(String restaurantName, String customerName, List<String> dishes) {
-        Restaurant restaurant = restaurantDao.getRestaurant(restaurantName);
-        User currCustomer = userDao.findUserByEmail(customerName);
+        Restaurant restaurant = restaurantRep.getRestaurant(restaurantName);
+        User currCustomer = userRep.findUserByEmail(customerName);
 
         if (restaurant != null) {
             float cost = 0.0f;
@@ -69,13 +69,13 @@ public class OrderServiceImpl implements org.masonord.delivery.service.interface
                     .setDishes(new HashSet<>());
 
             for (String name : dishes) {
-                Dish tempDish = dishDao.getDishByName(name);
+                Dish tempDish = dishRep.getDishByName(name);
                 if (tempDish != null) {
                     items.getDishes().add(tempDish);
                     cost+= tempDish.getCost();
                 }
             }
-            orderItemDao.addNewOrderItem(items);
+            orderItemRep.addNewOrderItem(items);
             Order newOrder = new Order()
                     .setOrderItems(items)
                     .setId(UUID.randomUUID().toString())
@@ -83,14 +83,14 @@ public class OrderServiceImpl implements org.masonord.delivery.service.interface
                     .setCustomer(currCustomer)
                     .setRestaurant(restaurant)
                     .setCost(cost);
-            return OrderMapper.toOrderDto(orderDao.createOrder(newOrder));
+            return OrderMapper.toOrderDto(orderRep.createOrder(newOrder));
         }
         throw exception(ModelType.RESTAURANT, ExceptionType.ENTITY_NOT_FOUND, restaurantName);
     }
     @Override
     public List<OrderDto> getOrders(OffsetBasedPageRequest offsetBasedPageRequest) {
         List<OrderDto> orders = new LinkedList<>();
-        List<Order> orderEntity = orderDao.getOrders(offsetBasedPageRequest.getOffset(), offsetBasedPageRequest.getPageSize());
+        List<Order> orderEntity = orderRep.getOrders(offsetBasedPageRequest.getOffset(), offsetBasedPageRequest.getPageSize());
         for (Order o : orderEntity)
             orders.add(OrderMapper.toOrderDto(o));
 
@@ -101,8 +101,8 @@ public class OrderServiceImpl implements org.masonord.delivery.service.interface
 
     @Override
     public CompletedOrderDto completeOrder(OrderCompleteRequest orderCompleteRequest) {
-        User courier = userDao.findUserByEmail(orderCompleteRequest.getCourierEmail());
-        Order order = orderDao.getOrder(orderCompleteRequest.getOrderId());
+        User courier = userRep.findUserByEmail(orderCompleteRequest.getCourierEmail());
+        Order order = orderRep.getOrder(orderCompleteRequest.getOrderId());
         IdUtils idUtils = new IdUtils();
 
         if (idUtils.validateUuid(orderCompleteRequest.getOrderId())) {
@@ -116,9 +116,9 @@ public class OrderServiceImpl implements org.masonord.delivery.service.interface
                                 .setCost(order.getCost())
                                 .setCompletedTime(DateUtils.todayToStr());
 
-                        orderDao.deleteOrder(orderDao.getOrder(orderCompleteRequest.getOrderId()));
+                        orderRep.deleteOrder(orderRep.getOrder(orderCompleteRequest.getOrderId()));
 
-                        return CompletedOrderMapper.toCompletedOrderDto(completedOrderDao.addOrder(completedOrder));
+                        return CompletedOrderMapper.toCompletedOrderDto(completedOrderRep.addOrder(completedOrder));
                     }
                     throw exception(ModelType.COURIER, ExceptionType.CONFLICT_EXCEPTION, orderCompleteRequest.getOrderId());
                 }
@@ -131,13 +131,13 @@ public class OrderServiceImpl implements org.masonord.delivery.service.interface
 
     @Override
     public OrderDto updateOrderProfile(Order order) {
-        return OrderMapper.toOrderDto(orderDao.updateOrderProfile(order));
+        return OrderMapper.toOrderDto(orderRep.updateOrderProfile(order));
     }
 
     @Override
     public String deleteOrder(String orderId) {
-        Order order = orderDao.getOrder(orderId);
-        orderDao.deleteOrder(order);
+        Order order = orderRep.getOrder(orderId);
+        orderRep.deleteOrder(order);
         return "Successfully destroyed";
     }
 

@@ -1,7 +1,7 @@
 package org.masonord.delivery.service.classes;
 
 import org.masonord.delivery.dto.model.DishDto;
-import org.masonord.delivery.repository.dao.DishDao;
+import org.masonord.delivery.repository.DishRep;
 import org.masonord.delivery.service.interfaces.DishService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,7 +12,7 @@ import java.util.List;
 public class DishServiceImpl implements DishService {
 
     @Autowired
-    DishDao dishDao;
+    DishRep dishRep;
 
     @Override
     public DishDto addNewDish(DishDto dishDto) {

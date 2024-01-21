@@ -1,8 +1,8 @@
-package org.masonord.delivery.repository.interfaces;
+package org.masonord.delivery.repository;
 
 import org.masonord.delivery.model.Location;
 
-public interface LocationDaoInterface {
+public interface LocationRep {
 
     Location addNewPlace(Location location);
 

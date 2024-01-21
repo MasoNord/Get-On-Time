@@ -1,7 +1,6 @@
 package org.masonord.delivery.service.classes;
 
 import org.masonord.delivery.dto.mapper.RestaurantMapper;
-import org.masonord.delivery.dto.mapper.UserMapper;
 import org.masonord.delivery.dto.model.DishDto;
 import org.masonord.delivery.dto.model.MenuDto;
 import org.masonord.delivery.dto.model.OrderDto;
@@ -15,17 +14,16 @@ import org.masonord.delivery.model.order.Order;
 import org.masonord.delivery.model.restarurant.Dish;
 import org.masonord.delivery.model.restarurant.Menu;
 import org.masonord.delivery.model.restarurant.Restaurant;
-import org.masonord.delivery.repository.dao.*;
+import org.masonord.delivery.repository.*;
+import org.masonord.delivery.repository.hibernate.*;
 import org.masonord.delivery.service.interfaces.LocationService;
 import org.masonord.delivery.service.interfaces.RestaurantService;
-import org.masonord.delivery.service.interfaces.UserService;
 import org.masonord.delivery.util.DateUtils;
 import org.masonord.delivery.util.IdUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.beans.PropertyEditorSupport;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -39,40 +37,40 @@ public class RestaurantServiceImpl implements RestaurantService {
     LocationService locationService;
 
     @Autowired
-    UserDao userDao;
+    UserRep userRep;
 
     @Autowired
-    OrderDao orderDao;
+    OrderRep orderRep;
 
     @Autowired
-    MenuDao menuDao;
+    MenuRep menuRep;
 
     @Autowired
-    DishDao dishDao;
+    DishRep dishRep;
 
     @Autowired
-    RestaurantDao restaurantDao;
+    RestaurantRep restaurantRep;
 
     @Override
     public RestaurantDto addNewRestaurant(RestaurantDto restaurantDto, String email) {
         Location location = locationService.addNewPlaceByName(restaurantDto.getLocation());
 
-        if (restaurantDao.getRestaurant(restaurantDto.getName()) == null) {
+        if (restaurantRep.getRestaurant(restaurantDto.getName()) == null) {
 
             Restaurant restaurant = new Restaurant()
                     .setLocation(location)
                     .setName(restaurantDto.getName())
-                    .setUser(userDao.findUserByEmail(email)) // change the method parameters from user's email to the actual user
+                    .setUser(userRep.findUserByEmail(email)) // change the method parameters from user's email to the actual user
                     .setOrders(new HashSet<>())
                     .setReviews(new HashSet<>());
 
 
             Set<Menu> menus = new HashSet<>();
-            restaurantDao.createRestaurant(restaurant);
+            restaurantRep.createRestaurant(restaurant);
             for (MenuDto menu : restaurantDto.getMenus()) {
                 IdUtils idUtils = new IdUtils();
 
-                if (menuDao.getMenuByName(menu.getName()) == null) {
+                if (menuRep.getMenuByName(menu.getName()) == null) {
                     Menu newMenu = new Menu()
                             .setId(idUtils.generateUuid())
                             .setRestaurant(restaurant)
@@ -84,11 +82,11 @@ public class RestaurantServiceImpl implements RestaurantService {
                             .setReviews(new HashSet<>());
 
 
-                    menuDao.addNewManu(newMenu);
+                    menuRep.addNewManu(newMenu);
                     Set<Dish> menuDishes = new HashSet<>();
                     for (DishDto dish : menu.getDishes()) {
                         idUtils = new IdUtils();
-                        Dish exist = dishDao.getDishByName(dish.getName());
+                        Dish exist = dishRep.getDishByName(dish.getName());
 
                         if (exist == null) {
                             Dish newDish = new Dish()
@@ -98,19 +96,19 @@ public class RestaurantServiceImpl implements RestaurantService {
                                     .setDescription(dish.getDescription())
                                     .setId(idUtils.generateUuid())
                                     .setReviews(new HashSet<>());
-                            dishDao.createDish(newDish);
+                            dishRep.createDish(newDish);
                             menuDishes.add(newDish);
                         }
                             // add warn logging, the dish is already exists in the chosen menu
                     }
                     newMenu.setDishes(menuDishes);
                     menus.add(newMenu);
-                    menuDao.updateMenu(newMenu);
+                    menuRep.updateMenu(newMenu);
                 }
                 // logg warn, the menu is already exists;
             }
             restaurant.setMenus(menus);
-            return RestaurantMapper.toRestaurantDto(restaurantDao.updateRestaurant(restaurant));
+            return RestaurantMapper.toRestaurantDto(restaurantRep.updateRestaurant(restaurant));
         }
         throw exception(ModelType.RESTAURANT, ExceptionType.DUPLICATE_ENTITY, email);
     }
@@ -122,7 +120,7 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     public List<RestaurantDto> getAllRestaurants() {
-        List<Restaurant> restaurants = restaurantDao.getAllRestaurants();
+        List<Restaurant> restaurants = restaurantRep.getAllRestaurants();
 
         return new ArrayList<>(restaurants
                 .stream()
@@ -133,7 +131,7 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     public List<OrderDto> getAllOrders(String restaurantName) {
-        Restaurant restaurant = restaurantDao.getRestaurant(restaurantName);
+        Restaurant restaurant = restaurantRep.getRestaurant(restaurantName);
         if (restaurant != null) {
             return new ArrayList<>(restaurant.getOrders()
                     .stream()
@@ -146,14 +144,14 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     public String changeOrderStatus(String orderId, String restaurantName, OrderStatusType status) {
-        Restaurant restaurant = restaurantDao.getRestaurant(restaurantName);
+        Restaurant restaurant = restaurantRep.getRestaurant(restaurantName);
         IdUtils idUtils = new IdUtils();
         if (restaurant != null) {
             if (idUtils.validateUuid(orderId)) {
-                Order order = orderDao.getOrder(orderId);
+                Order order = orderRep.getOrder(orderId);
                 if (order != null) {
                     order.setOrderStatusType(status);
-                    orderDao.updateOrderProfile(order);
+                    orderRep.updateOrderProfile(order);
                     return "Order has been updated successfully";
                 }
                 throw exception(ModelType.ORDER, ExceptionType.ENTITY_NOT_FOUND, orderId);

@@ -1,8 +1,7 @@
-package org.masonord.delivery.repository.dao;
+package org.masonord.delivery.repository.hibernate;
 
 import org.masonord.delivery.model.User;
-import org.masonord.delivery.repository.AbstractHibernateDao;
-import org.masonord.delivery.repository.interfaces.UserDaoInterface;
+import org.masonord.delivery.repository.UserRep;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,9 +10,9 @@ import java.util.List;
 
 @Repository
 @Transactional
-public class UserDao extends AbstractHibernateDao<User> implements UserDaoInterface {
+public class HibernateUserRep extends AbstractHibernateRep<User> implements UserRep {
     @Autowired
-    public UserDao() {
+    public HibernateUserRep() {
         setClass(User.class);
     }
 

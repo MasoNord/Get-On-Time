@@ -1,11 +1,10 @@
-package org.masonord.delivery.repository.interfaces;
+package org.masonord.delivery.repository;
 
 import org.masonord.delivery.model.restarurant.Restaurant;
-import org.masonord.delivery.service.interfaces.RestaurantService;
 
 import java.util.List;
 
-public interface RestaurantDaoInterface {
+public interface RestaurantRep {
 
     Restaurant createRestaurant(Restaurant restaurant);
 

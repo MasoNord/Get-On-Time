@@ -1,10 +1,10 @@
-package org.masonord.delivery.repository.interfaces;
+package org.masonord.delivery.repository;
 
 import org.masonord.delivery.model.restarurant.Dish;
 
 import java.util.List;
 
-public interface DishDaoInterface {
+public interface DishRep {
 
     Dish createDish(Dish dish);
 

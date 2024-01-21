@@ -1,9 +1,8 @@
-package org.masonord.delivery.repository.dao;
+package org.masonord.delivery.repository.hibernate;
 
 import jakarta.transaction.Transactional;
 import org.masonord.delivery.model.restarurant.Dish;
-import org.masonord.delivery.repository.AbstractHibernateDao;
-import org.masonord.delivery.repository.interfaces.DishDaoInterface;
+import org.masonord.delivery.repository.DishRep;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -11,10 +10,10 @@ import java.util.List;
 
 @Repository
 @Transactional
-public class DishDao extends AbstractHibernateDao<Dish> implements DishDaoInterface {
+public class HibernateDishRep extends AbstractHibernateRep<Dish> implements DishRep {
 
     @Autowired
-    public DishDao() {setClass(Dish.class);}
+    public HibernateDishRep() {setClass(Dish.class);}
 
     @Override
     public Dish createDish(Dish dish) {

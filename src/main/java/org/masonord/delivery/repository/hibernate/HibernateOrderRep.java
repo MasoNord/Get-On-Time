@@ -1,16 +1,15 @@
-package org.masonord.delivery.repository.dao;
+package org.masonord.delivery.repository.hibernate;
 
 import org.masonord.delivery.model.order.Order;
-import org.masonord.delivery.repository.AbstractHibernateDao;
-import org.masonord.delivery.repository.interfaces.OrderDaoInterface;
+import org.masonord.delivery.repository.OrderRep;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 @Repository
 @Transactional
-public class OrderDao extends AbstractHibernateDao<Order> implements OrderDaoInterface {
-    public OrderDao() {
+public class HibernateOrderRep extends AbstractHibernateRep<Order> implements OrderRep {
+    public HibernateOrderRep() {
         setClass(Order.class);
     }
 

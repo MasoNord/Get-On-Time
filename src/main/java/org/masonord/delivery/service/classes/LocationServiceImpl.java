@@ -1,6 +1,5 @@
 package org.masonord.delivery.service.classes;
 
-import org.masonord.delivery.config.HibernateConfig;
 import org.masonord.delivery.config.PropertiesConfig;
 import org.masonord.delivery.dto.model.GeoCodingDto;
 import org.masonord.delivery.dto.model.LocationDto;
@@ -8,7 +7,7 @@ import org.masonord.delivery.enums.ExceptionType;
 import org.masonord.delivery.enums.ModelType;
 import org.masonord.delivery.exception.ExceptionHandler;
 import org.masonord.delivery.model.Location;
-import org.masonord.delivery.repository.dao.LocationDao;
+import org.masonord.delivery.repository.LocationRep;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +21,7 @@ public class LocationServiceImpl implements org.masonord.delivery.service.interf
     }
 
     @Autowired
-    LocationDao locationDao;
+    LocationRep locationRep;
 
     @Autowired
     GeoCodingApiServiceImpl geoCodingApiService;
@@ -43,7 +42,7 @@ public class LocationServiceImpl implements org.masonord.delivery.service.interf
                     .setZipCode(locationDto.getZipCode())
                     .setNumber(locationDto.getNumber())
                     .setCity(locationDto.getCity());
-            return locationDao.addNewPlace(location);
+            return locationRep.addNewPlace(location);
         }
 
         throw exception(ModelType.LOCATION, ExceptionType.ENTITY_NOT_FOUND, address);

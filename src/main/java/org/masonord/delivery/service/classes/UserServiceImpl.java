@@ -7,7 +7,7 @@ import org.masonord.delivery.dto.model.UserDto;
 import org.masonord.delivery.enums.*;
 import org.masonord.delivery.exception.ExceptionHandler;
 import org.masonord.delivery.model.User;
-import org.masonord.delivery.repository.dao.UserDao;
+import org.masonord.delivery.repository.UserRep;
 import org.masonord.delivery.util.DateUtils;
 import org.masonord.delivery.util.FakeDataUtil;
 import org.masonord.delivery.util.IdUtils;
@@ -24,7 +24,7 @@ import java.util.*;
 public class UserServiceImpl implements org.masonord.delivery.service.interfaces.UserService, UserDetailsService {
 
     @Autowired
-    private UserDao userDao;
+    private UserRep userRep;
 
     @Autowired
     private ExceptionHandler exceptionHandler;
@@ -45,7 +45,7 @@ public class UserServiceImpl implements org.masonord.delivery.service.interfaces
 
     @Override
     public UserDto signup(UserDto userDto) {
-        User user = userDao.findUserByEmail(userDto.getEmail());
+        User user = userRep.findUserByEmail(userDto.getEmail());
 
         if (user == null) {
             if (Objects.equals(userDto.getRole().toString(), "COURIER")) {
@@ -73,7 +73,7 @@ public class UserServiceImpl implements org.masonord.delivery.service.interfaces
                         .setDc(DateUtils.todayToStr())
                         .setDu(DateUtils.todayToStr());
             }
-            return UserMapper.toUserDto(userDao.creatUser(user));
+            return UserMapper.toUserDto(userRep.creatUser(user));
         }
         throw exception(ModelType.USER, ExceptionType.DUPLICATE_ENTITY, userDto.getEmail());
     }
@@ -81,7 +81,7 @@ public class UserServiceImpl implements org.masonord.delivery.service.interfaces
     @Override
     public UserDetails loadUserByUsername(String email) {
 
-        User user = userDao.findUserByEmail(email);
+        User user = userRep.findUserByEmail(email);
 
         if (user != null) {
             Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
@@ -95,7 +95,7 @@ public class UserServiceImpl implements org.masonord.delivery.service.interfaces
 
     @Override
     public UserDto findUserByEmail(String email) {
-        User user = userDao.findUserByEmail(email);
+        User user = userRep.findUserByEmail(email);
         if (user != null) {
             return UserMapper.toUserDto(user);
         }
@@ -106,7 +106,7 @@ public class UserServiceImpl implements org.masonord.delivery.service.interfaces
     @Override
     public List<UserDto> getUsers(OffsetBasedPageRequest offsetBasedPageRequest) {
         List<UserDto> users = new LinkedList<>();
-        List<User> userEntity = userDao.getAllUsers(offsetBasedPageRequest.getOffset(), offsetBasedPageRequest.getPageSize());
+        List<User> userEntity = userRep.getAllUsers(offsetBasedPageRequest.getOffset(), offsetBasedPageRequest.getPageSize());
         for (int i = 0; i < userEntity.size(); i++) {
             users.add(UserMapper.toUserDto(userEntity.get(i)));
         }
@@ -115,14 +115,14 @@ public class UserServiceImpl implements org.masonord.delivery.service.interfaces
 
     @Override
     public UserDto changePassword(String email, String oldPassword, String newPassword) {
-        User user = userDao.findUserByEmail(email);
+        User user = userRep.findUserByEmail(email);
 
         if (user != null) {
             if (!bCryptPasswordEncoder.matches(oldPassword, user.getPassword())) {
                 throw exception(ModelType.USER, ExceptionType.WRONG_PASSWORD, "passwords are not match");
             }else {
                 user.setPassword(newPassword);
-                return UserMapper.toUserDto(userDao.updateUserProfile(user));
+                return UserMapper.toUserDto(userRep.updateUserProfile(user));
             }
         }
 
@@ -131,14 +131,14 @@ public class UserServiceImpl implements org.masonord.delivery.service.interfaces
 
     @Override
     public UserDto updateProfile(String email, UserDto newUserProfile) {
-        User user = userDao.findUserByEmail(email);
+        User user = userRep.findUserByEmail(email);
 
         if (user != null) {
             user
                     .setLastName(newUserProfile.getLastName())
                     .setFirstName(newUserProfile.getFirstName())
                     .setEmail(newUserProfile.getEmail());
-            return UserMapper.toUserDto(userDao.updateUserProfile(user));
+            return UserMapper.toUserDto(userRep.updateUserProfile(user));
         }
 
         throw exception(ModelType.USER, ExceptionType.ENTITY_NOT_FOUND, email);

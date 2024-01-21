@@ -1,10 +1,10 @@
-package org.masonord.delivery.repository.interfaces;
+package org.masonord.delivery.repository;
 
 import org.masonord.delivery.model.restarurant.Menu;
 
 import java.util.List;
 
-public interface MenuDaoInterface {
+public interface MenuRep {
 
     Menu addNewManu(Menu menu);
 

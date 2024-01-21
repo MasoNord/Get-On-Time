@@ -1,17 +1,16 @@
-package org.masonord.delivery.repository.dao;
+package org.masonord.delivery.repository.hibernate;
 
 import jakarta.transaction.Transactional;
 import org.masonord.delivery.model.restarurant.Menu;
-import org.masonord.delivery.repository.AbstractHibernateDao;
-import org.masonord.delivery.repository.interfaces.MenuDaoInterface;
+import org.masonord.delivery.repository.MenuRep;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
 @Transactional
-public class MenuDao extends AbstractHibernateDao<Menu> implements MenuDaoInterface {
+public class HibernateMenuRep extends AbstractHibernateRep<Menu> implements MenuRep {
 
-    public MenuDao() {setClass(Menu.class);}
+    public HibernateMenuRep() {setClass(Menu.class);}
 
     @Override
     public Menu addNewManu(Menu menu) {

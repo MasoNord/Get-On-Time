@@ -1,9 +1,9 @@
-package org.masonord.delivery.repository.interfaces;
+package org.masonord.delivery.repository;
 
 import org.masonord.delivery.model.order.Order;
 import java.util.List;
 
-public interface OrderDaoInterface {
+public interface OrderRep {
     Order createOrder(Order order);
 
     List<Order> getOrders();
