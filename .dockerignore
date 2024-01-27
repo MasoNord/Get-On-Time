@@ -1,0 +1,7 @@
+frontend
+.gitignore
+.git
+README.md
+*.iml
+.idea
+Dockerfile

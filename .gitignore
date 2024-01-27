@@ -24,7 +24,7 @@ out
 .env
 /src/main/resources/database.properties
 /src/main/resources/security.properties
-
+/src/main/resources/application.properties
 
 ### NetBeans ###
 /nbproject/private/

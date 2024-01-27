@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: QwV_16T!+703
+      POSTGRES_DB: delivery-app
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    restart: on-failure
+    ports:
+      - "8099:8099"
+    depends_on:
+      - postgres
+    environment:
+      SPRING_APPLICATION_JSON: '{
+        "jdbc.driverClassName": "org.postgresql.Driver",
+        "jdbc.url": "jdbc:postgresql://postgres:5432/delivery-app",
+        "jdbc.username": "postgres",
+        "jdbc.password": "QwV_16T!+703",
+        "hibernate.dialect": "org.hibernate.dialect.PostgreSQLDialect",
+        "hibernate.show_sql": "true",
+        "hibernate.format_sql": "true",
+        "hibernate.hbm2ddl.auto": "update",
+        "hibernate.max.depth": "1"
+      }'
+    stdin_open: true
+    tty: true
+volumes:
+  postgres-data: {}
