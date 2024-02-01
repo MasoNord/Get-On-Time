@@ -4,7 +4,7 @@ import org.masonord.delivery.model.restarurant.Dish;
 
 import java.util.List;
 
-public interface DishRep {
+public interface DishRepository {
 
     Dish createDish(Dish dish);
 

@@ -1,15 +1,15 @@
 package org.masonord.delivery.repository.hibernate;
 
 import org.masonord.delivery.model.order.Order;
-import org.masonord.delivery.repository.OrderRep;
+import org.masonord.delivery.repository.OrderRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 @Repository
 @Transactional
-public class HibernateOrderRep extends AbstractHibernateRep<Order> implements OrderRep {
-    public HibernateOrderRep() {
+public class HibernateOrderRepository extends AbstractHibernateRep<Order> implements OrderRepository {
+    public HibernateOrderRepository() {
         setClass(Order.class);
     }
 

@@ -1,15 +1,15 @@
 package org.masonord.delivery.repository.hibernate;
 
 import org.masonord.delivery.model.CompletedOrder;
-import org.masonord.delivery.repository.CompletedOrderRep;
+import org.masonord.delivery.repository.CompletedOrderRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Repository
 @Transactional
-public class HibernateCompleteOrderRep extends AbstractHibernateRep<CompletedOrder> implements CompletedOrderRep {
-    public HibernateCompleteOrderRep() {
+public class HibernateCompleteOrderRepository extends AbstractHibernateRep<CompletedOrder> implements CompletedOrderRepository {
+    public HibernateCompleteOrderRepository() {
         setClass(CompletedOrder.class);
     }
     @Override

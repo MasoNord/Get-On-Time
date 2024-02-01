@@ -7,7 +7,7 @@ import org.masonord.delivery.enums.ExceptionType;
 import org.masonord.delivery.enums.ModelType;
 import org.masonord.delivery.exception.ExceptionHandler;
 import org.masonord.delivery.model.Location;
-import org.masonord.delivery.repository.LocationRep;
+import org.masonord.delivery.repository.LocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +21,7 @@ public class LocationServiceImpl implements org.masonord.delivery.service.interf
     }
 
     @Autowired
-    LocationRep locationRep;
+    LocationRepository locationRepository;
 
     @Autowired
     GeoCodingApiServiceImpl geoCodingApiService;
@@ -42,7 +42,7 @@ public class LocationServiceImpl implements org.masonord.delivery.service.interf
                     .setZipCode(locationDto.getZipCode())
                     .setNumber(locationDto.getNumber())
                     .setCity(locationDto.getCity());
-            return locationRep.addNewPlace(location);
+            return locationRepository.addNewPlace(location);
         }
 
         throw exception(ModelType.LOCATION, ExceptionType.ENTITY_NOT_FOUND, address);

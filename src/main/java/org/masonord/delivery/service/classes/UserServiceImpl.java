@@ -7,10 +7,9 @@ import org.masonord.delivery.dto.model.UserDto;
 import org.masonord.delivery.enums.*;
 import org.masonord.delivery.exception.ExceptionHandler;
 import org.masonord.delivery.model.User;
-import org.masonord.delivery.repository.UserRep;
+import org.masonord.delivery.repository.UserRepository;
 import org.masonord.delivery.util.DateUtils;
 import org.masonord.delivery.util.FakeDataUtil;
-import org.masonord.delivery.util.IdUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,20 +22,32 @@ import java.util.*;
 @AllArgsConstructor
 public class UserServiceImpl implements org.masonord.delivery.service.interfaces.UserService, UserDetailsService {
 
-    @Autowired
-    private UserRep userRep;
+    private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
+    private final FakeDataUtil;
 
     @Autowired
-    private ExceptionHandler exceptionHandler;
+    public UserServiceImpl(UserRepository userRepository,
+                           BCryptPasswordEncoder passwordEncoder,
+                           FakeDataUtil fakeData) {
+        this.userRepository = userRepository;
+    }
+
 
     @Autowired
-    private IdUtils idUtils;
+    private UserRepository userRepository;
 
-    @Autowired
-    private CourierServiceImpl courierService;
-
-    @Autowired
-    private CustomerServiceImpl customerService;
+//    @Autowired
+//    private ExceptionHandler exceptionHandler;
+//
+//    @Autowired
+//    private IdUtils idUtils;
+//
+//    @Autowired
+//    private CourierServiceImpl courierService;
+//
+//    @Autowired
+//    private CustomerServiceImpl customerService;
 
     @Autowired
     private FakeDataUtil fakeData;
@@ -45,7 +56,7 @@ public class UserServiceImpl implements org.masonord.delivery.service.interfaces
 
     @Override
     public UserDto signup(UserDto userDto) {
-        User user = userRep.findUserByEmail(userDto.getEmail());
+        User user = userRepository.findUserByEmail(userDto.getEmail());
 
         if (user == null) {
             if (Objects.equals(userDto.getRole().toString(), "COURIER")) {
@@ -73,7 +84,7 @@ public class UserServiceImpl implements org.masonord.delivery.service.interfaces
                         .setDc(DateUtils.todayToStr())
                         .setDu(DateUtils.todayToStr());
             }
-            return UserMapper.toUserDto(userRep.creatUser(user));
+            return UserMapper.toUserDto(userRepository.creatUser(user));
         }
         throw exception(ModelType.USER, ExceptionType.DUPLICATE_ENTITY, userDto.getEmail());
     }
@@ -81,7 +92,7 @@ public class UserServiceImpl implements org.masonord.delivery.service.interfaces
     @Override
     public UserDetails loadUserByUsername(String email) {
 
-        User user = userRep.findUserByEmail(email);
+        User user = userRepository.findUserByEmail(email);
 
         if (user != null) {
             Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
@@ -95,7 +106,7 @@ public class UserServiceImpl implements org.masonord.delivery.service.interfaces
 
     @Override
     public UserDto findUserByEmail(String email) {
-        User user = userRep.findUserByEmail(email);
+        User user = userRepository.findUserByEmail(email);
         if (user != null) {
             return UserMapper.toUserDto(user);
         }
@@ -106,7 +117,7 @@ public class UserServiceImpl implements org.masonord.delivery.service.interfaces
     @Override
     public List<UserDto> getUsers(OffsetBasedPageRequest offsetBasedPageRequest) {
         List<UserDto> users = new LinkedList<>();
-        List<User> userEntity = userRep.getAllUsers(offsetBasedPageRequest.getOffset(), offsetBasedPageRequest.getPageSize());
+        List<User> userEntity = userRepository.getAllUsers(offsetBasedPageRequest.getOffset(), offsetBasedPageRequest.getPageSize());
         for (int i = 0; i < userEntity.size(); i++) {
             users.add(UserMapper.toUserDto(userEntity.get(i)));
         }
@@ -115,14 +126,14 @@ public class UserServiceImpl implements org.masonord.delivery.service.interfaces
 
     @Override
     public UserDto changePassword(String email, String oldPassword, String newPassword) {
-        User user = userRep.findUserByEmail(email);
+        User user = userRepository.findUserByEmail(email);
 
         if (user != null) {
             if (!bCryptPasswordEncoder.matches(oldPassword, user.getPassword())) {
                 throw exception(ModelType.USER, ExceptionType.WRONG_PASSWORD, "passwords are not match");
             }else {
                 user.setPassword(newPassword);
-                return UserMapper.toUserDto(userRep.updateUserProfile(user));
+                return UserMapper.toUserDto(userRepository.updateUserProfile(user));
             }
         }
 
@@ -131,14 +142,14 @@ public class UserServiceImpl implements org.masonord.delivery.service.interfaces
 
     @Override
     public UserDto updateProfile(String email, UserDto newUserProfile) {
-        User user = userRep.findUserByEmail(email);
+        User user = userRepository.findUserByEmail(email);
 
         if (user != null) {
             user
                     .setLastName(newUserProfile.getLastName())
                     .setFirstName(newUserProfile.getFirstName())
                     .setEmail(newUserProfile.getEmail());
-            return UserMapper.toUserDto(userRep.updateUserProfile(user));
+            return UserMapper.toUserDto(userRepository.updateUserProfile(user));
         }
 
         throw exception(ModelType.USER, ExceptionType.ENTITY_NOT_FOUND, email);

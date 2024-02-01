@@ -79,4 +79,7 @@ public interface CourierService {
 
     CourierMetaInfoDto getMetaInfo(String courierEmail, String startDate, String endDate) throws ParseException;
 
+
+    String acceptOrder(String courierEmail, String orderId);
+
 }

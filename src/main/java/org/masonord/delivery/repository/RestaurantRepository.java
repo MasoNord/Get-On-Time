@@ -4,7 +4,7 @@ import org.masonord.delivery.model.restarurant.Restaurant;
 
 import java.util.List;
 
-public interface RestaurantRep {
+public interface RestaurantRepository {
 
     Restaurant createRestaurant(Restaurant restaurant);
 

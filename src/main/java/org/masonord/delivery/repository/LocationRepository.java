@@ -2,7 +2,7 @@ package org.masonord.delivery.repository;
 
 import org.masonord.delivery.model.Location;
 
-public interface LocationRep {
+public interface LocationRepository {
 
     Location addNewPlace(Location location);
 

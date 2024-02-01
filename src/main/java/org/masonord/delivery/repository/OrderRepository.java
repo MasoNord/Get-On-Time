@@ -3,7 +3,7 @@ package org.masonord.delivery.repository;
 import org.masonord.delivery.model.order.Order;
 import java.util.List;
 
-public interface OrderRep {
+public interface OrderRepository {
     Order createOrder(Order order);
 
     List<Order> getOrders();

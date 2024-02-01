@@ -2,15 +2,15 @@ package org.masonord.delivery.repository.hibernate;
 
 import jakarta.transaction.Transactional;
 import org.masonord.delivery.model.restarurant.Menu;
-import org.masonord.delivery.repository.MenuRep;
+import org.masonord.delivery.repository.MenuRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
 @Transactional
-public class HibernateMenuRep extends AbstractHibernateRep<Menu> implements MenuRep {
+public class HibernateMenuRepository extends AbstractHibernateRep<Menu> implements MenuRepository {
 
-    public HibernateMenuRep() {setClass(Menu.class);}
+    public HibernateMenuRepository() {setClass(Menu.class);}
 
     @Override
     public Menu addNewManu(Menu menu) {

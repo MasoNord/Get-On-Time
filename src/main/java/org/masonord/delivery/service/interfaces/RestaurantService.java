@@ -18,8 +18,6 @@ public interface RestaurantService {
 
     List<OrderDto> getAllOrders(String restaurantName);
 
-    String changeOrderStatus(String orderId, String restaurantName, OrderStatusType status);
-
     List<Restaurant> getMostPopularRestaurants();
 
     Restaurant getRestaurantByName(String name);

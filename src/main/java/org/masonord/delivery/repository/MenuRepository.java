@@ -4,7 +4,7 @@ import org.masonord.delivery.model.restarurant.Menu;
 
 import java.util.List;
 
-public interface MenuRep {
+public interface MenuRepository {
 
     Menu addNewManu(Menu menu);
 

@@ -5,6 +5,7 @@ import org.masonord.delivery.controller.v1.request.OrderCompleteRequest;
 import org.masonord.delivery.dto.model.CompletedOrderDto;
 import org.masonord.delivery.dto.model.LocationDto;
 import org.masonord.delivery.dto.model.OrderDto;
+import org.masonord.delivery.enums.OrderStatusType;
 import org.masonord.delivery.model.order.Order;
 
 import java.util.List;
@@ -37,6 +38,8 @@ public interface OrderService {
 
     List<OrderDto> getOrders(OffsetBasedPageRequest offsetBasedPageRequest);
 
+    List<OrderDto> getClosestOrders(String couriersName);
+
     /**
      * Complete an order when the ride comes to the end
      *
@@ -63,4 +66,7 @@ public interface OrderService {
      */
 
     String deleteOrder(String orderId);
+
+
+    String changeOrderStatus(String orderId, String restaurantName, OrderStatusType status);
 }

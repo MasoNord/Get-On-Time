@@ -15,9 +15,9 @@ import org.masonord.delivery.model.CompletedOrder;
 import org.masonord.delivery.model.Location;
 import org.masonord.delivery.model.User;
 import org.masonord.delivery.model.order.Order;
-import org.masonord.delivery.repository.CompletedOrderRep;
-import org.masonord.delivery.repository.OrderRep;
-import org.masonord.delivery.repository.UserRep;
+import org.masonord.delivery.repository.CompletedOrderRepository;
+import org.masonord.delivery.repository.OrderRepository;
+import org.masonord.delivery.repository.UserRepository;
 import org.masonord.delivery.service.interfaces.LocationService;
 import org.masonord.delivery.util.DateUtils;
 import org.masonord.delivery.util.IdUtils;
@@ -31,23 +31,23 @@ import java.util.*;
 public class CourierServiceImpl implements org.masonord.delivery.service.interfaces.CourierService {
 
     @Autowired
-    private UserRep userRep;
+    private UserRepository userRepository;
 
     @Autowired
     private LocationService locationService;
 
     @Autowired
-    private CompletedOrderRep completedOrderRep;
+    private CompletedOrderRepository completedOrderRepository;
 
     @Autowired
-    private OrderRep orderRep;
+    private OrderRepository orderRepository;
 
     @Autowired
     private IdUtils idUtils;
 
     @Override
     public CourierDto findCourierByEmail(String email) {
-        User courier = userRep.findUserByEmail(email);
+        User courier = userRepository.findUserByEmail(email);
 
         if (courier != null && Objects.equals(courier.getRole(), UserRoles.COURIER)) {
             return CourierMapper.toCourierDto(courier);
@@ -59,7 +59,7 @@ public class CourierServiceImpl implements org.masonord.delivery.service.interfa
     @Override
     public List<CourierDto> getAllCouriers(OffsetBasedPageRequest offsetBasedPageRequest) {
         List<CourierDto> couriers = new LinkedList<>();
-        List<User> couriersEntity = userRep.getAllUsers(offsetBasedPageRequest.getOffset(), offsetBasedPageRequest.getPageSize());
+        List<User> couriersEntity = userRepository.getAllUsers(offsetBasedPageRequest.getOffset(), offsetBasedPageRequest.getPageSize());
 
         for (User c : couriersEntity) {
             if (Objects.equals(c.getRole(), UserRoles.COURIER)) {
@@ -72,12 +72,12 @@ public class CourierServiceImpl implements org.masonord.delivery.service.interfa
 
     @Override
     public String updateCurrentLocation(LocationDto locationDto, String email) {
-       User courier = userRep.findUserByEmail(email);
+       User courier = userRepository.findUserByEmail(email);
 
        if (courier != null && Objects.equals(courier.getRole(), UserRoles.COURIER)) {
             Location location = locationService.addNewPlaceByName(locationDto);
             courier.setLocation(location);
-            userRep.updateUserProfile(courier);
+            userRepository.updateUserProfile(courier);
 
             return "The location has been successfully updated";
        }
@@ -88,8 +88,8 @@ public class CourierServiceImpl implements org.masonord.delivery.service.interfa
 
     @Override
     public CourierDto setNewOrder(String orderId, String email) {
-        Order order = orderRep.getOrder(orderId);
-        User courier = userRep.findUserByEmail(email);
+        Order order = orderRepository.getOrder(orderId);
+        User courier = userRepository.findUserByEmail(email);
         if (idUtils.validateUuid(orderId)) {
             if (order != null) {
                 if (courier != null && Objects.equals(courier.getRole(), UserRoles.COURIER)) {
@@ -98,10 +98,10 @@ public class CourierServiceImpl implements org.masonord.delivery.service.interfa
 
                         order.setCourier(courier);
                         orders.add(order);
-                        orderRep.updateOrderProfile(order);
+                        orderRepository.updateOrderProfile(order);
 
                         courier.setOrders(orders);
-                        return CourierMapper.toCourierDto(userRep.updateUserProfile(courier));
+                        return CourierMapper.toCourierDto(userRepository.updateUserProfile(courier));
                     }
                     throw exception(ModelType.ORDER, ExceptionType.CONFLICT_EXCEPTION, orderId);
                 }
@@ -118,10 +118,10 @@ public class CourierServiceImpl implements org.masonord.delivery.service.interfa
 
     @Override
     public CourierMetaInfoDto getMetaInfo(String courierEmail, String startDate, String endDate) throws ParseException {
-        User courier = userRep.findUserByEmail(courierEmail);
+        User courier = userRepository.findUserByEmail(courierEmail);
 
         if (courier != null) {
-            List<CompletedOrder> completedOrders = completedOrderRep.getCompletedOrders();
+            List<CompletedOrder> completedOrders = completedOrderRepository.getCompletedOrders();
             int criteria = (CourierCriteriaType.valueOf(courier.getTransport().getValue().toUpperCase()).getValue());
             int countCompletedOrders = 0;
             float rating = 0.0f, earnings = 0.0f;
@@ -143,6 +143,11 @@ public class CourierServiceImpl implements org.masonord.delivery.service.interfa
         }
 
         throw  exception(ModelType.COURIER, ExceptionType.ENTITY_NOT_FOUND, courierEmail);
+    }
+
+    @Override
+    public String acceptOrder(String courierEmail, String orderId) {
+        return null;
     }
 
     @Override

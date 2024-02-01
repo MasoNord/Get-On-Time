@@ -3,7 +3,7 @@ package org.masonord.delivery.repository;
 import org.masonord.delivery.model.User;
 import java.util.List;
 
-public interface UserRep {
+public interface UserRepository {
     User creatUser(User user);
 
     User findUserByEmail(String email);
