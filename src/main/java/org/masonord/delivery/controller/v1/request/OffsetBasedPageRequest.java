@@ -3,11 +3,17 @@ package org.masonord.delivery.controller.v1.request;
 import lombok.Getter;
 import org.masonord.delivery.enums.ExceptionType;
 import org.masonord.delivery.exception.ExceptionHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 
+@Getter
 public class OffsetBasedPageRequest {
+    @Autowired
+    ExceptionHandler exceptionHandler;
+
     private int limit;
-    @Getter
     private int offset;
+
+
 
     public OffsetBasedPageRequest(int offset, int limit)  {
         if (limit < 0) {
@@ -51,7 +57,7 @@ public class OffsetBasedPageRequest {
     }
 
     public RuntimeException exception(String model, ExceptionType exceptionType, String ...args) {
-        return ExceptionHandler.throwException(model, exceptionType, args);
+        return exceptionHandler.throwException(model, exceptionType, args);
     }
 
 }

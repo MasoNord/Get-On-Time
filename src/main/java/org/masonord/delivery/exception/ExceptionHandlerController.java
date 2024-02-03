@@ -1,6 +1,8 @@
-package org.masonord.delivery.exceptionPimsleur;
+package org.masonord.delivery.exception;
 
 import org.masonord.delivery.dto.response.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +13,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @RestControllerAdvice
 public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExceptionHandlerController.class);
     @ExceptionHandler(org.masonord.delivery.exception.ExceptionHandler.EntityNotFoundException.class)
     public final ResponseEntity handledNotFoundExceptions(Exception exception, WebRequest request) {
         Response response = Response.notFoundException();

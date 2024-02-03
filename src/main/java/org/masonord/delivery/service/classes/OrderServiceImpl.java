@@ -45,6 +45,9 @@ public class OrderServiceImpl implements org.masonord.delivery.service.interface
     @Autowired
     OrderItemRepository orderItemRepository;
 
+    @Autowired
+    ExceptionHandler exceptionHandler;
+
 
     @Override
     public OrderDto getOrderById(String id) {
@@ -188,7 +191,7 @@ public class OrderServiceImpl implements org.masonord.delivery.service.interface
     }
 
     private RuntimeException exception(ModelType entity, ExceptionType exception, String ...args) {
-        return ExceptionHandler.throwException(entity, exception, args);
+        return exceptionHandler.throwException(entity, exception, args);
     }
 
     private boolean hasOrder(Set<Order> orders, Order order){

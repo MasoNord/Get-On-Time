@@ -4,6 +4,9 @@ import org.masonord.delivery.config.PropertiesConfig;
 import org.masonord.delivery.enums.ModelType;
 import org.masonord.delivery.enums.ExceptionType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties;
+import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.text.MessageFormat;
@@ -11,34 +14,39 @@ import java.util.Optional;
 
 @Component
 public class ExceptionHandler {
-
-    private static PropertiesConfig propertiesConfig;
+    private static Environment env;
 
     @Autowired
-    public ExceptionHandler(PropertiesConfig propertiesConfig) {
-        ExceptionHandler.propertiesConfig = propertiesConfig;
+    public ExceptionHandler(Environment env) {
+        this.env = env;
     }
 
-    public static RuntimeException throwException(String message, String... args) {
-        return new RuntimeException(format(message, args));
-    }
-
-    public static RuntimeException throwException(ModelType modelType, ExceptionType exceptionType, String ...args) {
+    public RuntimeException throwExceptionNonStatic(ModelType modelType, ExceptionType exceptionType, String ...args) {
         String message = getMessage(modelType, exceptionType);
         return throwException(exceptionType, message, args);
     }
 
-    public static RuntimeException throwException(String model, ExceptionType exceptionType, String ...args) {
+    public RuntimeException throwException(String message, String... args) {
+        return new RuntimeException(format(message, args));
+    }
+
+    public RuntimeException throwException(ModelType modelType, ExceptionType exceptionType, String ...args) {
+        String message = getMessage(modelType, exceptionType);
+        return throwException(exceptionType, message, args);
+    }
+
+    public RuntimeException throwException(String model, ExceptionType exceptionType, String ...args) {
         String message = getMessage(model, exceptionType);
         return throwException(exceptionType, message, args);
     }
 
-    public static RuntimeException throwException(ModelType modelType, ExceptionType exceptionType, String id, String ...args) {
+    public RuntimeException throwException(ModelType modelType, ExceptionType exceptionType, String id, String ...args) {
         String message = getMessage(modelType, exceptionType).concat(".").concat(id);
         return throwException(exceptionType, message, args);
     }
 
-    private static RuntimeException throwException(ExceptionType exceptionType, String message, String ...args) {
+    // TODO: refactoring strictly necessary
+    private RuntimeException throwException(ExceptionType exceptionType, String message, String ...args) {
         if (ExceptionType.ENTITY_NOT_FOUND.equals(exceptionType)) {
             return new EntityNotFoundException(format(message, args));
         }else if(ExceptionType.DUPLICATE_ENTITY.equals(exceptionType)) {
@@ -53,58 +61,64 @@ public class ExceptionHandler {
             return new ConflictException(format(message, args));
         }else if (ExceptionType.ENTITY_EXCEPTION.equals(exceptionType)) {
             return new Exception(format(message, args));
+        }else if (ExceptionType.LOCATION_NOT_SET.equals(exceptionType)) {
+            return new LocationNotSetException(format(message, args));
         }
         return new RuntimeException(format(message, args));
     }
 
-    private static String format(String message, String ...args) {
-        Optional<String> content = Optional.ofNullable(propertiesConfig.getConfigValue(message));
+    private String format(String message, String ...args) {
+        Optional<String> content = Optional.ofNullable(env.getProperty(message));
         return content.map(s -> MessageFormat.format(s, (Object[]) args)).orElseGet(() -> String.format(message, (Object[]) args));
     }
 
-    private static String getMessage(ModelType modelType, ExceptionType exceptionType) {
+    private String getMessage(ModelType modelType, ExceptionType exceptionType) {
         return modelType.name().concat(".").concat(exceptionType.getValue()).toLowerCase();
     }
 
-    private  static String getMessage(String model, ExceptionType exceptionType) {
+    private String getMessage(String model, ExceptionType exceptionType) {
         return model.concat(".").concat(exceptionType.getValue()).toLowerCase();
     }
 
-    public static class EntityNotFoundException extends RuntimeException {
+    public class EntityNotFoundException extends RuntimeException {
         public EntityNotFoundException(String message) {
             super(message);
         }
     }
 
-    public static class DuplicateEntityException extends RuntimeException {
+    public class DuplicateEntityException extends RuntimeException {
         public DuplicateEntityException(String message) {
             super(message);
         }
     }
 
-    public static class NotUuidFormatException extends RuntimeException {
+    public  class NotUuidFormatException extends RuntimeException {
         public NotUuidFormatException(String message) {
             super(message);
         }
     }
 
-    public static class WrongPasswordException extends RuntimeException {
+    public  class WrongPasswordException extends RuntimeException {
         public WrongPasswordException(String message) {
             super(message);
         }
     }
 
-    public static class RangeNotSatisfiableException extends RuntimeException {
+    public  class RangeNotSatisfiableException extends RuntimeException {
         public RangeNotSatisfiableException(String message) {super(message);}
     }
 
-    public static class ConflictException extends RuntimeException {
+    public  class ConflictException extends RuntimeException {
         public ConflictException(String message)  {
             super(message);
         }
     }
 
-    public static class Exception extends RuntimeException {
+    public  class LocationNotSetException extends RuntimeException {
+        public LocationNotSetException(String message) {super(message);}
+    }
+
+    public  class Exception extends RuntimeException {
         public Exception(String message) {super(message);}
     }
 

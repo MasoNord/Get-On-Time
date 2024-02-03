@@ -45,6 +45,9 @@ public class CourierServiceImpl implements org.masonord.delivery.service.interfa
     @Autowired
     private IdUtils idUtils;
 
+    @Autowired
+    private ExceptionHandler exceptionHandler;
+
     @Override
     public CourierDto findCourierByEmail(String email) {
         User courier = userRepository.findUserByEmail(email);
@@ -156,6 +159,6 @@ public class CourierServiceImpl implements org.masonord.delivery.service.interfa
     }
 
     private RuntimeException exception(ModelType entity, ExceptionType exception, String ...args) {
-        return ExceptionHandler.throwException(entity, exception, args);
+        return exceptionHandler.throwException(entity, exception, args);
     }
 }

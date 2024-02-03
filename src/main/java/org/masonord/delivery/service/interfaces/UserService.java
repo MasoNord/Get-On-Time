@@ -51,11 +51,11 @@ public interface UserService {
 
     List<UserDto> getUsers(OffsetBasedPageRequest offsetBasedPageRequest);
 
-    /**
-     * Create random users
-     *
-     * @param count - define how many users will be created
-     */
-
-    void createDummyUsers(int count);
+//    /**
+//     * Create random users
+//     *
+//     * @param count - define how many users will be created
+//     */
+//
+//    void createDummyUsers(int count);
 }

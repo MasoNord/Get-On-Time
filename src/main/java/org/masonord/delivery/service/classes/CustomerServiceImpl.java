@@ -25,6 +25,9 @@ public class CustomerServiceImpl implements org.masonord.delivery.service.interf
     @Autowired
     LocationServiceImpl locationService;
 
+    @Autowired
+    ExceptionHandler exceptionHandler;
+
     @Override
     public CustomerDto findCustomerByEmail(String email) {
         User customer = userRepository.findUserByEmail(email);
@@ -71,6 +74,6 @@ public class CustomerServiceImpl implements org.masonord.delivery.service.interf
     }
 
     private RuntimeException exception(ModelType entity, ExceptionType exception, String ...args) {
-        return ExceptionHandler.throwException(entity, exception, args);
+        return exceptionHandler.throwException(entity, exception, args);
     }
 }

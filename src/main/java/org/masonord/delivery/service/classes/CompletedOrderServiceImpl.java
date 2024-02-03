@@ -24,6 +24,9 @@ public class CompletedOrderServiceImpl implements org.masonord.delivery.service.
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    ExceptionHandler exceptionHandler;
+
     @Override
     public List<CompletedOrderDto> getAllCompletedOrders() {
         List<CompletedOrderDto> completedOrdersDto = new ArrayList<>();
@@ -53,6 +56,6 @@ public class CompletedOrderServiceImpl implements org.masonord.delivery.service.
     }
 
     private RuntimeException exception(ModelType entity, ExceptionType exception, String ...args) {
-        return ExceptionHandler.throwException(entity, exception, args);
+        return exceptionHandler.throwException(entity, exception, args);
     }
 }

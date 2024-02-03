@@ -31,22 +31,25 @@ import java.util.stream.Collectors;
 public class RestaurantServiceImpl implements RestaurantService {
 
     @Autowired
-    LocationService locationService;
+    private LocationService locationService;
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Autowired
-    OrderRepository orderRepository;
+    private OrderRepository orderRepository;
 
     @Autowired
-    MenuRepository menuRepository;
+    private MenuRepository menuRepository;
 
     @Autowired
-    DishRepository dishRepository;
+    private DishRepository dishRepository;
 
     @Autowired
-    RestaurantRepository restaurantRepository;
+    private RestaurantRepository restaurantRepository;
+
+    @Autowired
+    private ExceptionHandler exceptionHandler;
 
     @Override
     public RestaurantDto addNewRestaurant(RestaurantDto restaurantDto, String email) {
@@ -150,6 +153,6 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     private RuntimeException exception(ModelType entity, ExceptionType exception, String ...args) {
-        return ExceptionHandler.throwException(entity, exception, args);
+        return exceptionHandler.throwException(entity, exception, args);
     }
 }

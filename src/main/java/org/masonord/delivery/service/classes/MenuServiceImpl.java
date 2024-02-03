@@ -29,6 +29,9 @@ public class MenuServiceImpl implements MenuService {
     @Autowired
     private DishRepository dishRepository;
 
+    @Autowired
+    private ExceptionHandler exceptionHandler;
+
 
     @Override
     public MenuDto addNewManu(MenuDto menuDto) {
@@ -113,6 +116,6 @@ public class MenuServiceImpl implements MenuService {
     }
 
     private RuntimeException exception(ModelType entity, ExceptionType exception, String... args) {
-        return ExceptionHandler.throwException(entity, exception, args);
+        return exceptionHandler.throwException(entity, exception, args);
     }
 }
