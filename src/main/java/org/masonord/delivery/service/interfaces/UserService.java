@@ -1,6 +1,7 @@
 package org.masonord.delivery.service.interfaces;
 
 import org.masonord.delivery.controller.v1.request.OffsetBasedPageRequest;
+import org.masonord.delivery.dto.model.LocationDto;
 import org.masonord.delivery.dto.model.UserDto;
 import java.util.List;
 
@@ -31,7 +32,7 @@ public interface UserService {
      * @return UserDto
      */
 
-    UserDto changePassword(String email, String oldPassword, String newPassword);
+    String changePassword(String oldPassword, String newPassword, String email);
 
     /**
      * Update user's personal data
@@ -49,13 +50,15 @@ public interface UserService {
      * @return List<UserDto>
      */
 
-    List<UserDto> getUsers(OffsetBasedPageRequest offsetBasedPageRequest);
+    List<UserDto> getUsers(int offset, int limit);
 
-//    /**
-//     * Create random users
-//     *
-//     * @param count - define how many users will be created
-//     */
-//
-//    void createDummyUsers(int count);
+    /**
+     * Update user's current location
+     *
+     * @param locationDto
+     * @param email
+     * @return
+     */
+
+    String updateLocation(LocationDto locationDto, String email);
 }

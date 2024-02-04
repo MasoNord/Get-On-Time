@@ -1,13 +1,16 @@
 package org.masonord.delivery.service.classes;
 
-import org.masonord.delivery.controller.v1.request.OffsetBasedPageRequest;
 import org.masonord.delivery.dto.mapper.UserMapper;
+import org.masonord.delivery.dto.model.LocationDto;
 import org.masonord.delivery.dto.model.UserDto;
 import org.masonord.delivery.enums.*;
 import org.masonord.delivery.exception.ExceptionHandler;
+import org.masonord.delivery.model.Location;
 import org.masonord.delivery.model.User;
 import org.masonord.delivery.repository.UserRepository;
+import org.masonord.delivery.service.interfaces.LocationService;
 import org.masonord.delivery.util.DateUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service("userService")
 public class UserServiceImpl implements org.masonord.delivery.service.interfaces.UserService, UserDetailsService {
@@ -22,14 +26,17 @@ public class UserServiceImpl implements org.masonord.delivery.service.interfaces
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final ExceptionHandler exceptionHandler;
+    private final LocationService locationService;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
                            BCryptPasswordEncoder passwordEncoder,
-                           ExceptionHandler exceptionHandler) {
+                           ExceptionHandler exceptionHandler,
+                           LocationService locationService) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = passwordEncoder;
         this.exceptionHandler = exceptionHandler;
+        this.locationService = locationService;
     }
 
     @Override
@@ -50,7 +57,7 @@ public class UserServiceImpl implements org.masonord.delivery.service.interfaces
                             .setDc(DateUtils.todayToStr())
                             .setDu(DateUtils.todayToStr());
                 }else {
-                    throw exception(ModelType.COURIER, ExceptionType.ENTITY_EXCEPTION, "");
+                    throw exception(ModelType.COURIER, ExceptionType.ENTITY_EXCEPTION);
                 }
             }else {
                 user = new User()
@@ -64,62 +71,68 @@ public class UserServiceImpl implements org.masonord.delivery.service.interfaces
             }
             return UserMapper.toUserDto(userRepository.creatUser(user));
         }
-//        throw exception(ModelType.USER, ExceptionType.DUPLICATE_ENTITY, userDto.getEmail());
-        throw exceptionHandler.throwExceptionNonStatic(ModelType.USER, ExceptionType.DUPLICATE_ENTITY, userDto.getEmail());
+        throw exception(ModelType.USER, ExceptionType.DUPLICATE_ENTITY, userDto.getEmail());
+
     }
 
     @Override
     public UserDetails loadUserByUsername(String email) {
 
-        User user = userRepository.findUserByEmail(email);
+        if (!Objects.isNull(email)) {
+            User user = userRepository.findUserByEmail(email);
 
-        if (user != null) {
-            Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-            authorities.add(new SimpleGrantedAuthority(user.getRole().getValue()));
+            if (user != null) {
+                Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+                authorities.add(new SimpleGrantedAuthority(user.getRole().getValue()));
 
-            return buildUserForAuthentication(user, authorities);
+                return buildUserForAuthentication(user, authorities);
+            }
+
+            throw exception(ModelType.USER, ExceptionType.ENTITY_NOT_FOUND, email);
         }
 
-        throw exception(ModelType.USER, ExceptionType.ENTITY_NOT_FOUND, email);
+        throw exception(ModelType.USER, ExceptionType.INVALID_ARGUMENT_EXCEPTION, "email");
     }
 
     @Override
     public UserDto findUserByEmail(String email) {
-        User user = userRepository.findUserByEmail(email);
-        if (user != null) {
-            return UserMapper.toUserDto(user);
-        }
-
-        throw exception(ModelType.USER, ExceptionType.ENTITY_NOT_FOUND, email);
-    }
-
-
-    // TODO: refactoring
-
-    @Override
-    public List<UserDto> getUsers(OffsetBasedPageRequest offsetBasedPageRequest) {
-        List<UserDto> users = new LinkedList<>();
-        List<User> userEntity = userRepository.getAllUsers(offsetBasedPageRequest.getOffset(), offsetBasedPageRequest.getPageSize());
-        for (int i = 0; i < userEntity.size(); i++) {
-            users.add(UserMapper.toUserDto(userEntity.get(i)));
-        }
-        return users;
-    }
-
-    @Override
-    public UserDto changePassword(String email, String oldPassword, String newPassword) {
-        User user = userRepository.findUserByEmail(email);
-
-        if (user != null) {
-            if (!bCryptPasswordEncoder.matches(oldPassword, user.getPassword())) {
-                throw exception(ModelType.USER, ExceptionType.WRONG_PASSWORD, "");
-            }else {
-                user.setPassword(newPassword);
-                return UserMapper.toUserDto(userRepository.updateUserProfile(user));
+        if (!Objects.isNull(email)) {
+            User user = userRepository.findUserByEmail(email);
+            if (user != null) {
+                return UserMapper.toUserDto(user);
             }
+
+            throw exception(ModelType.USER, ExceptionType.ENTITY_NOT_FOUND, email);
         }
 
-        throw exception(ModelType.USER, ExceptionType.ENTITY_NOT_FOUND, email);
+        throw exception(ModelType.USER, ExceptionType.INVALID_ARGUMENT_EXCEPTION, "email");
+    }
+
+    @Override
+    public List<UserDto> getUsers(int offset, int limit) {
+        return new ArrayList<>(
+                userRepository.getAllUsers(offset, limit)
+                .stream()
+                .map(user -> new ModelMapper().map(user, UserDto.class))
+                .collect(Collectors.toList())
+        );
+    }
+
+    @Override
+    public String changePassword(String oldPassword, String newPassword, String email) {
+        if (!Objects.isNull(email)) {
+            User user = userRepository.findUserByEmail(email);
+
+            if (user != null) {
+                if (bCryptPasswordEncoder.matches(oldPassword, user.getPassword())) {
+                    user.setPassword(bCryptPasswordEncoder.encode(newPassword));
+                    return "The password has been successfully updated ";
+                }
+                throw exception(ModelType.USER, ExceptionType.WRONG_PASSWORD, "");
+            }
+            throw exception(ModelType.USER, ExceptionType.ENTITY_NOT_FOUND, email);
+        }
+        throw exception(ModelType.USER, ExceptionType.INVALID_ARGUMENT_EXCEPTION, "email");
     }
 
     @Override
@@ -137,7 +150,23 @@ public class UserServiceImpl implements org.masonord.delivery.service.interfaces
         throw exception(ModelType.USER, ExceptionType.ENTITY_NOT_FOUND, email);
     }
 
-    public RuntimeException exception(ModelType entity, ExceptionType exception, String... args) {
+    @Override
+    public String updateLocation(LocationDto locationDto, String email) {
+        if (!Objects.isNull(email)) {
+            User user = userRepository.findUserByEmail(email);
+
+            if (!Objects.isNull(user)) {
+                Location location = locationService.addNewPlaceByName(locationDto);
+                user.setLocation(location);
+                userRepository.updateUserProfile(user);
+                return "The current location has been successfully updated";
+            }
+            throw exception(ModelType.COURIER, ExceptionType.ENTITY_NOT_FOUND, email);
+        }
+        throw exception(ModelType.USER, ExceptionType.INVALID_ARGUMENT_EXCEPTION, "email");
+    }
+
+    private RuntimeException exception(ModelType entity, ExceptionType exception, String... args) {
         return exceptionHandler.throwException(entity, exception, args);
     }
 
