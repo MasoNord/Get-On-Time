@@ -11,7 +11,7 @@ public class PropertiesConfig  {
 
     private static ConfigurationClass config;
     @Autowired
-    PropertiesConfig(ConfigurationClass config) {
+    public PropertiesConfig(ConfigurationClass config) {
         PropertiesConfig.config= config;
     }
 

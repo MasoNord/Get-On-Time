@@ -17,11 +17,11 @@ import java.util.Properties;
 @Configuration
 @EnableTransactionManagement
 public class HibernateConfig {
-    private static PropertiesConfig environment;
+    private final Environment env;
 
     @Autowired
-    HibernateConfig(PropertiesConfig propertiesConfig) {
-        HibernateConfig.environment = propertiesConfig;
+    HibernateConfig(Environment env) {
+        this.env = env;
     }
 
     @Bean
@@ -36,20 +36,20 @@ public class HibernateConfig {
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(environment.getConfigValue("jdbc.driverClassName"));
-        dataSource.setUrl(environment.getConfigValue("jdbc.url"));
-        dataSource.setUsername(environment.getConfigValue("jdbc.username"));
-        dataSource.setPassword(environment.getConfigValue("jdbc.password"));
+        dataSource.setDriverClassName(env.getProperty("jdbc.driverClassName"));
+        dataSource.setUrl(env.getProperty("jdbc.url"));
+        dataSource.setUsername(env.getProperty("jdbc.username"));
+        dataSource.setPassword(env.getProperty("jdbc.password"));
         return dataSource;
     }
 
     private Properties hibernateProperties() {
         Properties properties = new Properties();
-        properties.put("hibernate.dialect", environment.getConfigValue("hibernate.dialect"));
-        properties.put("hibernate.show_sql", environment.getConfigValue("hibernate.show_sql"));
-        properties.put("hibernate.format_sql", environment.getConfigValue("hibernate.format_sql"));
-        properties.put("hibernate.hbm2ddl.auto", environment.getConfigValue("hibernate.hbm2ddl.auto"));
-        properties.put("hibernate.max_fetch_depth", environment.getConfigValue("hibernate.max.depth"));
+        properties.put("hibernate.dialect", env.getProperty("hibernate.dialect"));
+        properties.put("hibernate.show_sql", env.getProperty("hibernate.show_sql"));
+        properties.put("hibernate.format_sql", env.getProperty("hibernate.format_sql"));
+        properties.put("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
+        properties.put("hibernate.max_fetch_depth", env.getProperty("hibernate.max.depth"));
         return properties;
     }
 
