@@ -30,6 +30,11 @@ public class HibernateRestaurantRepository extends AbstractHibernateRep<Restaura
     }
 
     @Override
+    public List<Restaurant> getAllRestaurants(int offset, int limit) {
+        return getAll(offset, limit);
+    }
+
+    @Override
     public List<Restaurant> getAllRestaurants() {
         return getAll();
     }

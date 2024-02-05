@@ -8,46 +8,52 @@ import org.masonord.delivery.enums.ModelType;
 import org.masonord.delivery.exception.ExceptionHandler;
 import org.masonord.delivery.model.Location;
 import org.masonord.delivery.repository.LocationRepository;
+import org.masonord.delivery.service.interfaces.GeoCodingApiService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service("LocationService")
 public class LocationServiceImpl implements org.masonord.delivery.service.interfaces.LocationService {
-    private static PropertiesConfig environment;
+    private final LocationRepository locationRepository;
+    private final GeoCodingApiService geoCodingApiService;
+    private final Environment env;
+    private final ExceptionHandler exceptionHandler;
 
     @Autowired
-    LocationServiceImpl(PropertiesConfig propertiesConfig) {
-        LocationServiceImpl.environment = propertiesConfig;
+    LocationServiceImpl(LocationRepository locationRepository,
+                        GeoCodingApiService geoCodingApiService,
+                        Environment env,
+                        ExceptionHandler exceptionHandler) {
+        this.locationRepository = locationRepository;
+        this.geoCodingApiService = geoCodingApiService;
+        this.exceptionHandler = exceptionHandler;
+        this.env = env;
     }
-
-    @Autowired
-    LocationRepository locationRepository;
-
-    @Autowired
-    GeoCodingApiServiceImpl geoCodingApiService;
-
-    @Autowired
-    ExceptionHandler exceptionHandler;
 
     @Override
     public Location addNewPlaceByName(LocationDto locationDto) {
-        String address = locationDto.getNumber() + "+" + locationDto.getStreet() + "+" + locationDto.getCity() + "+" + locationDto.getZipCode()
-                + "+" + locationDto.getCountry() + "&api_key=" + environment.getConfigValue("geocoding");
-
+        String address = locationDto.getNumber() + "+" + locationDto.getStreet() + "+" + locationDto.getCity() + "+" + locationDto.getZip()
+                + "+" + locationDto.getCountry() + "&api_key=" + env.getProperty("geocoding");
         GeoCodingDto[] coordinates = geoCodingApiService.getGeoLocation(address);
 
         if (coordinates.length != 0) {
-            Location location = new Location()
-                    .setLatitude(coordinates[0].getLat())
-                    .setLongitude(coordinates[0].getLon())
-                    .setStreet(locationDto.getStreet())
-                    .setCountry(locationDto.getCountry())
-                    .setZipCode(locationDto.getZipCode())
-                    .setNumber(locationDto.getNumber())
-                    .setCity(locationDto.getCity());
-            return locationRepository.addNewPlace(location);
+            Location location = locationRepository.getLocationByCoordinates(coordinates[0].getLat(), coordinates[0].getLon());
+            if (Objects.isNull(location)) {
+                location = new Location()
+                        .setLatitude(coordinates[0].getLat())
+                        .setLongitude(coordinates[0].getLon())
+                        .setStreet(locationDto.getStreet())
+                        .setCountry(locationDto.getCountry())
+                        .setZipCode(locationDto.getZip())
+                        .setNumber(locationDto.getNumber())
+                        .setCity(locationDto.getCity());
+                return locationRepository.addNewPlace(location);
+            }
+            return location;
         }
-
         throw exception(ModelType.LOCATION, ExceptionType.ENTITY_NOT_FOUND, address);
     }
 

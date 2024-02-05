@@ -10,7 +10,9 @@ public enum ExceptionType {
     ENTITY_EXCEPTION("exception"),
     WRONG_PASSWORD("wrong.password"),
     RANGE_NOT_SATISFIABLE("not.satisfiable"),
-    CONFLICT_EXCEPTION("conflict");
+    CONFLICT_EXCEPTION("conflict"),
+    LOCATION_NOT_SET("not.location"),
+    INVALID_ARGUMENT_EXCEPTION("invalid.arguments");
 
     private final String value;
 }

@@ -5,10 +5,12 @@ import org.masonord.delivery.dto.model.DishDto;
 import org.masonord.delivery.dto.model.MenuDto;
 import org.masonord.delivery.dto.model.OrderDto;
 import org.masonord.delivery.dto.model.RestaurantDto;
+import org.masonord.delivery.enums.CourierType;
 import org.masonord.delivery.enums.ExceptionType;
 import org.masonord.delivery.enums.ModelType;
 import org.masonord.delivery.exception.ExceptionHandler;
 import org.masonord.delivery.model.Location;
+import org.masonord.delivery.model.User;
 import org.masonord.delivery.model.restarurant.Dish;
 import org.masonord.delivery.model.restarurant.Menu;
 import org.masonord.delivery.model.restarurant.Restaurant;
@@ -21,10 +23,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service("RestaurantService")
@@ -55,7 +54,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     public RestaurantDto addNewRestaurant(RestaurantDto restaurantDto, String email) {
         Location location = locationService.addNewPlaceByName(restaurantDto.getLocation());
 
-        if (restaurantRepository.getRestaurant(restaurantDto.getName()) == null) {
+        if (Objects.isNull(restaurantRepository.getRestaurant(restaurantDto.getName()))) {
 
             Restaurant restaurant = new Restaurant()
                     .setLocation(location)
@@ -70,7 +69,7 @@ public class RestaurantServiceImpl implements RestaurantService {
             for (MenuDto menu : restaurantDto.getMenus()) {
                 IdUtils idUtils = new IdUtils();
 
-                if (menuRepository.getMenuByName(menu.getName()) == null) {
+                if (Objects.isNull(menuRepository.getMenuByName(menu.getName()))) {
                     Menu newMenu = new Menu()
                             .setId(idUtils.generateUuid())
                             .setRestaurant(restaurant)
@@ -88,7 +87,7 @@ public class RestaurantServiceImpl implements RestaurantService {
                         idUtils = new IdUtils();
                         Dish exist = dishRepository.getDishByName(dish.getName());
 
-                        if (exist == null) {
+                        if (Objects.isNull(exist)) {
                             Dish newDish = new Dish()
                                     .setMenu(newMenu)
                                     .setName(dish.getName())
@@ -119,8 +118,8 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
-    public List<RestaurantDto> getAllRestaurants() {
-        List<Restaurant> restaurants = restaurantRepository.getAllRestaurants();
+    public List<RestaurantDto> getAllRestaurants(int offset, int limit) {
+        List<Restaurant> restaurants = restaurantRepository.getAllRestaurants(offset, limit);
 
         return new ArrayList<>(restaurants
                 .stream()
@@ -145,6 +144,39 @@ public class RestaurantServiceImpl implements RestaurantService {
     @Override
     public List<Restaurant> getMostPopularRestaurants() {
         return null;
+    }
+
+    @Override
+    public List<RestaurantDto> getClosestRestaurants(String userEmail) {
+        User user = userRepository.findUserByEmail(userEmail);
+        List<Restaurant> restaurants = restaurantRepository.getAllRestaurants();
+        List<RestaurantDto> closestRestaurants = new ArrayList<>();
+
+        if (user.getLocation() != null) {
+            for (Restaurant restaurant : restaurants) {
+                double distance = LocationService.getDistanceFromLatLonInM(
+                        user.getLocation().getLatitude(), user.getLocation().getLongitude(),
+                        restaurant.getLocation().getLatitude(), restaurant.getLocation().getLongitude()
+                );
+
+                if (!Objects.equals(ModelType.COURIER.getValue(), user.getRole().getValue())) {
+                    restaurant.setOrders(null);
+                    if (distance <= 10000) {
+                        closestRestaurants.add(RestaurantMapper.toRestaurantDto(restaurant));
+                    }
+                }else {
+                    if (CourierType.WALK.equals(user.getTransport()) && distance <= 2500) {
+                        closestRestaurants.add(RestaurantMapper.toRestaurantDto(restaurant));
+                    } else if (CourierType.BICYCLE.equals(user.getTransport()) && distance <= 4000) {
+                        closestRestaurants.add(RestaurantMapper.toRestaurantDto(restaurant));
+                    } else if (CourierType.CAR.equals(user.getTransport()) && distance <= 10000) {
+                        closestRestaurants.add(RestaurantMapper.toRestaurantDto(restaurant));
+                    }
+                }
+            }
+            return closestRestaurants;
+        }
+        throw exception(ModelType.USER, ExceptionType.LOCATION_NOT_SET);
     }
 
     @Override

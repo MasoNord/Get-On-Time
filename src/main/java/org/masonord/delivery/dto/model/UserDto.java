@@ -13,7 +13,7 @@ import org.masonord.delivery.enums.UserRoles;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonIgnoreProperties("password")
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class UserDto {
     private String firstName;

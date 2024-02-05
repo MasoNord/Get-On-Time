@@ -1,10 +1,14 @@
 package org.masonord.delivery.repository.hibernate;
 
+import jakarta.persistence.criteria.CriteriaQuery;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.query.Query;
+import org.hibernate.query.SelectionQuery;
 import org.postgresql.shaded.com.ongres.scram.common.util.Preconditions;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
@@ -45,7 +49,14 @@ public abstract class AbstractHibernateRep<T> {
         return  sessionFactory.getCurrentSession().createQuery("from " + targetClass.getName(), targetClass).list();
     }
 
-    protected List<T> getAll(int offset, int limit) {
+    protected T getByCoordinates(final double lat, final double lon) {
+        String query = "from " + targetClass.getName() + " u where u.longitude = :lon and u.latitude = :lat";
+        return (T) sessionFactory.getCurrentSession().createQuery(query)
+                .setParameter("lon", lon)
+                .setParameter("lat", lat).uniqueResult();
+    }
+
+    protected List<T> getAll(final int offset, final int limit) {
         Query<T> query = sessionFactory.getCurrentSession().createQuery("From " + targetClass.getName(), targetClass);
         query.setFirstResult(offset);
         query.setMaxResults(limit);

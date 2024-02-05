@@ -10,7 +10,7 @@ public class LocationMapper {
                 .setCity(location.getCity())
                 .setNumber(location.getNumber())
                 .setCountry(location.getCountry())
-                .setZipCode(location.getZipCode())
+                .setZip(location.getZipCode())
                 .setStreet(location.getStreet());
     }
 

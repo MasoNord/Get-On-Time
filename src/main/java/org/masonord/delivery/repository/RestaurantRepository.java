@@ -12,5 +12,7 @@ public interface RestaurantRepository {
 
     Restaurant updateRestaurant(Restaurant restaurant);
 
+    List<Restaurant> getAllRestaurants(int offset, int limit);
+
     List<Restaurant> getAllRestaurants();
 }

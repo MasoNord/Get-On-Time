@@ -9,6 +9,7 @@ import org.masonord.delivery.dto.model.LocationDto;
 import org.masonord.delivery.dto.model.MenuDto;
 import org.masonord.delivery.dto.model.OrderDto;
 import org.masonord.delivery.dto.model.RestaurantDto;
+import org.masonord.delivery.service.interfaces.OrderService;
 import org.masonord.delivery.service.interfaces.RestaurantService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,9 @@ public class RestaurantController {
     @Autowired
     private RestaurantService restaurantService;
 
+    @Autowired
+    private OrderService orderService;
+
     @PostMapping()
     public ResponseEntity<RestaurantDto> addNewRestaurant(
             @RequestBody @Valid RestaurantCreateRequest createRequest,
@@ -38,7 +42,7 @@ public class RestaurantController {
                 .setCity(createRequest.getLocation().getCity())
                 .setNumber(createRequest.getLocation().getNumber())
                 .setStreet(createRequest.getLocation().getStreet())
-                .setZipCode(createRequest.getLocation().getZipCode());
+                .setZip(createRequest.getLocation().getZip());
 
         Set<MenuDto> menus = new HashSet<>(createRequest.getMenus()
                 .stream()
@@ -60,15 +64,19 @@ public class RestaurantController {
     }
 
     @PutMapping("/orders/change-order-status")
-    public ResponseEntity<String> acceptOrder(@RequestParam String orderId,
+    public ResponseEntity<String> changeOrderStatus(@RequestParam String orderId,
                                               @RequestParam String restaurantName,
                                               @RequestBody @Valid ChangeOrderStatusRequest status) {
-        return ResponseEntity.ok().body(restaurantService.changeOrderStatus(orderId, restaurantName, status.getStatus()));
+        return ResponseEntity.ok().body(orderService.changeOrderStatus(orderId, restaurantName, status.getStatus()));
     }
 
     @GetMapping()
-    public ResponseEntity<List<RestaurantDto>> getRestaurants() {
-        return ResponseEntity.ok().body(restaurantService.getAllRestaurants());
+    public ResponseEntity<List<RestaurantDto>> getRestaurants(@RequestParam(defaultValue = "0") int offset, @RequestParam(defaultValue = "1") int limit) {
+        return ResponseEntity.ok().body(restaurantService.getAllRestaurants(offset, limit));
     }
 
+    @GetMapping("/closest")
+    public ResponseEntity<List<RestaurantDto>> getClosestRestaurants(HttpServletRequest request) {
+        return ResponseEntity.ok().body(restaurantService.getClosestRestaurants(request.getUserPrincipal().getName()));
+    }
 }

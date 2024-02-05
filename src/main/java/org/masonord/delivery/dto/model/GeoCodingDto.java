@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GeoCodingDto {
-    float lat;
+    double lat;
 
-    float lon;
+    double lon;
 }

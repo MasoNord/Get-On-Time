@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.masonord.delivery.enums.CountryType;
 
 @Setter
 @Getter
@@ -17,7 +16,7 @@ import org.masonord.delivery.enums.CountryType;
 public class LocationAddRequest {
 
     @NotNull
-    private CountryType country;
+    private String country;
 
     @NotEmpty
     private String street;

@@ -3,7 +3,6 @@ package org.masonord.delivery.model;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.Accessors;
-import org.masonord.delivery.enums.CountryType;
 
 @Getter
 @Setter
@@ -19,7 +18,7 @@ public class Location {
     private Long id;
 
     @Column(name = "country", nullable = false)
-    private CountryType country;
+    private String country;
 
     @Column(name = "city", nullable = false)
     private String city;
@@ -31,10 +30,10 @@ public class Location {
     private String zipCode;
 
     @Column(name = "latitude", nullable = false)
-    private float latitude;
+    private double latitude;
 
     @Column(name = "longitude", nullable = false)
-    private float longitude;
+    private double longitude;
 
     @Column(name = "number", nullable = false)
     private int number; // No. of a home house, flat, apartment etc
