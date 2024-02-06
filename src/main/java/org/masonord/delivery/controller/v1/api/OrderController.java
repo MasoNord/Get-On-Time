@@ -3,15 +3,9 @@ package org.masonord.delivery.controller.v1.api;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.masonord.delivery.controller.v1.request.ChangeOrderStatusRequest;
-import org.masonord.delivery.controller.v1.request.OffsetBasedPageRequest;
-import org.masonord.delivery.controller.v1.request.OrderCompleteRequest;
 import org.masonord.delivery.controller.v1.request.OrderCreateRequest;
 import org.masonord.delivery.dto.model.CompletedOrderDto;
-import org.masonord.delivery.dto.model.LocationDto;
 import org.masonord.delivery.dto.model.OrderDto;
-import org.masonord.delivery.dto.response.Response;
-import org.masonord.delivery.model.order.Order;
-import org.masonord.delivery.service.classes.OrderServiceImpl;
 import org.masonord.delivery.service.interfaces.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -44,9 +38,9 @@ public class OrderController {
         );
     }
 
-    @PostMapping("/complete")
-    public ResponseEntity<CompletedOrderDto> completeOrder(@RequestBody @Valid OrderCompleteRequest orderCompleteRequest) {
-        return ResponseEntity.ok().body(orderService.completeOrder(orderCompleteRequest));
+    @PostMapping("/complete/{orderId}")
+    public ResponseEntity<CompletedOrderDto> completeOrder(@PathVariable String orderId, HttpServletRequest request) {
+        return ResponseEntity.ok().body(orderService.completeOrder(request.getUserPrincipal().getName(), orderId));
     }
 
     @GetMapping("/all")

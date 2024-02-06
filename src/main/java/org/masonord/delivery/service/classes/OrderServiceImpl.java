@@ -1,11 +1,8 @@
 package org.masonord.delivery.service.classes;
 
-import org.masonord.delivery.controller.v1.request.OffsetBasedPageRequest;
-import org.masonord.delivery.controller.v1.request.OrderCompleteRequest;
 import org.masonord.delivery.dto.mapper.CompletedOrderMapper;
 import org.masonord.delivery.dto.mapper.OrderMapper;
 import org.masonord.delivery.dto.model.*;
-import org.masonord.delivery.enums.CourierType;
 import org.masonord.delivery.enums.ExceptionType;
 import org.masonord.delivery.enums.ModelType;
 import org.masonord.delivery.enums.OrderStatusType;
@@ -16,7 +13,6 @@ import org.masonord.delivery.model.order.OrderItem;
 import org.masonord.delivery.model.restarurant.Dish;
 import org.masonord.delivery.model.restarurant.Restaurant;
 import org.masonord.delivery.repository.*;
-import org.masonord.delivery.service.interfaces.LocationService;
 import org.masonord.delivery.util.DateUtils;
 import org.masonord.delivery.util.IdUtils;
 import org.modelmapper.ModelMapper;
@@ -127,15 +123,15 @@ public class OrderServiceImpl implements org.masonord.delivery.service.interface
     }
 
     @Override
-    public CompletedOrderDto completeOrder(OrderCompleteRequest orderCompleteRequest) {
-        User courier = userRepository.findUserByEmail(orderCompleteRequest.getCourierEmail());
-        Order order = orderRepository.getOrder(orderCompleteRequest.getOrderId());
+    public CompletedOrderDto completeOrder(String email, String orderId) {
         IdUtils idUtils = new IdUtils();
 
-        if (idUtils.validateUuid(orderCompleteRequest.getOrderId())) {
+        if (idUtils.validateUuid(orderId)) {
+            Order order = orderRepository.getOrder(orderId);
+            User courier = userRepository.findUserByEmail(email);
             if (!Objects.isNull(courier)) {
                 if (!Objects.isNull(order)) {
-                    if (hasOrder(courier.getOrders(), order)) {
+                    if (hasOrder(courier.getRides(), order)) {
 
                         CompletedOrder completedOrder = new CompletedOrder()
                                 .setOrderId(order.getId())
@@ -143,17 +139,17 @@ public class OrderServiceImpl implements org.masonord.delivery.service.interface
                                 .setCost(order.getCost())
                                 .setCompletedTime(DateUtils.todayToStr());
 
-                        orderRepository.deleteOrder(orderRepository.getOrder(orderCompleteRequest.getOrderId()));
+                        orderRepository.deleteOrder(order);
 
                         return CompletedOrderMapper.toCompletedOrderDto(completedOrderRepository.addOrder(completedOrder));
                     }
-                    throw exception(ModelType.COURIER, ExceptionType.CONFLICT_EXCEPTION, orderCompleteRequest.getOrderId());
+                    throw exception(ModelType.COURIER, ExceptionType.CONFLICT_EXCEPTION, orderId);
                 }
-                throw exception(ModelType.ORDER, ExceptionType.ENTITY_NOT_FOUND, orderCompleteRequest.getOrderId());
+                throw exception(ModelType.ORDER, ExceptionType.ENTITY_NOT_FOUND,  orderId);
             }
-            throw exception(ModelType.COURIER, ExceptionType.ENTITY_NOT_FOUND, orderCompleteRequest.getCourierEmail());
+            throw exception(ModelType.COURIER, ExceptionType.ENTITY_NOT_FOUND, email);
         }
-        throw exception(ModelType.ORDER, ExceptionType.NOT_UUID_FORMAT, orderCompleteRequest.getOrderId());
+        throw exception(ModelType.ORDER, ExceptionType.NOT_UUID_FORMAT, orderId);
     }
 
     @Override
@@ -165,7 +161,7 @@ public class OrderServiceImpl implements org.masonord.delivery.service.interface
     public String deleteOrder(String orderId) {
         Order order = orderRepository.getOrder(orderId);
         orderRepository.deleteOrder(order);
-        return "\"message\": \"Successfully destroyed\"";
+        return "\"message\": \"Order has been successfully deleted\"";
     }
 
     private RuntimeException exception(ModelType entity, ExceptionType exception, String ...args) {

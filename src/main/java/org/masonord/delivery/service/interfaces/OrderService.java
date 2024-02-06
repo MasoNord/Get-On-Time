@@ -1,9 +1,6 @@
 package org.masonord.delivery.service.interfaces;
 
-import org.masonord.delivery.controller.v1.request.OffsetBasedPageRequest;
-import org.masonord.delivery.controller.v1.request.OrderCompleteRequest;
 import org.masonord.delivery.dto.model.CompletedOrderDto;
-import org.masonord.delivery.dto.model.LocationDto;
 import org.masonord.delivery.dto.model.OrderDto;
 import org.masonord.delivery.enums.OrderStatusType;
 import org.masonord.delivery.model.order.Order;
@@ -43,11 +40,12 @@ public interface OrderService {
     /**
      * Complete an order when the ride comes to the end
      *
-     * @param orderCompleteRequest
+     * @param email
+     * @param orderID
      * @return CompletedOrderDto
      */
 
-    CompletedOrderDto completeOrder(OrderCompleteRequest orderCompleteRequest);
+    CompletedOrderDto completeOrder(String email, String orderID);
 
     /**
      * update an existing order until it's not on a ride
