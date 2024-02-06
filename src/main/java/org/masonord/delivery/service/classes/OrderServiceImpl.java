@@ -19,35 +19,39 @@ import org.masonord.delivery.repository.*;
 import org.masonord.delivery.service.interfaces.LocationService;
 import org.masonord.delivery.util.DateUtils;
 import org.masonord.delivery.util.IdUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
-@Service("OrderService")
+@Service
 public class OrderServiceImpl implements org.masonord.delivery.service.interfaces.OrderService {
+    private final UserRepository userRepository;
+    private final OrderRepository orderRepository;
+    private final RestaurantRepository restaurantRepository;
+    private final CompletedOrderRepository completedOrderRepository;
+    private final DishRepository dishRepository;
+    private final OrderItemRepository orderItemRepository;
+    private final ExceptionHandler exceptionHandler;
 
     @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    OrderRepository orderRepository;
-
-    @Autowired
-    RestaurantRepository restaurantRepository;
-
-    @Autowired
-    CompletedOrderRepository completedOrderRepository;
-
-    @Autowired
-    DishRepository dishRepository;
-
-    @Autowired
-    OrderItemRepository orderItemRepository;
-
-    @Autowired
-    ExceptionHandler exceptionHandler;
-
+    public OrderServiceImpl(UserRepository userRepository,
+                            OrderRepository orderRepository,
+                            RestaurantRepository restaurantRepository,
+                            CompletedOrderRepository completedOrderRepository,
+                            DishRepository dishRepository,
+                            OrderItemRepository orderItemRepository,
+                            ExceptionHandler exceptionHandler) {
+        this.userRepository = userRepository;
+        this.orderRepository = orderRepository;
+        this.restaurantRepository = restaurantRepository;
+        this.completedOrderRepository = completedOrderRepository;
+        this.dishRepository = dishRepository;
+        this.orderItemRepository = orderItemRepository;
+        this.exceptionHandler = exceptionHandler;
+    }
 
     @Override
     public OrderDto getOrderById(String id) {
@@ -55,18 +59,20 @@ public class OrderServiceImpl implements org.masonord.delivery.service.interface
         IdUtils idUtils = new IdUtils();
 
         if (idUtils.validateUuid(id)) {
-            if (order != null)
-                 return OrderMapper.toOrderDto(order);
+            if (!Objects.isNull(order)) {
+                return OrderMapper.toOrderDto(order);
+            }
             throw exception(ModelType.ORDER, ExceptionType.ENTITY_NOT_FOUND);
         }
         throw exception(ModelType.ORDER, ExceptionType.NOT_UUID_FORMAT, id);
     }
+
     @Override
     public OrderDto addNewOrder(String restaurantName, String customerName, List<String> dishes) {
         Restaurant restaurant = restaurantRepository.getRestaurant(restaurantName);
         User currCustomer = userRepository.findUserByEmail(customerName);
 
-        if (restaurant != null) {
+        if (!Objects.isNull(restaurant)) {
             float cost = 0.0f;
             OrderItem items = new OrderItem()
                     .setId(UUID.randomUUID().toString())
@@ -74,7 +80,7 @@ public class OrderServiceImpl implements org.masonord.delivery.service.interface
 
             for (String name : dishes) {
                 Dish tempDish = dishRepository.getDishByName(name);
-                if (tempDish != null) {
+                if (!Objects.isNull(tempDish)) {
                     items.getDishes().add(tempDish);
                     cost+= tempDish.getCost();
                 }
@@ -92,54 +98,26 @@ public class OrderServiceImpl implements org.masonord.delivery.service.interface
         throw exception(ModelType.RESTAURANT, ExceptionType.ENTITY_NOT_FOUND, restaurantName);
     }
     @Override
-    public List<OrderDto> getOrders(OffsetBasedPageRequest offsetBasedPageRequest) {
-        List<OrderDto> orders = new LinkedList<>();
-        List<Order> orderEntity = orderRepository.getOrders(offsetBasedPageRequest.getOffset(), offsetBasedPageRequest.getPageSize());
-        for (Order o : orderEntity)
-            orders.add(OrderMapper.toOrderDto(o));
-
-        return orders;
-
-        // TODO: do refactor of a code, from for loop to lambdas
-    }
-
-    @Override
-    public List<OrderDto> getClosestOrders(String courierEmail) {
-        User user = userRepository.findUserByEmail(courierEmail);
-        List<Order> orders = orderRepository.getOrders();
-        List<OrderDto> closestOrders = new ArrayList<>();
-        if (user.getLocation() != null) {
-            for (Order order : orders) {
-                double distance = LocationService.getDistanceFromLatLonInM(
-                        user.getLocation().getLatitude(), user.getLocation().getLongitude(),
-                        order.getRestaurant().getLocation().getLatitude(), order.getRestaurant().getLocation().getLongitude()
-                );
-                if (CourierType.WALK.equals(user.getTransport()) && distance <= 2500) {
-                    closestOrders.add(OrderMapper.toOrderDto(order));
-                }else if (CourierType.WALK.equals(user.getTransport()) && distance <= 4000) {
-                    closestOrders.add(OrderMapper.toOrderDto(order));
-                }else if (CourierType.WALK.equals(user.getTransport()) && distance <= 10000) {
-                    closestOrders.add(OrderMapper.toOrderDto(order));
-                }
-            }
-
-            return closestOrders;
-        }
-
-        throw exception(ModelType.USER, ExceptionType.LOCATION_NOT_SET);
+    public List<OrderDto> getOrders(int offset, int limit) {
+        return new ArrayList<>(orderRepository
+                .getOrders(offset, limit)
+                .stream()
+                .map(order -> new ModelMapper().map(order, OrderDto.class))
+                .collect(Collectors.toList())
+        );
     }
 
     @Override
     public String changeOrderStatus(String orderId, String restaurantName, OrderStatusType status) {
         Restaurant restaurant = restaurantRepository.getRestaurant(restaurantName);
         IdUtils idUtils = new IdUtils();
-        if (restaurant != null) {
+        if (!Objects.isNull(restaurant)) {
             if (idUtils.validateUuid(orderId)) {
                 Order order = orderRepository.getOrder(orderId);
-                if (order != null) {
+                if (!Objects.isNull(order)) {
                     order.setOrderStatusType(status);
                     orderRepository.updateOrderProfile(order);
-                    return "Order has been updated successfully";
+                    return "\"message\": \"Order's status has been updated successfully\"";
                 }
                 throw exception(ModelType.ORDER, ExceptionType.ENTITY_NOT_FOUND, orderId);
             }
@@ -155,8 +133,8 @@ public class OrderServiceImpl implements org.masonord.delivery.service.interface
         IdUtils idUtils = new IdUtils();
 
         if (idUtils.validateUuid(orderCompleteRequest.getOrderId())) {
-            if (courier != null) {
-                if (order != null) {
+            if (!Objects.isNull(courier)) {
+                if (!Objects.isNull(order)) {
                     if (hasOrder(courier.getOrders(), order)) {
 
                         CompletedOrder completedOrder = new CompletedOrder()
@@ -187,7 +165,7 @@ public class OrderServiceImpl implements org.masonord.delivery.service.interface
     public String deleteOrder(String orderId) {
         Order order = orderRepository.getOrder(orderId);
         orderRepository.deleteOrder(order);
-        return "Successfully destroyed";
+        return "\"message\": \"Successfully destroyed\"";
     }
 
     private RuntimeException exception(ModelType entity, ExceptionType exception, String ...args) {
@@ -195,10 +173,11 @@ public class OrderServiceImpl implements org.masonord.delivery.service.interface
     }
 
     private boolean hasOrder(Set<Order> orders, Order order){
-        for (Order o : orders)
-            if (Objects.equals(o.getId(), order.getId()))
+        for (Order o : orders) {
+            if (Objects.equals(o.getId(), order.getId())) {
                 return true;
+            }
+        }
         return false;
     }
-
 }

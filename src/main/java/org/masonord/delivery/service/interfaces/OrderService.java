@@ -32,13 +32,13 @@ public interface OrderService {
     /**
      * Get list of all orders
      *
-     * @param offsetBasedPageRequest - contain offset and limit parameters to apply pagination
+     * @param offset
+     * @param limit
      * @return List<OrderDto>
      */
 
-    List<OrderDto> getOrders(OffsetBasedPageRequest offsetBasedPageRequest);
+    List<OrderDto> getOrders(int offset, int limit);
 
-    List<OrderDto> getClosestOrders(String couriersName);
 
     /**
      * Complete an order when the ride comes to the end

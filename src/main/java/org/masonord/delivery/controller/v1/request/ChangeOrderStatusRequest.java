@@ -16,4 +16,10 @@ import org.masonord.delivery.enums.OrderStatusType;
 public class ChangeOrderStatusRequest {
     @NotNull
     private OrderStatusType status;
+
+    @NotNull
+    private String restaurantName;
+
+    @NotNull
+    private String orderId;
 }
