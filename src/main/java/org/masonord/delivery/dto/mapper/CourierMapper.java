@@ -15,8 +15,8 @@ public class CourierMapper {
                 .setLastName(courier.getLastName())
                 .setTransport(courier.getTransport())
                 .setWorkingHours(courier.getWorkingHours())
-                .setOrders(new HashSet<OrderDto>(courier
-                        .getOrders()
+                .setRides(new HashSet<OrderDto>(courier
+                        .getRides()
                         .stream()
                         .map(order -> new ModelMapper().map(order, OrderDto.class))
                         .collect(Collectors.toSet())

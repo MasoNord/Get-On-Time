@@ -6,10 +6,8 @@ import org.masonord.delivery.dto.mapper.LocationMapper;
 import org.masonord.delivery.dto.model.CourierDto;
 import org.masonord.delivery.dto.model.CourierMetaInfoDto;
 import org.masonord.delivery.dto.model.LocationDto;
-import org.masonord.delivery.enums.CourierCriteriaType;
-import org.masonord.delivery.enums.ExceptionType;
-import org.masonord.delivery.enums.ModelType;
-import org.masonord.delivery.enums.UserRoles;
+import org.masonord.delivery.dto.model.OrderDto;
+import org.masonord.delivery.enums.*;
 import org.masonord.delivery.exception.ExceptionHandler;
 import org.masonord.delivery.model.CompletedOrder;
 import org.masonord.delivery.model.Location;
@@ -21,32 +19,38 @@ import org.masonord.delivery.repository.UserRepository;
 import org.masonord.delivery.service.interfaces.LocationService;
 import org.masonord.delivery.util.DateUtils;
 import org.masonord.delivery.util.IdUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service("courierService")
 public class CourierServiceImpl implements org.masonord.delivery.service.interfaces.CourierService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final LocationService locationService;
+    private final CompletedOrderRepository completedOrderRepository;
+    private final OrderRepository orderRepository;
+    private final IdUtils idUtils;
+    private final ExceptionHandler exceptionHandler;
 
     @Autowired
-    private LocationService locationService;
-
-    @Autowired
-    private CompletedOrderRepository completedOrderRepository;
-
-    @Autowired
-    private OrderRepository orderRepository;
-
-    @Autowired
-    private IdUtils idUtils;
-
-    @Autowired
-    private ExceptionHandler exceptionHandler;
+    public CourierServiceImpl(UserRepository userRepository,
+                              LocationService locationService,
+                              CompletedOrderRepository completedOrderRepository,
+                              OrderRepository orderRepository,
+                              IdUtils idUtils,
+                              ExceptionHandler exceptionHandler) {
+        this.userRepository = userRepository;
+        this.locationService = locationService;
+        this.completedOrderRepository = completedOrderRepository;
+        this.orderRepository = orderRepository;
+        this.idUtils = idUtils;
+        this.exceptionHandler = exceptionHandler;
+    }
 
     @Override
     public CourierDto findCourierByEmail(String email) {
@@ -73,20 +77,6 @@ public class CourierServiceImpl implements org.masonord.delivery.service.interfa
         return couriers;
     }
 
-    @Override
-    public String updateCurrentLocation(LocationDto locationDto, String email) {
-       User courier = userRepository.findUserByEmail(email);
-
-       if (courier != null && Objects.equals(courier.getRole(), UserRoles.COURIER)) {
-            Location location = locationService.addNewPlaceByName(locationDto);
-            courier.setLocation(location);
-            userRepository.updateUserProfile(courier);
-
-            return "The location has been successfully updated";
-       }
-       throw exception(ModelType.COURIER, ExceptionType.ENTITY_NOT_FOUND, email);
-    }
-
     // TODO: come back when restaurant will be ready
 
     @Override
@@ -94,16 +84,18 @@ public class CourierServiceImpl implements org.masonord.delivery.service.interfa
         Order order = orderRepository.getOrder(orderId);
         User courier = userRepository.findUserByEmail(email);
         if (idUtils.validateUuid(orderId)) {
-            if (order != null) {
-                if (courier != null && Objects.equals(courier.getRole(), UserRoles.COURIER)) {
-                    if (order.getCourier() == null && Objects.equals(order.getCustomer().getRole(), UserRoles.COURIER)) {
-                        Set<Order> orders = courier.getOrders();
+            if (!Objects.isNull(order)) {
+                if (!Objects.isNull(courier)) {
+                    if (Objects.isNull(order.getCourier())) {
+                        Set<Order> rides = courier.getRides();
 
                         order.setCourier(courier);
-                        orders.add(order);
+                        order.setOrderStatusType(OrderStatusType.DRIVE);
+                        rides.add(order);
+
                         orderRepository.updateOrderProfile(order);
 
-                        courier.setOrders(orders);
+                        courier.setRides(rides);
                         return CourierMapper.toCourierDto(userRepository.updateUserProfile(courier));
                     }
                     throw exception(ModelType.ORDER, ExceptionType.CONFLICT_EXCEPTION, orderId);
@@ -113,6 +105,30 @@ public class CourierServiceImpl implements org.masonord.delivery.service.interfa
             throw exception(ModelType.ORDER, ExceptionType.ENTITY_NOT_FOUND, orderId);
         }
         throw exception(ModelType.ORDER, ExceptionType.NOT_UUID_FORMAT, orderId);
+    }
+
+
+
+    @Override
+    public String acceptOrder(String courierEmail, String orderId) {
+        return null;
+    }
+
+    @Override
+    public List<OrderDto> getOrders(String email) {
+        if (!Objects.isNull(email)) {
+            User user = userRepository.findUserByEmail(email);
+            if (!Objects.isNull(email)) {
+                return new ArrayList<>(user
+                        .getRides()
+                        .stream()
+                        .map(order -> new ModelMapper().map(order, OrderDto.class))
+                        .collect(Collectors.toList())
+                );
+            }
+            throw exception(ModelType.COURIER, ExceptionType.ENTITY_NOT_FOUND, email);
+        }
+        throw exception(ModelType.COURIER, ExceptionType.INVALID_ARGUMENT_EXCEPTION);
     }
 
     @Override
@@ -146,11 +162,6 @@ public class CourierServiceImpl implements org.masonord.delivery.service.interfa
         }
 
         throw  exception(ModelType.COURIER, ExceptionType.ENTITY_NOT_FOUND, courierEmail);
-    }
-
-    @Override
-    public String acceptOrder(String courierEmail, String orderId) {
-        return null;
     }
 
     @Override

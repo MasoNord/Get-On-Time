@@ -4,6 +4,7 @@ import org.masonord.delivery.controller.v1.request.OffsetBasedPageRequest;
 import org.masonord.delivery.dto.model.CourierDto;
 import org.masonord.delivery.dto.model.CourierMetaInfoDto;
 import org.masonord.delivery.dto.model.LocationDto;
+import org.masonord.delivery.dto.model.OrderDto;
 import org.masonord.delivery.model.User;
 import org.masonord.delivery.model.order.Order;
 
@@ -37,14 +38,6 @@ public interface CourierService {
      *
      */
     User updateProfile(String id, User newUserProfile);
-
-    /**
-     * Update courier's current location and return a corresponding message
-     *
-     * @param locationDto
-     * @return String
-     */
-    String updateCurrentLocation(LocationDto locationDto, String email);
 
     /**
      * Assign a new order to a courier
@@ -81,5 +74,7 @@ public interface CourierService {
 
 
     String acceptOrder(String courierEmail, String orderId);
+
+    List<OrderDto> getOrders(String email);
 
 }
