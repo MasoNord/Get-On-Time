@@ -1,6 +1,7 @@
 package org.masonord.delivery.service.interfaces;
 
 import org.masonord.delivery.controller.v1.request.OffsetBasedPageRequest;
+import org.masonord.delivery.controller.v1.request.UpdateUserRequest;
 import org.masonord.delivery.dto.model.LocationDto;
 import org.masonord.delivery.dto.model.UserDto;
 import java.util.List;
@@ -39,10 +40,10 @@ public interface UserService {
      *
      * @param email
      * @param newUserProfile
-     * @return UserDto
+     * @return String
      */
 
-    UserDto updateProfile(String email, UserDto newUserProfile);
+    String updateProfile(String email, UpdateUserRequest updateUserRequest);
 
     /**
      * Get all user records

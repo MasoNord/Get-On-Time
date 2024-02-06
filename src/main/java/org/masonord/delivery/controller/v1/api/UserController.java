@@ -14,17 +14,20 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.masonord.delivery.controller.v1.request.*;
 import org.masonord.delivery.dto.mapper.UserMapper;
+import org.masonord.delivery.dto.model.LocationDto;
 import org.masonord.delivery.enums.UserRoles;
+import org.masonord.delivery.model.User;
 import org.springframework.http.HttpHeaders;
-import org.masonord.delivery.controller.v1.request.OffsetBasedPageRequest;
-import org.masonord.delivery.controller.v1.request.UserPasswordChangeRequest;
-import org.masonord.delivery.controller.v1.request.UserSignupRequest;
 import org.masonord.delivery.dto.model.UserDto;
 import org.masonord.delivery.dto.response.Response;
 import org.masonord.delivery.service.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -34,21 +37,30 @@ import java.util.*;
 @RequestMapping("/api/v1/user")
 public class UserController {
 
-    @Autowired
     private UserService userService;
 
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
+    @Operation(summary = "Register a new user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "")
+    })
+
     @PostMapping("/signup")
-    public Response signup(@RequestBody @Valid UserSignupRequest userSignupRequest) {
+    public ResponseEntity signup(@RequestBody @Valid UserSignupRequest userSignupRequest) {
         UserDto userDto = new UserDto()
                 .setEmail(userSignupRequest.getEmail())
-                .setRole(userSignupRequest.getRole().toUpperCase())
+                .setRole(userSignupRequest.getRole().getValue())
                 .setFirstName(userSignupRequest.getFirstName())
                 .setLastName(userSignupRequest.getLastName())
                 .setPassword(userSignupRequest.getPassword())
-                .setTransport(userSignupRequest.getTransport())
+                .setTransport(userSignupRequest.getTransport().getValue())
                 .setWorkingHours(userSignupRequest.getWorkingHours());
 
-        return Response.ok().setPayload(userService.signup(userDto));
+        return ResponseEntity.ok().body(userService.signup(userDto));
     }
 
     @Operation(summary = "Get a user by his email")
@@ -59,30 +71,51 @@ public class UserController {
         }),
         @ApiResponse(responseCode = "404", description = "Use has not been found",
             content = {@Content(mediaType = "application/json",
-                schema = @Schema(implementation  = Response.class))
+                schema = @Schema(implementation  = ResponseEntity.class))
         }),
     })
     @GetMapping("/{email}")
-    public Response getUser(@PathVariable String email) {
-        return Response.ok().setPayload(userService.findUserByEmail(email));
+    public ResponseEntity<UserDto> getUser(@PathVariable String email) {
+        return ResponseEntity.ok().body(userService.findUserByEmail(email));
     }
 
     @GetMapping
-    public Response getUsers(@RequestParam(defaultValue = "0", required = false) int offset,
+    public ResponseEntity<List<UserDto>> getUsers(@RequestParam(defaultValue = "0", required = false) int offset,
                              @RequestParam(defaultValue = "1", required = false) int limit) {
-        return Response.ok().setPayload(userService.getUsers(new OffsetBasedPageRequest(offset, limit)));
+        return ResponseEntity.ok().body(userService.getUsers(offset, limit));
     }
 
-    @PutMapping("/password/{email}")
-    public Response changePassword(@RequestBody @Valid UserPasswordChangeRequest userPasswordChangeRequest, @PathVariable String email) {
-        return Response.ok().setPayload(userService.changePassword(userPasswordChangeRequest.oldPassword, userPasswordChangeRequest.newPassword, email));
+    @PutMapping("/password/update")
+    public ResponseEntity<String> updatePassword(@RequestBody @Valid UserPasswordChangeRequest userPasswordChangeRequest,
+                                         HttpServletRequest request) {
+        return ResponseEntity.ok().body(
+                userService.changePassword(
+                    userPasswordChangeRequest.oldPassword,
+                    userPasswordChangeRequest.newPassword,
+                    request.getUserPrincipal().getName()
+                )
+        );
     }
 
-    @PostMapping(value = "/random", params = {"count"})
-    public Response createDummyUsers(@RequestParam(value = "count", defaultValue = "1") int count) {
-        userService.createDummyUsers(count);
-        return Response.ok().setPayload("dummy users has been successfully created");
+    @PutMapping(value = "/location/update", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> updateCurrentLocation(@RequestBody @Valid LocationAddRequest locationAddRequest, HttpServletRequest request) {
+        LocationDto locationDto = new LocationDto()
+                .setZip(locationAddRequest.getZip())
+                .setNumber((locationAddRequest.getNumber()))
+                .setCity(locationAddRequest.getCity())
+                .setCountry(locationAddRequest.getCountry())
+                .setStreet(locationAddRequest.getStreet());
+
+        return ResponseEntity.ok().body(userService.updateLocation(locationDto, request.getUserPrincipal().getName()));
     }
+
+    @PutMapping("/update")
+    public ResponseEntity<String> updateUserRecord(@RequestBody @Valid UpdateUserRequest updateUserRequest, HttpServletRequest request) {
+        return ResponseEntity.ok().body(userService.updateProfile(request.getUserPrincipal().getName(), updateUserRequest));
+    }
+
+
+    // TODO:
 
     @GetMapping("/token/refresh")
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {

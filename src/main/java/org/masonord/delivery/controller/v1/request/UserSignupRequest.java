@@ -3,11 +3,13 @@ package org.masonord.delivery.controller.v1.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.masonord.delivery.enums.CourierType;
+import org.masonord.delivery.enums.UserRoles;
 
 @Setter
 @Getter
@@ -27,10 +29,10 @@ public class UserSignupRequest {
     @NotEmpty
     private String password;
 
-    @NotEmpty
-    private String role;
+    @NotNull
+    private UserRoles role;
 
     private String workingHours;
 
-    private String transport;
+    private CourierType transport;
 }

@@ -1,5 +1,6 @@
 package org.masonord.delivery.service.classes;
 
+import org.masonord.delivery.controller.v1.request.UpdateUserRequest;
 import org.masonord.delivery.dto.mapper.UserMapper;
 import org.masonord.delivery.dto.model.LocationDto;
 import org.masonord.delivery.dto.model.UserDto;
@@ -8,6 +9,7 @@ import org.masonord.delivery.exception.ExceptionHandler;
 import org.masonord.delivery.model.Location;
 import org.masonord.delivery.model.User;
 import org.masonord.delivery.repository.UserRepository;
+import org.masonord.delivery.service.interfaces.CourierService;
 import org.masonord.delivery.service.interfaces.LocationService;
 import org.masonord.delivery.util.DateUtils;
 import org.modelmapper.ModelMapper;
@@ -43,32 +45,29 @@ public class UserServiceImpl implements org.masonord.delivery.service.interfaces
     public UserDto signup(UserDto userDto) {
         User user = userRepository.findUserByEmail(userDto.getEmail());
 
-        if (user == null) {
-            if (Objects.equals(userDto.getRole().toString(), "COURIER")) {
-                if (!Objects.isNull(userDto.getTransport()) && !Objects.isNull(userDto.getWorkingHours())) {
-                    user = new User()
-                            .setEmail(userDto.getEmail())
-                            .setRole(UserRoles.valueOf(userDto.getRole().toUpperCase()))
-                            .setWorkingHours(userDto.getWorkingHours())
-                            .setTransport(CourierType.valueOf(userDto.getTransport().toUpperCase()))
-                            .setPassword(bCryptPasswordEncoder.encode(userDto.getPassword()))
-                            .setFirstName(userDto.getFirstName())
-                            .setLastName(userDto.getLastName())
-                            .setDc(DateUtils.todayToStr())
-                            .setDu(DateUtils.todayToStr());
-                }else {
-                    throw exception(ModelType.COURIER, ExceptionType.ENTITY_EXCEPTION);
-                }
+        if (Objects.isNull(user)) {
+            user = new User();
+            if (Objects.equals(userDto.getRole().toUpperCase(), "COURIER") &&
+                    !Objects.isNull(userDto.getTransport()) &&
+                    !Objects.isNull(userDto.getWorkingHours())) {
+                user
+                        .setWorkingHours(userDto.getWorkingHours())
+                        .setRides(new HashSet<>())
+                        .setTransport(CourierType.valueOf(userDto.getTransport().toUpperCase()));
             }else {
-                user = new User()
-                        .setEmail(userDto.getEmail())
-                        .setRole(UserRoles.valueOf(userDto.getRole().toUpperCase()))
-                        .setPassword(bCryptPasswordEncoder.encode(userDto.getPassword()))
-                        .setFirstName(userDto.getFirstName())
-                        .setLastName(userDto.getLastName())
-                        .setDc(DateUtils.todayToStr())
-                        .setDu(DateUtils.todayToStr());
+                throw exception(ModelType.COURIER, ExceptionType.ENTITY_EXCEPTION);
             }
+            if (Objects.equals(userDto.getRole().toUpperCase(), "OWNER")) {
+                user.setRestaurants(new HashSet<>());
+            }
+            user
+                    .setEmail(userDto.getEmail())
+                    .setRole(UserRoles.valueOf(userDto.getRole().toUpperCase()))
+                    .setPassword(bCryptPasswordEncoder.encode(userDto.getPassword()))
+                    .setFirstName(userDto.getFirstName())
+                    .setLastName(userDto.getLastName())
+                    .setDc(DateUtils.todayToStr())
+                    .setDu(DateUtils.todayToStr());
             return UserMapper.toUserDto(userRepository.creatUser(user));
         }
         throw exception(ModelType.USER, ExceptionType.DUPLICATE_ENTITY, userDto.getEmail());
@@ -126,7 +125,7 @@ public class UserServiceImpl implements org.masonord.delivery.service.interfaces
             if (user != null) {
                 if (bCryptPasswordEncoder.matches(oldPassword, user.getPassword())) {
                     user.setPassword(bCryptPasswordEncoder.encode(newPassword));
-                    return "The password has been successfully updated ";
+                    return "The user's password has been successfully updated ";
                 }
                 throw exception(ModelType.USER, ExceptionType.WRONG_PASSWORD, "");
             }
@@ -135,18 +134,26 @@ public class UserServiceImpl implements org.masonord.delivery.service.interfaces
         throw exception(ModelType.USER, ExceptionType.INVALID_ARGUMENT_EXCEPTION, "email");
     }
 
+
+
     @Override
-    public UserDto updateProfile(String email, UserDto newUserProfile) {
+    public String updateProfile(String email, UpdateUserRequest updateUserRequest) {
         User user = userRepository.findUserByEmail(email);
-
         if (user != null) {
+            if (Objects.equals(ModelType.COURIER.getValue(), user.getRole().getValue())) {
+                user.setTransport(!Objects.isNull(updateUserRequest.getCourierType())
+                        ? updateUserRequest.getCourierType()
+                        : user.getTransport()
+                );
+            }
             user
-                    .setLastName(newUserProfile.getLastName())
-                    .setFirstName(newUserProfile.getFirstName())
-                    .setEmail(newUserProfile.getEmail());
-            return UserMapper.toUserDto(userRepository.updateUserProfile(user));
-        }
+                    .setLastName(updateUserRequest.getLastName())
+                    .setFirstName(updateUserRequest.getFirstName())
+                    .setEmail(updateUserRequest.getEmail());
 
+            userRepository.updateUserProfile(user);
+            return "The user's record has been successfully updated";
+        }
         throw exception(ModelType.USER, ExceptionType.ENTITY_NOT_FOUND, email);
     }
 
@@ -159,7 +166,7 @@ public class UserServiceImpl implements org.masonord.delivery.service.interfaces
                 Location location = locationService.addNewPlaceByName(locationDto);
                 user.setLocation(location);
                 userRepository.updateUserProfile(user);
-                return "The current location has been successfully updated";
+                return "\"message\": \"The user's current location has been successfully updated\"";
             }
             throw exception(ModelType.COURIER, ExceptionType.ENTITY_NOT_FOUND, email);
         }

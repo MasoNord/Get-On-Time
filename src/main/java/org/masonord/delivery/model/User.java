@@ -1,6 +1,7 @@
 package org.masonord.delivery.model;
 
 import jakarta.persistence.*;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -62,7 +63,7 @@ public class User {
     @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER)
     private Set<Order> orders;
 
-    @OneToMany(mappedBy = "courier", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "courier", fetch = FetchType.EAGER)
     private Set<Order> rides;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
