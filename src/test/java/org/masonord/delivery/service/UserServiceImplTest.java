@@ -26,16 +26,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.util.Collection;
-import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -104,7 +100,7 @@ public class UserServiceImplTest {
 
             @Override
             public String getName() {
-                return null;
+                return email;
             }
         });
     }
@@ -291,7 +287,7 @@ public class UserServiceImplTest {
         given(passwordEncoder.encode(newPassword)).willReturn(newPassword);
         given(userRepository.updateUserProfile(user)).willReturn(user);
 
-        userService.changePassword(passwordResetRequest.oldPassword, passwordResetRequest.newPassword, email);
+        userService.changePassword(passwordResetRequest.oldPassword, passwordResetRequest.newPassword);
 
         verify(userRepository).updateUserProfile(userArgumentCaptor.capture());
 
@@ -306,7 +302,7 @@ public class UserServiceImplTest {
                 new ExceptionHandler.WrongPasswordException("The user's password is wrong")
         );
 
-        assertThatThrownBy(() -> userService.changePassword("", "", email))
+        assertThatThrownBy(() -> userService.changePassword("", ""))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("The user's password is wrong");
     }
@@ -322,7 +318,7 @@ public class UserServiceImplTest {
         given(userRepository.updateUserProfile(user)).willReturn(user);
         given(locationService.addNewPlaceByName(locationDto)).willReturn(new Location());
 
-        String response = userService.updateLocation(locationDto, email);
+        String response = userService.updateLocation(locationDto);
 
         verify(userRepository).findUserByEmail(email);
         verify(userRepository).updateUserProfile(user);
@@ -341,7 +337,7 @@ public class UserServiceImplTest {
         given(userRepository.findUserByEmail(email)).willReturn(user);
         given(userRepository.updateUserProfile(user)).willReturn(user);
 
-        String response  = userService.updateProfile(email, updateUserRequest);
+        String response  = userService.updateProfile(updateUserRequest);
 
         verify(userRepository).findUserByEmail(email);
         verify(userRepository).updateUserProfile(user);
