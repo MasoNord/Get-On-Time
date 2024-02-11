@@ -1,11 +1,8 @@
 package org.masonord.delivery.exception;
 
-import org.masonord.delivery.config.PropertiesConfig;
 import org.masonord.delivery.enums.ModelType;
 import org.masonord.delivery.enums.ExceptionType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties;
-import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -14,16 +11,11 @@ import java.util.Optional;
 
 @Component
 public class ExceptionHandler {
-    private static Environment env;
+    private Environment env;
 
     @Autowired
     public ExceptionHandler(Environment env) {
         this.env = env;
-    }
-
-    public RuntimeException throwExceptionNonStatic(ModelType modelType, ExceptionType exceptionType, String ...args) {
-        String message = getMessage(modelType, exceptionType);
-        return throwException(exceptionType, message, args);
     }
 
     public RuntimeException throwException(String message, String... args) {
@@ -37,11 +29,6 @@ public class ExceptionHandler {
 
     public RuntimeException throwException(String model, ExceptionType exceptionType, String ...args) {
         String message = getMessage(model, exceptionType);
-        return throwException(exceptionType, message, args);
-    }
-
-    public RuntimeException throwException(ModelType modelType, ExceptionType exceptionType, String id, String ...args) {
-        String message = getMessage(modelType, exceptionType).concat(".").concat(id);
         return throwException(exceptionType, message, args);
     }
 
@@ -63,6 +50,8 @@ public class ExceptionHandler {
             return new Exception(format(message, args));
         }else if (ExceptionType.LOCATION_NOT_SET.equals(exceptionType)) {
             return new LocationNotSetException(format(message, args));
+        }else if (ExceptionType.INVALID_ARGUMENT_EXCEPTION.equals(exceptionType)) {
+            return new InvalidArgumentException(format(message, args));
         }
         return new RuntimeException(format(message, args));
     }
@@ -80,25 +69,25 @@ public class ExceptionHandler {
         return model.concat(".").concat(exceptionType.getValue()).toLowerCase();
     }
 
-    public class EntityNotFoundException extends RuntimeException {
+    public static class EntityNotFoundException extends RuntimeException {
         public EntityNotFoundException(String message) {
             super(message);
         }
     }
 
-    public class DuplicateEntityException extends RuntimeException {
+    public static class DuplicateEntityException extends RuntimeException {
         public DuplicateEntityException(String message) {
             super(message);
         }
     }
 
-    public  class NotUuidFormatException extends RuntimeException {
+    public static class NotUuidFormatException extends RuntimeException {
         public NotUuidFormatException(String message) {
             super(message);
         }
     }
 
-    public  class WrongPasswordException extends RuntimeException {
+    public static class WrongPasswordException extends RuntimeException {
         public WrongPasswordException(String message) {
             super(message);
         }
@@ -114,12 +103,18 @@ public class ExceptionHandler {
         }
     }
 
-    public  class LocationNotSetException extends RuntimeException {
+    public static class LocationNotSetException extends RuntimeException {
         public LocationNotSetException(String message) {super(message);}
     }
 
-    public  class Exception extends RuntimeException {
+    public static class Exception extends RuntimeException {
         public Exception(String message) {super(message);}
+    }
+
+    public static class InvalidArgumentException extends RuntimeException {
+        public InvalidArgumentException(String message) {
+            super(message);
+        }
     }
 
 }
