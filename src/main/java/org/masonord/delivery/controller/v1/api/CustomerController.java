@@ -1,37 +1,35 @@
 package org.masonord.delivery.controller.v1.api;
 
-import org.masonord.delivery.controller.v1.request.LocationAddRequest;
-import org.masonord.delivery.controller.v1.request.OffsetBasedPageRequest;
-import org.masonord.delivery.dto.model.LocationDto;
-import org.masonord.delivery.dto.response.Response;
-import org.masonord.delivery.service.classes.CustomerServiceImpl;
+import jakarta.servlet.http.HttpServletRequest;
+import org.masonord.delivery.dto.model.CustomerDto;
+import org.masonord.delivery.dto.model.OrderDto;
 import org.masonord.delivery.service.interfaces.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestController("CustomerController")
+import java.util.List;
+
+@RestController
 @RequestMapping("/api/v1/customer")
 public class CustomerController {
-
+    private final CustomerService customerService;
     @Autowired
-    private CustomerService customerService;
+    public CustomerController(CustomerService customerService) {
+        this.customerService = customerService;
+    }
+
     @GetMapping("/{email}")
-    public Response getCustomer(@PathVariable String email) {
-        return Response.ok().setPayload(customerService.findCustomerByEmail(email));
+    public ResponseEntity<CustomerDto> getCustomer(@PathVariable String email) {
+        return ResponseEntity.ok().body(customerService.findCustomerByEmail(email));
     }
     @GetMapping()
-    public Response getCustomers(@RequestParam(defaultValue = "0", required = false) int offset, @RequestParam(defaultValue = "10", required = false) int limit){
-        return Response.ok().setPayload(customerService.getCustomers(new OffsetBasedPageRequest(offset, limit)));
+    public ResponseEntity<List<CustomerDto>> getCustomers(@RequestParam(defaultValue = "0", required = false) int offset, @RequestParam(defaultValue = "10", required = false) int limit){
+        return ResponseEntity.ok().body(customerService.getCustomers(offset, limit));
     }
-    @PutMapping("/{email}")
-    public Response updateCurrentLocation(@RequestBody LocationAddRequest locationAddRequest, @PathVariable String email) {
-        LocationDto locationDto = new LocationDto()
-                .setStreet(locationAddRequest.getStreet())
-                .setCity(locationAddRequest.getCity())
-                .setCountry(locationAddRequest.getCountry())
-                .setZipCode(locationAddRequest.getZipCode())
-                .setNumber(locationAddRequest.getNumber());
 
-        return Response.ok().setPayload(customerService.updateCurrentLocation(locationDto, email));
+    @GetMapping("/active-orders")
+    public ResponseEntity<List<OrderDto>> getActiveOrders(HttpServletRequest request) {
+        return ResponseEntity.ok().body(customerService.getActiveOrders(request.getUserPrincipal().getName()));
     }
 }

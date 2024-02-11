@@ -13,6 +13,7 @@ import org.masonord.delivery.service.interfaces.OrderService;
 import org.masonord.delivery.service.interfaces.RestaurantService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,20 +23,21 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Tag(name = "restaurant", description = "the restaurant API")
-@RestController("RestaurantController")
+@RestController
 @RequestMapping("/api/v1/restaurant")
 public class RestaurantController {
 
-    @Autowired
-    private RestaurantService restaurantService;
+    private final RestaurantService restaurantService;
+    private final OrderService orderService;
 
     @Autowired
-    private OrderService orderService;
+    public RestaurantController(RestaurantService restaurantService, OrderService orderService) {
+        this.restaurantService = restaurantService;
+        this.orderService = orderService;
+    }
 
     @PostMapping()
-    public ResponseEntity<RestaurantDto> addNewRestaurant(
-            @RequestBody @Valid RestaurantCreateRequest createRequest,
-            HttpServletRequest request) {
+    public ResponseEntity<RestaurantDto> addNewRestaurant(@RequestBody @Valid RestaurantCreateRequest createRequest) {
 
         LocationDto locationDto = new LocationDto()
                 .setCountry(createRequest.getLocation().getCountry())
@@ -55,7 +57,7 @@ public class RestaurantController {
                 .setLocation(locationDto)
                 .setName(createRequest.getName())
                 .setMenus(menus);
-        return ResponseEntity.ok().body(restaurantService.addNewRestaurant(restaurantDto, request.getUserPrincipal().getName()));
+        return ResponseEntity.ok().body(restaurantService.addNewRestaurant(restaurantDto));
     }
 
     @GetMapping("/orders/{restaurantName}")
@@ -63,7 +65,7 @@ public class RestaurantController {
         return ResponseEntity.ok().body(restaurantService.getAllOrders(restaurantName));
     }
 
-    @PutMapping("/orders/change-order-status")
+    @PutMapping(value = "/orders/change-order-status",  produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> changeOrderStatus(@RequestParam String orderId,
                                               @RequestParam String restaurantName,
                                               @RequestBody @Valid ChangeOrderStatusRequest status) {

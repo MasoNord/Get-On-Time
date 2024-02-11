@@ -15,25 +15,19 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.masonord.delivery.controller.v1.request.*;
-import org.masonord.delivery.dto.mapper.UserMapper;
 import org.masonord.delivery.dto.model.LocationDto;
-import org.masonord.delivery.enums.UserRoles;
-import org.masonord.delivery.model.User;
 import org.springframework.http.HttpHeaders;
 import org.masonord.delivery.dto.model.UserDto;
-import org.masonord.delivery.dto.response.Response;
 import org.masonord.delivery.service.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
 import java.io.IOException;
 import java.util.*;
+
 @Tag(name = "user", description = "the user API")
-@RestController("UserController")
+@RestController
 @RequestMapping("/api/v1/user")
 public class UserController {
 
@@ -86,19 +80,17 @@ public class UserController {
     }
 
     @PutMapping("/password/update")
-    public ResponseEntity<String> updatePassword(@RequestBody @Valid UserPasswordChangeRequest userPasswordChangeRequest,
-                                         HttpServletRequest request) {
+    public ResponseEntity<String> updatePassword(@RequestBody @Valid PasswordResetRequest passwordResetRequest) {
         return ResponseEntity.ok().body(
                 userService.changePassword(
-                    userPasswordChangeRequest.oldPassword,
-                    userPasswordChangeRequest.newPassword,
-                    request.getUserPrincipal().getName()
+                    passwordResetRequest.oldPassword,
+                    passwordResetRequest.newPassword
                 )
         );
     }
 
     @PutMapping(value = "/location/update", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> updateCurrentLocation(@RequestBody @Valid LocationAddRequest locationAddRequest, HttpServletRequest request) {
+    public ResponseEntity<String> updateCurrentLocation(@RequestBody @Valid LocationAddRequest locationAddRequest) {
         LocationDto locationDto = new LocationDto()
                 .setZip(locationAddRequest.getZip())
                 .setNumber((locationAddRequest.getNumber()))
@@ -106,12 +98,12 @@ public class UserController {
                 .setCountry(locationAddRequest.getCountry())
                 .setStreet(locationAddRequest.getStreet());
 
-        return ResponseEntity.ok().body(userService.updateLocation(locationDto, request.getUserPrincipal().getName()));
+        return ResponseEntity.ok().body(userService.updateLocation(locationDto));
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<String> updateUserRecord(@RequestBody @Valid UpdateUserRequest updateUserRequest, HttpServletRequest request) {
-        return ResponseEntity.ok().body(userService.updateProfile(request.getUserPrincipal().getName(), updateUserRequest));
+    @PutMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE )
+    public ResponseEntity<String> updateUserRecord(@RequestBody @Valid UpdateUserRequest updateUserRequest) {
+        return ResponseEntity.ok().body(userService.updateProfile(updateUserRequest));
     }
 
 

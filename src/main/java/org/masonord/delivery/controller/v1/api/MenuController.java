@@ -17,15 +17,17 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@RestController("MenuController")
+@RestController
 @RequestMapping("/api/v1/menu")
 public class MenuController {
 
+    private final IdUtils idUtils;
+    private final MenuService menuService;
     @Autowired
-    private IdUtils idUtils;
-
-    @Autowired
-    private MenuService menuService;
+    public MenuController(IdUtils idUtils, MenuService menuService) {
+        this.idUtils = idUtils;
+        this.menuService = menuService;
+    }
 
     @PostMapping()
     public ResponseEntity<MenuDto> addNewManu(@RequestBody @Valid MenuCreateRequest createRequest) {
@@ -35,7 +37,7 @@ public class MenuController {
                 .setDescription(createRequest.getDescription())
                 .setDishes(new HashSet<>());
 
-        return ResponseEntity.ok(menuService.addNewManu(menuDto));
+        return ResponseEntity.ok(menuService.addNewManu(menuDto, createRequest.getLat(), createRequest.getLon()));
     }
 
     @GetMapping("/{name}")
@@ -60,8 +62,4 @@ public class MenuController {
         return ResponseEntity.ok(menuService.getAllMenus());
     }
 
-//    @DeleteMapping("/{name}")
-//    public ResponseEntity<Void> deleteMenuByName(@PathVariable String name) {
-//        return ResponseEntity.ok(menuService.removeMenu(name));
-//    }
 }
