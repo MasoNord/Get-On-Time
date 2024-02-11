@@ -9,16 +9,11 @@ import java.util.Set;
 
 public interface MenuService {
 
-    MenuDto addNewManu(MenuDto menu);
+    MenuDto addNewManu(MenuDto menuDto, double lat, double lon);
 
     MenuDto getManuByName(String name);
 
-    MenuDto updateMenu(MenuDto menu);
-
-    MenuDto addDishes(List<DishDto> dishes, String menuName);
-
     List<MenuDto> getAllMenus();
 
-    void removeMenu(String name);
-
+    MenuDto addDishes(List<DishDto> dishes, String menuName);
 }

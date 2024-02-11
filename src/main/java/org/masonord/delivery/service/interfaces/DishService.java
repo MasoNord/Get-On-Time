@@ -6,13 +6,9 @@ import java.util.List;
 
 public interface DishService {
 
-    DishDto addNewDish(DishDto dishDto);
+    DishDto addNewDish(DishDto dishDto, String menuName, double lat, double lon);
 
     DishDto getDishByName(String name);
 
-    DishDto updateDishRecord(String name);
-
-    List<DishDto> getAllDishes();
-
-    void deleteDish(String name);
+    List<DishDto> getAllDishes(int offset, int limit);
 }

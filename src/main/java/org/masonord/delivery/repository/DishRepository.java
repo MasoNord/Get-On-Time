@@ -14,7 +14,7 @@ public interface DishRepository {
 
     Dish getDishByUUID(String uuid);
 
-    List<Dish> getAllDishes();
+    List<Dish> getAllDishes(int offset, int limit);
 
     void deleteDish(Dish dish);
 }

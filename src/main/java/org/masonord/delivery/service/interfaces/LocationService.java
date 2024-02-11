@@ -15,16 +15,6 @@ public interface LocationService {
     Location addNewPlaceByName(LocationDto locationDto);
 
     /**
-     * Register a new location based on latitude and longitude
-     *
-     * @param latitude
-     * @param longitude
-     * @return
-     */
-
-    Location addNewPlaceByCoordinates(float latitude, float longitude);
-
-    /**
      * Calculate distance between two points
      * and return result in meters using Harvesine formula
      *

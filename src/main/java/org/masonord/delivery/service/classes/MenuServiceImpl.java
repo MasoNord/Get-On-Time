@@ -2,15 +2,20 @@ package org.masonord.delivery.service.classes;
 
 import org.masonord.delivery.dto.mapper.MenuMapper;
 import org.masonord.delivery.dto.model.DishDto;
+import org.masonord.delivery.dto.model.LocationDto;
 import org.masonord.delivery.dto.model.MenuDto;
 import org.masonord.delivery.enums.ExceptionType;
 import org.masonord.delivery.enums.ModelType;
 import org.masonord.delivery.exception.ExceptionHandler;
+import org.masonord.delivery.model.User;
 import org.masonord.delivery.model.restarurant.Menu;
 import org.masonord.delivery.model.restarurant.Dish;
+import org.masonord.delivery.model.restarurant.Restaurant;
 import org.masonord.delivery.repository.DishRepository;
 import org.masonord.delivery.repository.MenuRepository;
+import org.masonord.delivery.repository.RestaurantRepository;
 import org.masonord.delivery.service.interfaces.MenuService;
+import org.masonord.delivery.service.interfaces.UserService;
 import org.masonord.delivery.util.DateUtils;
 import org.masonord.delivery.util.IdUtils;
 import org.modelmapper.ModelMapper;
@@ -20,38 +25,55 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Service("MenuService")
+@Service
 public class MenuServiceImpl implements MenuService {
+    private final MenuRepository menuRepository;
+    private final DishRepository dishRepository;
+    private final ExceptionHandler exceptionHandler;
+    private final RestaurantRepository restaurantRepository;
+    private final UserService userService;
 
     @Autowired
-    private MenuRepository menuRepository;
-
-    @Autowired
-    private DishRepository dishRepository;
-
-    @Autowired
-    private ExceptionHandler exceptionHandler;
-
+    public MenuServiceImpl(MenuRepository menuRepository,
+                           DishRepository dishRepository,
+                           ExceptionHandler exceptionHandler,
+                           UserService userService,
+                           RestaurantRepository restaurantRepository) {
+        this.menuRepository = menuRepository;
+        this.dishRepository = dishRepository;
+        this.exceptionHandler = exceptionHandler;
+        this.userService = userService;
+        this.restaurantRepository = restaurantRepository;
+    }
 
     @Override
-    public MenuDto addNewManu(MenuDto menuDto) {
-        Menu menu = menuRepository.getMenuByName(menuDto.getName());
-        IdUtils idUtils = new IdUtils();
-        if (menu == null) {
-            menu = new Menu()
-                    .setId(idUtils.generateUuid())
-                    .setMenuType(menuDto.getMenuType())
-                    .setName(menuDto.getName())
-                    .setDescription(menuDto.getDescription())
-                    .setDu(DateUtils.todayToStr())
-                    .setDc(DateUtils.todayToStr())
-                    .setDishes(new HashSet<>())
-                    .setReviews(new HashSet<>());
+    public MenuDto addNewManu(MenuDto menuDto, double lat, double lon) {
+        Restaurant restaurant = restaurantRepository.findByCoordinates(lat, lon);
 
-            return MenuMapper.toMenuDto(menuRepository.addNewManu(menu));
+        if (!Objects.isNull(restaurant)) {
+            Menu menu = menuRepository.getMenuByName(menuDto.getName());
+            if (Objects.isNull(menu)) {
+                IdUtils idUtils = new IdUtils();
+
+                menu = new Menu()
+                        .setId(idUtils.generateUuid())
+                        .setMenuType(menuDto.getMenuType())
+                        .setName(menuDto.getName())
+                        .setDescription(menuDto.getDescription())
+                        .setDu(DateUtils.todayToStr())
+                        .setDc(DateUtils.todayToStr())
+                        .setDishes(new HashSet<>())
+                        .setReviews(new HashSet<>());
+
+                restaurant.getMenus().add(menu);
+                menuRepository.addNewManu(menu);
+                restaurantRepository.updateRestaurant(restaurant);
+
+                return MenuMapper.toMenuDto(menu);
+            }
+            throw exception(ModelType.MENU, ExceptionType.DUPLICATE_ENTITY);
         }
-
-        throw exception(ModelType.MENU, ExceptionType.DUPLICATE_ENTITY);
+        throw exception(ModelType.RESTAURANT, ExceptionType.ENTITY_NOT_FOUND);
     }
 
     @Override
@@ -75,7 +97,6 @@ public class MenuServiceImpl implements MenuService {
                     dishRepository.createDish(newDish);
                     menuDishes.add(newDish);
                 }
-                // add warn logging, the dish is already exists in the chosen menu
             }
 
             menu.setDishes(menuDishes);
@@ -96,11 +117,6 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
-    public MenuDto updateMenu(MenuDto menu) {
-        return null;
-    }
-
-    @Override
     public List<MenuDto> getAllMenus() {
         List<Menu> menus = menuRepository.getAllMenus();
         return new ArrayList<>(menus
@@ -108,11 +124,6 @@ public class MenuServiceImpl implements MenuService {
                 .map(menu -> new ModelMapper().map(menu, MenuDto.class))
                 .collect(Collectors.toList())
         );
-    }
-
-    @Override
-    public void removeMenu(String name) {
-
     }
 
     private RuntimeException exception(ModelType entity, ExceptionType exception, String... args) {

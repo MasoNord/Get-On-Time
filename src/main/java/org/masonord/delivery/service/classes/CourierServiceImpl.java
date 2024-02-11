@@ -27,9 +27,8 @@ import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Service("courierService")
+@Service
 public class CourierServiceImpl implements org.masonord.delivery.service.interfaces.CourierService {
-
     private final UserRepository userRepository;
     private final LocationService locationService;
     private final CompletedOrderRepository completedOrderRepository;
@@ -64,9 +63,9 @@ public class CourierServiceImpl implements org.masonord.delivery.service.interfa
     }
 
     @Override
-    public List<CourierDto> getAllCouriers(OffsetBasedPageRequest offsetBasedPageRequest) {
+    public List<CourierDto> getAllCouriers(int offset, int limit) {
         List<CourierDto> couriers = new LinkedList<>();
-        List<User> couriersEntity = userRepository.getAllUsers(offsetBasedPageRequest.getOffset(), offsetBasedPageRequest.getPageSize());
+        List<User> couriersEntity = userRepository.getAllUsers(offset, limit);
 
         for (User c : couriersEntity) {
             if (Objects.equals(c.getRole(), UserRoles.COURIER)) {
@@ -77,10 +76,8 @@ public class CourierServiceImpl implements org.masonord.delivery.service.interfa
         return couriers;
     }
 
-    // TODO: come back when restaurant will be ready
-
     @Override
-    public CourierDto setNewOrder(String orderId, String email) {
+    public CourierDto acceptOrder(String orderId, String email) {
         Order order = orderRepository.getOrder(orderId);
         User courier = userRepository.findUserByEmail(email);
         if (idUtils.validateUuid(orderId)) {
@@ -107,13 +104,6 @@ public class CourierServiceImpl implements org.masonord.delivery.service.interfa
         throw exception(ModelType.ORDER, ExceptionType.NOT_UUID_FORMAT, orderId);
     }
 
-
-
-    @Override
-    public String acceptOrder(String courierEmail, String orderId) {
-        return null;
-    }
-
     @Override
     public List<OrderDto> getOrders(String email) {
         if (!Objects.isNull(email)) {
@@ -133,40 +123,6 @@ public class CourierServiceImpl implements org.masonord.delivery.service.interfa
 
     @Override
     public void calculateRatingAndSalary(String courierEmail, Order order) {
-    }
-
-    @Override
-    public CourierMetaInfoDto getMetaInfo(String courierEmail, String startDate, String endDate) throws ParseException {
-        User courier = userRepository.findUserByEmail(courierEmail);
-
-        if (courier != null) {
-            List<CompletedOrder> completedOrders = completedOrderRepository.getCompletedOrders();
-            int criteria = (CourierCriteriaType.valueOf(courier.getTransport().getValue().toUpperCase()).getValue());
-            int countCompletedOrders = 0;
-            float rating = 0.0f, earnings = 0.0f;
-
-            for (CompletedOrder o : completedOrders) {
-                if (DateUtils.DetermineDateBetweenTwoDates(startDate, endDate, o.getCompletedTime()) && Objects.equals(o.getCourier().getEmail(), courier.getEmail())) {
-                    earnings += o.getCost() * criteria;
-                    countCompletedOrders++;
-                }
-            }
-
-            rating = ((float) countCompletedOrders / DateUtils.DifferenceBetweenTwoDates(startDate, endDate)) * criteria;
-
-            return new CourierMetaInfoDto()
-                    .setLocationDto(LocationMapper.toLocationDto(courier.getLocation()))
-                    .setRating(rating)
-                    .setWorkingHours(courier.getWorkingHours())
-                    .setEarnings(earnings);
-        }
-
-        throw  exception(ModelType.COURIER, ExceptionType.ENTITY_NOT_FOUND, courierEmail);
-    }
-
-    @Override
-    public User updateProfile(String id, User newUserProfile) {
-        return null;
     }
 
     private RuntimeException exception(ModelType entity, ExceptionType exception, String ...args) {

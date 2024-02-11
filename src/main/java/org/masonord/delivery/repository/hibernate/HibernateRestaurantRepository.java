@@ -30,6 +30,11 @@ public class HibernateRestaurantRepository extends AbstractHibernateRep<Restaura
     }
 
     @Override
+    public Restaurant findByCoordinates(double lat, double lon) {
+        return getByCoordinates(lat, lon);
+    }
+
+    @Override
     public List<Restaurant> getAllRestaurants(int offset, int limit) {
         return getAll(offset, limit);
     }

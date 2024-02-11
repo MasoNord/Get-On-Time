@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 
-@Service("LocationService")
+@Service
 public class LocationServiceImpl implements org.masonord.delivery.service.interfaces.LocationService {
     private final LocationRepository locationRepository;
     private final GeoCodingApiService geoCodingApiService;
@@ -55,11 +55,6 @@ public class LocationServiceImpl implements org.masonord.delivery.service.interf
             return location;
         }
         throw exception(ModelType.LOCATION, ExceptionType.ENTITY_NOT_FOUND, address);
-    }
-
-    @Override
-    public Location addNewPlaceByCoordinates(float latitude, float longitude) {
-        return null;
     }
 
     private  RuntimeException exception(ModelType entity, ExceptionType exception, String ...args) {

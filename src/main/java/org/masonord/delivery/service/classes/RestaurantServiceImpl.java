@@ -1,5 +1,6 @@
 package org.masonord.delivery.service.classes;
 
+import org.masonord.delivery.controller.v1.request.SetReviewRequest;
 import org.masonord.delivery.dto.mapper.RestaurantMapper;
 import org.masonord.delivery.dto.model.DishDto;
 import org.masonord.delivery.dto.model.MenuDto;
@@ -17,6 +18,7 @@ import org.masonord.delivery.model.restarurant.Restaurant;
 import org.masonord.delivery.repository.*;
 import org.masonord.delivery.service.interfaces.LocationService;
 import org.masonord.delivery.service.interfaces.RestaurantService;
+import org.masonord.delivery.service.interfaces.UserService;
 import org.masonord.delivery.util.DateUtils;
 import org.masonord.delivery.util.IdUtils;
 import org.modelmapper.ModelMapper;
@@ -29,37 +31,45 @@ import java.util.stream.Collectors;
 @Service("RestaurantService")
 public class RestaurantServiceImpl implements RestaurantService {
 
-    @Autowired
-    private LocationService locationService;
+    private final LocationService locationService;
+    private final UserRepository userRepository;
+    private final OrderRepository orderRepository;
+    private final MenuRepository menuRepository;
+    private final DishRepository dishRepository;
+    private final RestaurantRepository restaurantRepository;
+    private final UserService userService;
+    private final ExceptionHandler exceptionHandler;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private OrderRepository orderRepository;
-
-    @Autowired
-    private MenuRepository menuRepository;
-
-    @Autowired
-    private DishRepository dishRepository;
-
-    @Autowired
-    private RestaurantRepository restaurantRepository;
-
-    @Autowired
-    private ExceptionHandler exceptionHandler;
+    public RestaurantServiceImpl(LocationService locationService,
+                                 UserRepository userRepository,
+                                 OrderRepository orderRepository,
+                                 MenuRepository menuRepository,
+                                 DishRepository dishRepository,
+                                 RestaurantRepository restaurantRepository,
+                                 UserService userService,
+                                 ExceptionHandler exceptionHandler) {
+        this.locationService = locationService;
+        this.userRepository = userRepository;
+        this.orderRepository = orderRepository;
+        this.menuRepository = menuRepository;
+        this.dishRepository = dishRepository;
+        this.restaurantRepository = restaurantRepository;
+        this.exceptionHandler = exceptionHandler;
+        this.userService = userService;
+    }
 
     @Override
-    public RestaurantDto addNewRestaurant(RestaurantDto restaurantDto, String email) {
+    public RestaurantDto addNewRestaurant(RestaurantDto restaurantDto) {
         Location location = locationService.addNewPlaceByName(restaurantDto.getLocation());
+        User user = userService.getUser();
 
         if (Objects.isNull(restaurantRepository.getRestaurant(restaurantDto.getName()))) {
 
             Restaurant restaurant = new Restaurant()
                     .setLocation(location)
                     .setName(restaurantDto.getName())
-                    .setUser(userRepository.findUserByEmail(email))
+                    .setUser(user)
                     .setOrders(new HashSet<>())
                     .setReviews(new HashSet<>());
 
@@ -109,12 +119,7 @@ public class RestaurantServiceImpl implements RestaurantService {
             restaurant.setMenus(menus);
             return RestaurantMapper.toRestaurantDto(restaurantRepository.updateRestaurant(restaurant));
         }
-        throw exception(ModelType.RESTAURANT, ExceptionType.DUPLICATE_ENTITY, email);
-    }
-
-    @Override
-    public RestaurantService updateRestaurantProfile(RestaurantDto restaurantDto) {
-        return null;
+        throw exception(ModelType.RESTAURANT, ExceptionType.DUPLICATE_ENTITY);
     }
 
     @Override
@@ -149,10 +154,10 @@ public class RestaurantServiceImpl implements RestaurantService {
     @Override
     public List<RestaurantDto> getClosestRestaurants(String userEmail) {
         User user = userRepository.findUserByEmail(userEmail);
-        List<Restaurant> restaurants = restaurantRepository.getAllRestaurants();
-        List<RestaurantDto> closestRestaurants = new ArrayList<>();
 
         if (user.getLocation() != null) {
+            List<Restaurant> restaurants = restaurantRepository.getAllRestaurants();
+            List<RestaurantDto> closestRestaurants = new ArrayList<>();
             for (Restaurant restaurant : restaurants) {
                 double distance = LocationService.getDistanceFromLatLonInM(
                         user.getLocation().getLatitude(), user.getLocation().getLongitude(),
@@ -160,7 +165,7 @@ public class RestaurantServiceImpl implements RestaurantService {
                 );
 
                 if (!Objects.equals(ModelType.COURIER.getValue(), user.getRole().getValue())) {
-                    restaurant.setOrders(null);
+                    restaurant.setOrders(new HashSet<>());
                     if (distance <= 10000) {
                         closestRestaurants.add(RestaurantMapper.toRestaurantDto(restaurant));
                     }
@@ -183,6 +188,13 @@ public class RestaurantServiceImpl implements RestaurantService {
     public Restaurant getRestaurantByName(String name) {
         return null;
     }
+
+
+    @Override
+    public RestaurantDto setReview(SetReviewRequest request) {
+        return null;
+    }
+
 
     private RuntimeException exception(ModelType entity, ExceptionType exception, String ...args) {
         return exceptionHandler.throwException(entity, exception, args);

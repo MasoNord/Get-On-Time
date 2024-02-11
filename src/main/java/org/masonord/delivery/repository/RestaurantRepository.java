@@ -12,7 +12,11 @@ public interface RestaurantRepository {
 
     Restaurant updateRestaurant(Restaurant restaurant);
 
+    Restaurant findByCoordinates(double lat, double lon);
+
     List<Restaurant> getAllRestaurants(int offset, int limit);
 
     List<Restaurant> getAllRestaurants();
+
+
 }

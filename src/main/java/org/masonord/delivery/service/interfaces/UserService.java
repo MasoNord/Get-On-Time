@@ -4,6 +4,9 @@ import org.masonord.delivery.controller.v1.request.OffsetBasedPageRequest;
 import org.masonord.delivery.controller.v1.request.UpdateUserRequest;
 import org.masonord.delivery.dto.model.LocationDto;
 import org.masonord.delivery.dto.model.UserDto;
+import org.masonord.delivery.model.User;
+
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 public interface UserService {
@@ -15,6 +18,10 @@ public interface UserService {
      */
 
     UserDto signup(UserDto userDto);
+
+    UserDto fetchUser();
+
+    User getUser();
 
     /**
      * Search an existing user
@@ -28,22 +35,20 @@ public interface UserService {
     /**
      * Change user's password
      *
-     * @param email
      * @param newPassword
      * @return UserDto
      */
 
-    String changePassword(String oldPassword, String newPassword, String email);
+    String changePassword(String oldPassword, String newPassword);
 
     /**
      * Update user's personal data
      *
-     * @param email
-     * @param newUserProfile
+     * @param updateUserRequest
      * @return String
      */
 
-    String updateProfile(String email, UpdateUserRequest updateUserRequest);
+    String updateProfile(UpdateUserRequest updateUserRequest);
 
     /**
      * Get all user records
@@ -57,9 +62,8 @@ public interface UserService {
      * Update user's current location
      *
      * @param locationDto
-     * @param email
      * @return
      */
 
-    String updateLocation(LocationDto locationDto, String email);
+    String updateLocation(LocationDto locationDto);
 }

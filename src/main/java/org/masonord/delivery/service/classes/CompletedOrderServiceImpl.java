@@ -15,17 +15,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@Service("completedOrderService")
+@Service
 public class CompletedOrderServiceImpl implements org.masonord.delivery.service.interfaces.CompletedOrderService {
 
-    @Autowired
-    CompletedOrderRepository completedOrderRepository;
+    private final CompletedOrderRepository completedOrderRepository;
+    private final UserRepository userRepository;
+    private final ExceptionHandler exceptionHandler;
 
     @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    ExceptionHandler exceptionHandler;
+    public CompletedOrderServiceImpl(CompletedOrderRepository completedOrderRepository, UserRepository userRepository, ExceptionHandler exceptionHandler) {
+        this.completedOrderRepository = completedOrderRepository;
+        this.userRepository = userRepository;
+        this.exceptionHandler = exceptionHandler;
+    }
 
     @Override
     public List<CompletedOrderDto> getAllCompletedOrders() {

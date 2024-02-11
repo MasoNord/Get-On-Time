@@ -36,8 +36,8 @@ public class HibernateDishRepository extends AbstractHibernateRep<Dish> implemen
     }
 
     @Override
-    public List<Dish> getAllDishes() {
-        return getAll();
+    public List<Dish> getAllDishes(int offset, int limit) {
+        return getAll(offset, limit);
     }
 
     @Override

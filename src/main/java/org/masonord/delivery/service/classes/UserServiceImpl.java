@@ -9,12 +9,12 @@ import org.masonord.delivery.exception.ExceptionHandler;
 import org.masonord.delivery.model.Location;
 import org.masonord.delivery.model.User;
 import org.masonord.delivery.repository.UserRepository;
-import org.masonord.delivery.service.interfaces.CourierService;
 import org.masonord.delivery.service.interfaces.LocationService;
 import org.masonord.delivery.util.DateUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -75,6 +75,35 @@ public class UserServiceImpl implements org.masonord.delivery.service.interfaces
     }
 
     @Override
+    public UserDto fetchUser() {
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (!Objects.isNull(userEmail)) {
+            User user = userRepository.findUserByEmail(userEmail);
+            if(!Objects.isNull(user)) {
+                return UserMapper.toUserDto(user);
+            }
+            throw exception(ModelType.USER, ExceptionType.ENTITY_NOT_FOUND, userEmail);
+        }
+
+        throw exception(ModelType.USER, ExceptionType.INVALID_ARGUMENT_EXCEPTION, "email");
+    }
+
+    @Override
+    public User getUser() {
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        if (!Objects.isNull(userEmail)) {
+            User user = userRepository.findUserByEmail(userEmail);
+            if (!Objects.isNull(user)) {
+                return user;
+            }
+            throw exception(ModelType.USER, ExceptionType.ENTITY_NOT_FOUND, userEmail);
+        }
+
+        throw exception(ModelType.USER, ExceptionType.INVALID_ARGUMENT_EXCEPTION, "email");
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String email) {
 
         if (!Objects.isNull(email)) {
@@ -118,59 +147,45 @@ public class UserServiceImpl implements org.masonord.delivery.service.interfaces
     }
 
     @Override
-    public String changePassword(String oldPassword, String newPassword, String email) {
-        if (!Objects.isNull(email)) {
-            User user = userRepository.findUserByEmail(email);
+    public String changePassword(String oldPassword, String newPassword) {
+        User user = getUser();
 
-            if (user != null) {
-                if (bCryptPasswordEncoder.matches(oldPassword, user.getPassword())) {
-                    user.setPassword(bCryptPasswordEncoder.encode(newPassword));
-                    return "The user's password has been successfully updated ";
-                }
-                throw exception(ModelType.USER, ExceptionType.WRONG_PASSWORD, "");
-            }
-            throw exception(ModelType.USER, ExceptionType.ENTITY_NOT_FOUND, email);
-        }
-        throw exception(ModelType.USER, ExceptionType.INVALID_ARGUMENT_EXCEPTION, "email");
-    }
-
-
-
-    @Override
-    public String updateProfile(String email, UpdateUserRequest updateUserRequest) {
-        User user = userRepository.findUserByEmail(email);
-        if (user != null) {
-            if (Objects.equals(ModelType.COURIER.getValue(), user.getRole().getValue())) {
-                user.setTransport(!Objects.isNull(updateUserRequest.getCourierType())
-                        ? updateUserRequest.getCourierType()
-                        : user.getTransport()
-                );
-            }
-            user
-                    .setLastName(updateUserRequest.getLastName())
-                    .setFirstName(updateUserRequest.getFirstName())
-                    .setEmail(updateUserRequest.getEmail());
-
+        if (bCryptPasswordEncoder.matches(oldPassword, user.getPassword())) {
+            user.setPassword(bCryptPasswordEncoder.encode(newPassword));
             userRepository.updateUserProfile(user);
-            return "The user's record has been successfully updated";
+            return "\"message\": \"User's password has been successfully updated\"";
         }
-        throw exception(ModelType.USER, ExceptionType.ENTITY_NOT_FOUND, email);
+
+        throw exception(ModelType.USER, ExceptionType.WRONG_PASSWORD, "");
     }
 
     @Override
-    public String updateLocation(LocationDto locationDto, String email) {
-        if (!Objects.isNull(email)) {
-            User user = userRepository.findUserByEmail(email);
-
-            if (!Objects.isNull(user)) {
-                Location location = locationService.addNewPlaceByName(locationDto);
-                user.setLocation(location);
-                userRepository.updateUserProfile(user);
-                return "\"message\": \"The user's current location has been successfully updated\"";
-            }
-            throw exception(ModelType.COURIER, ExceptionType.ENTITY_NOT_FOUND, email);
+    public String updateProfile(UpdateUserRequest updateUserRequest){
+        User user = getUser();
+        if (Objects.equals(ModelType.COURIER.getValue(), user.getRole().getValue())) {
+            user.setTransport(!Objects.isNull(updateUserRequest.getCourierType())
+                    ? updateUserRequest.getCourierType()
+                    : user.getTransport()
+            );
         }
-        throw exception(ModelType.USER, ExceptionType.INVALID_ARGUMENT_EXCEPTION, "email");
+        user
+                .setLastName(updateUserRequest.getLastName())
+                .setFirstName(updateUserRequest.getFirstName())
+                .setEmail(updateUserRequest.getEmail());
+
+        userRepository.updateUserProfile(user);
+        return "\"message\": \"User has been successfully updated\"";
+    }
+
+    @Override
+    public String updateLocation(LocationDto locationDto) {
+        User user = getUser();
+
+        Location location = locationService.addNewPlaceByName(locationDto);
+        user.setLocation(location);
+        userRepository.updateUserProfile(user);
+
+        return "\"message\": \"User's current location has been successfully updated\"";
     }
 
     private RuntimeException exception(ModelType entity, ExceptionType exception, String... args) {

@@ -28,16 +28,7 @@ public interface CourierService {
      *
      */
 
-    List<CourierDto> getAllCouriers(OffsetBasedPageRequest offsetBasedPageRequest);
-
-    /**
-     * Update courier's profile
-     *
-     * @param newUserProfile
-     * @return User
-     *
-     */
-    User updateProfile(String id, User newUserProfile);
+    List<CourierDto> getAllCouriers(int offset, int limit);
 
     /**
      * Assign a new order to a courier
@@ -47,7 +38,7 @@ public interface CourierService {
      * @return CourierDto
      */
 
-    CourierDto setNewOrder(String orderId, String email);
+    CourierDto acceptOrder(String orderId, String email);
 
     /**
      * Calculate rating and salary for a given courier
@@ -57,23 +48,6 @@ public interface CourierService {
      */
 
     void calculateRatingAndSalary(String courierEmail, Order order);
-
-    /**
-     * Get meta info for a given courier
-     * This displays the following information:
-     * Courier's earnings and Courier's rating, among others
-     *
-     * @param courierEmail
-     * @param startDate
-     * @param endDate
-     * @return
-     * @throws ParseException
-     */
-
-    CourierMetaInfoDto getMetaInfo(String courierEmail, String startDate, String endDate) throws ParseException;
-
-
-    String acceptOrder(String courierEmail, String orderId);
 
     List<OrderDto> getOrders(String email);
 
