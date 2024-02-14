@@ -12,7 +12,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UserPasswordChangeRequest {
+public class PasswordResetRequest {
     @NotEmpty
     public String oldPassword;
 

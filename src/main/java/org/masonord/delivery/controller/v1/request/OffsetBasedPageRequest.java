@@ -7,13 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @Getter
 public class OffsetBasedPageRequest {
+
     @Autowired
-    ExceptionHandler exceptionHandler;
+    private ExceptionHandler exceptionHandler;
 
     private int limit;
     private int offset;
-
-
 
     public OffsetBasedPageRequest(int offset, int limit)  {
         if (limit < 0) {

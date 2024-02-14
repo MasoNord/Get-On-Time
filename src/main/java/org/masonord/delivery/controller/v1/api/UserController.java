@@ -6,6 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -26,9 +27,9 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.*;
 
-@Tag(name = "user", description = "the user API")
 @RestController
 @RequestMapping("/api/v1/user")
+@Tag(name = "User API")
 public class UserController {
 
     private UserService userService;
@@ -38,13 +39,24 @@ public class UserController {
         this.userService = userService;
     }
 
-    @Operation(summary = "Register a new user")
+    @RequestMapping(value = "signup", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Create new user")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "")
+            @ApiResponse(responseCode = "200", description = "Success", content = {
+                    @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = UserDto.class)
+                    )
+                }
+            ),
+            @ApiResponse(responseCode = "400", description = "Wrong data supplied"),
+            @ApiResponse(responseCode = "400", description = "User is already exist"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "500", description = "Failure")
     })
 
-    @PostMapping("/signup")
-    public ResponseEntity signup(@RequestBody @Valid UserSignupRequest userSignupRequest) {
+    public ResponseEntity<UserDto> signup(@RequestBody @Valid UserSignupRequest userSignupRequest) {
         UserDto userDto = new UserDto()
                 .setEmail(userSignupRequest.getEmail())
                 .setRole(userSignupRequest.getRole().getValue())
@@ -57,29 +69,59 @@ public class UserController {
         return ResponseEntity.ok().body(userService.signup(userDto));
     }
 
-    @Operation(summary = "Get a user by his email")
+    @RequestMapping(value = "/{email}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Get a user by email", description = "User must exist")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "User has been found",
+        @ApiResponse(responseCode = "200", description = "Success",
             content = {@Content(mediaType = "application/json",
                 schema = @Schema(implementation = UserDto.class))
         }),
-        @ApiResponse(responseCode = "404", description = "Use has not been found",
+        @ApiResponse(responseCode = "404", description = "Use not found",
             content = {@Content(mediaType = "application/json",
                 schema = @Schema(implementation  = ResponseEntity.class))
         }),
+        @ApiResponse(responseCode = "401", description = "Unauthorized"),
+        @ApiResponse(responseCode = "403", description = "Forbidden"),
+        @ApiResponse(responseCode = "500", description = "Failure")
     })
-    @GetMapping("/{email}")
+
     public ResponseEntity<UserDto> getUser(@PathVariable String email) {
         return ResponseEntity.ok().body(userService.findUserByEmail(email));
     }
 
-    @GetMapping
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Get all users")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success", content = {
+                    @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = UserDto.class))
+                    )
+                }
+            ),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "500", description = "Failure")
+    })
+
     public ResponseEntity<List<UserDto>> getUsers(@RequestParam(defaultValue = "0", required = false) int offset,
                              @RequestParam(defaultValue = "1", required = false) int limit) {
         return ResponseEntity.ok().body(userService.getUsers(offset, limit));
     }
 
-    @PutMapping("/password/update")
+    @RequestMapping(value = "/password/update", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Update user's current password", description = "Old Password must be valid")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success", content = {
+                    @Content(mediaType = "application/json")
+                }
+            ),
+            @ApiResponse(responseCode = "400", description = "Passwords are not match"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "500", description = "Failure")
+    })
     public ResponseEntity<String> updatePassword(@RequestBody @Valid PasswordResetRequest passwordResetRequest) {
         return ResponseEntity.ok().body(
                 userService.changePassword(
@@ -89,7 +131,20 @@ public class UserController {
         );
     }
 
-    @PutMapping(value = "/location/update", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/location/update", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Update user's current location", description = "User must exist")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success", content = {
+                    @Content(mediaType = "application/json")
+                }
+            ),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "404", description = "Location not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "500", description = "Failure")
+    })
+
     public ResponseEntity<String> updateCurrentLocation(@RequestBody @Valid LocationAddRequest locationAddRequest) {
         LocationDto locationDto = new LocationDto()
                 .setZip(locationAddRequest.getZip())
@@ -101,15 +156,25 @@ public class UserController {
         return ResponseEntity.ok().body(userService.updateLocation(locationDto));
     }
 
-    @PutMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE )
+    @RequestMapping(value = "/update", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Update user's profile", description = "User must exist")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success", content = {
+                    @Content(mediaType = "application/json")
+                }
+            ),
+
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "400", description = "Invalid update data supplied"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "500", description = "Failure")
+    })
+
     public ResponseEntity<String> updateUserRecord(@RequestBody @Valid UpdateUserRequest updateUserRequest) {
         return ResponseEntity.ok().body(userService.updateProfile(updateUserRequest));
     }
 
-
-    // TODO:
-
-    @GetMapping("/token/refresh")
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
        String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {

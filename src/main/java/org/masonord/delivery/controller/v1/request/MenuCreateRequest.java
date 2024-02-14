@@ -23,6 +23,12 @@ public class MenuCreateRequest {
     private String description;
 
     @NotNull
+    double lat;
+
+    @NotNull
+    double lon;
+
+    @NotNull
     private Set<DishCreateRequest> dishes;
 
     private String type;
