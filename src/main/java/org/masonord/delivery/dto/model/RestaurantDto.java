@@ -15,6 +15,8 @@ import java.util.Set;
 public class RestaurantDto {
     public String name;
 
+    public Set<OrderDto> orders;
+
     public Set<MenuDto> menus;
 
     public Set<ReviewDto> reviews;

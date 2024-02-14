@@ -1,29 +1,20 @@
 package org.masonord.delivery.service.classes;
 
-import org.masonord.delivery.controller.v1.request.OffsetBasedPageRequest;
 import org.masonord.delivery.dto.mapper.CourierMapper;
-import org.masonord.delivery.dto.mapper.LocationMapper;
 import org.masonord.delivery.dto.model.CourierDto;
-import org.masonord.delivery.dto.model.CourierMetaInfoDto;
-import org.masonord.delivery.dto.model.LocationDto;
 import org.masonord.delivery.dto.model.OrderDto;
 import org.masonord.delivery.enums.*;
 import org.masonord.delivery.exception.ExceptionHandler;
-import org.masonord.delivery.model.CompletedOrder;
-import org.masonord.delivery.model.Location;
 import org.masonord.delivery.model.User;
 import org.masonord.delivery.model.order.Order;
 import org.masonord.delivery.repository.CompletedOrderRepository;
 import org.masonord.delivery.repository.OrderRepository;
 import org.masonord.delivery.repository.UserRepository;
 import org.masonord.delivery.service.interfaces.LocationService;
-import org.masonord.delivery.util.DateUtils;
 import org.masonord.delivery.util.IdUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 

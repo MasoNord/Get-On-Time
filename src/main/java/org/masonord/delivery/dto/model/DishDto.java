@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.Accessors;
+import org.masonord.delivery.model.order.OrderItem;
 
 import java.util.Set;
 
@@ -24,6 +25,8 @@ public class DishDto {
     private String description;
 
     private Set<ReviewDto> reviews;
+
+    private OrderItem orderItem;
 
     private String menu;
 }

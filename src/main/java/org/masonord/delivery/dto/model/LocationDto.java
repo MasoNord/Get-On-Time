@@ -21,4 +21,8 @@ public class LocationDto {
     private String city;
 
     private int number;
+
+    private double lon;
+
+    private double lat;
 }

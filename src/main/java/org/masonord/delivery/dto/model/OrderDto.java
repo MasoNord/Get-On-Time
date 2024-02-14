@@ -21,7 +21,6 @@ import java.util.Set;
 public class OrderDto {
     private String id;
 
-    // select any currency you want
     private float cost;
 
     private String courierEmail;

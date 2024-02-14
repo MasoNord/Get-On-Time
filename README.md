@@ -1,70 +1,114 @@
 # Application
-![Get On Time Schema](https://github.com/MasoNord/Get-On-Time/assets/112730325/05dd0e87-b8c1-4ceb-93cb-6b81d9fb6e33)
 
-## Table of Content:
-- [About the project](#about-the-project)
-- [Dependencies](#dependencies)
-- [How to install](#How-to-install)
-- [How to use:](#CRUD-API)
+## Introduction
 
-## About the project:
-This is an implementation of a backend for delivery services. Customers will be able to order any type of food in any restaurant they want. Restaurants, in turn,  will accept customers' orders, and couriers will deliver the order to the customer's door. 
+This is project is a simple implementation of a backend for delivery service powered by Spring Boot.
+In real world delivery services do have a really sophisticated infrastructure. It requires consideration
+of many edge cases and solid system architecture. This project is simple a demo demonstrating basic features
+This project certainly has bugs and vulnerabilities, so please don't blame me for that, I'm a beginner and still
+learning how to build proper backend 
 
-App will consist of the following parts:
-* CRUD API: (courier part, customer part and restaurant owner part)
-* Rate Limiter
-* Load Balancer
+## About This Project
+1. Courier:
+   * You can accept, complete orders
+   * Track ongoing rides
+   * Browse nearby restaurants based on your location and transport
+   * Your complete orders is saved on the database
+2. Customer:
+    * You can make new order
+    * Browse all personal orders
+    * Browse nearby restaurants based on your location
+3. All users:
+    * Login into their accounts
+    * Create new accounts
+    * Update personal information
+    * Update password
+    * Update current location 
+4. Owners:
+    * Add new restaurant
+    * Track all orders
+    * Update menu profile
 
-## Dependencies:
-- Spring Boot
-- Java 21
-- PostgreSQL
-- Hibernate
-- Docker & Docker Compose
-- Junit
-- Spring Security and jjwt
-- Log4j
+For more information about app's functionality, please, refer to the open API documentation
+
+## Prerequisites
+
+What things you need to install
+
+~~~
+    - Locally installed PostgreSQL server
+    - COmpativle IDE, Intellij IDEA strongly recommended for this projects
+    - In case you want to run the Dockerized version keep in mind, docker/docker-compouse must be installed on you computer
+    - Create an account on https://geocode.maps.co/ and get a free API key which we'll need to specify in propery file 
+~~~
+
+## Installing / Running
+   To run the application fill required fields in application.properties file as following
+~~~
+   # Spring Security properties
+
+spring.thymeleaf.prefix=classpath:/templates/
+spring.thymeleaf.suffix=.html
+refresh.token.expiration =  < your refersh token expiration >
+access.token.expiration= < your access token expiration >
+secret = < your secret >
+geocoding = < Here must be your API key from https://geocode.maps.co/ >
+
+# Database properties
+
+jdbc.driverClassName = org.postgresql.Driver
+jdbc.url = jdbc:postgresql://localhost:5432/delivery-app
+jdbc.username = < your user name >
+jdbc.password = < your password >
+hibernate.dialect = org.hibernate.dialect.PostgreSQLDialect
+hibernate.show_sql = true
+hibernate.format_sql = true
+hibernate.hbm2ddl.auto = update
+hibernate.max.depth = 1
+
+#Rate Limiter Settings
+
+capacity = 100
+tokens = 10
+defaultTokens = 1
+
+# Spring Configuration
+
+spring.output.ansi.enabled=ALWAYS
+server.port = 8099
+~~~
+
+You can also change logger's properties in log4j2.xml file if you want
+
+For PostgrSQL
+
+~~~
+   Make sure that you create a database with a name delivery-app, or came up with your own
+   naming, but don't forget to make changes in the db section of a property file
+~~~
+
+For Docker
+
+~~~
+   First of all, make sure you build an executable jar file
+   
+   In the root folder run the followign command
+   
+   docker-compose up
+~~~
+
+
+## Built With
+- [Spring](https://spring.io/) - Spring Boot resource and authorization server
+- [Java](https://www.oracle.com/technetwork/java/javase/overview/index.html)
+- [PostgreSQL](https://www.postgresql.org/)
+- [Hibernate](https://hibernate.org/)
+- [Docker](https://www.docker.com/)
+- [Docker Compose](https://docs.docker.com/compose/)
+- [Junit](https://junit.org/junit5/)
+- [Mockito](https://github.com/mockito/mockito)
+- [Log4j](https://logging.apache.org/log4j/2.x/)
 - [Geocoding API](https://geocode.maps.co/)
-- lombok
-- jackson
-- bucket4j
-
-## How to install:
-1. Clone the following repository
-```
-git clone https://github.com/MasoNord/delivery-app.git
-```
-2. Import it in Intellij IDE or any IDE/text editor of you flavor
-
-3. Run the application
-
-## How to use:
-
-### Frontend
-
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.0.8.
-
-#### Development server
-
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
-
-#### Code scaffolding
-
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
-
-#### Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
-
-#### Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-#### Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-#### Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
-
+- [Lombok](https://projectlombok.org/)
+- [Jackson](https://github.com/FasterXML/jackson)
+- [bucket4j](https://bucket4j.com/)
